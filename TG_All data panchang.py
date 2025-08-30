@@ -139,7 +139,7 @@ def generate_panchang_image(data, filename="panchang.png"):
     ax.set_axis_off()
 
     # Title
-    plt.text(0.5, 1.1, "🌟 Planetary Positions & Panchang Details", 
+    plt.text(0.5, 1.1, "🌟 Planetary Positions & Panchang Details_By_Rao_Gs", 
              ha="center", va="center", fontsize=18, fontweight="bold", color="#f5d742", transform=ax.transAxes)
 
     # Sub Info
@@ -185,6 +185,7 @@ if __name__ == "__main__":
     # Image
     generate_panchang_image(data, "panchang.png")
     send_telegram_image("panchang.png", caption="🌟 Panchang Snapshot")
+
 
 
 
