@@ -1,9 +1,15 @@
 import streamlit as st
-from PIL import Image, ImageDraw, ImageFilter
+import numpy as np
+from PIL import Image
+import pygame
+import pygame.freetype
 import swisseph as swe
-import pytz, datetime, math, time, sys
+import pytz, datetime, math
 
-st.set_page_config(page_title="वेदिक ग्रह घड़ी", layout="wide")
+# ---------------------------------------------------------------------
+# CONFIG
+# ---------------------------------------------------------------------
+st.set_page_config(page_title="वेदिक ग्रह घड़ी — Streamlit", layout="wide")
 
 LAT = 19.0760
 LON = 72.8777
@@ -31,7 +37,7 @@ PLANETS = {
 "राहु":(swe.TRUE_NODE,"☊")
 }
 
-PLANET_SYMBOL_OVERRIDE={
+PLANET_SYMBOL={
 "सूर्य":"🜚","चन्द्र":"☽","मंगल":"♂","बुध":"☿","बृहस्पति":"♃",
 "शुक्र":"♀","शनि":"♄","राहु":"☊","केतु":"☋",
 }
@@ -44,103 +50,134 @@ PLANET_COLOR={
 
 swe.set_sid_mode(swe.SIDM_LAHIRI,0,0)
 
-# ------------------------------------------------------
-# SAME ASTRO LOGIC AS ORIGINAL — NO CHANGE
-# ------------------------------------------------------
+# ---------------------------------------------------------------------
+# ASTRO
+# ---------------------------------------------------------------------
 def compute_positions():
     ist = pytz.timezone("Asia/Kolkata")
     now = datetime.datetime.now(ist)
-    jd_ut = swe.julday(now.year, now.month, now.day,
-                       now.hour+now.minute/60+now.second/3600) - (5.5/24)
-    pos={}
-    speed={}
-    for pname,(pcode,_) in PLANETS.items():
-        r=swe.calc_ut(jd_ut,pcode)
+    jd = swe.julday(now.year,now.month,now.day,
+                    now.hour+now.minute/60+now.second/3600)-(5.5/24)
+
+    pos={}; retro={}
+    for pname,(code,_) in PLANETS.items():
+        r=swe.calc_ut(jd,code)
         lon=r[0][0]; sp=r[0][3]
-        ay=swe.get_ayanamsa_ut(jd_ut)
+        ay=swe.get_ayanamsa_ut(jd)
         sid=(lon-ay)%360
-        pos[pname]=sid; speed[pname]=(sp<0)
+        pos[pname]=sid
+        retro[pname]=(sp<0)
 
-    if "राहु" in pos:
-        pos["केतु"]=(pos["राहु"]+180)%360
-        speed["केतु"]=speed["राहु"]
+    pos["केतु"]=(pos["राहु"]+180)%360
+    retro["केतु"]=retro["राहु"]
 
-    return pos, speed, now
+    return pos,retro,now
 
 def nakshatra_info(lon):
     each=13+1/3
-    i=int(lon//each)%27
-    p=int((lon%each)//(each/4))+1
-    return *NAKSHATRAS[i], p
+    idx=int(lon//each)%27
+    pd=int((lon%each)//(each/4))+1
+    return *NAKSHATRAS[idx], pd
 
-# ------------------------------------------------------
-# GRAPHICS – same rendering code
-# ------------------------------------------------------
-def draw_chart(positions, retro):
-    size=650
-    img=Image.new("RGBA",(size,size),(0,0,0,255))
-    d=ImageDraw.Draw(img)
-    cx=cy=size//2; radius=220
+# ---------------------------------------------------------------------
+# DRAW planet ring using Pygame (high quality)
+# ---------------------------------------------------------------------
+pygame.init()
+pygame.freetype.init()
 
+def draw_chart(pos,retro):
+
+    SIZE = 820
+    surf = pygame.Surface((SIZE,SIZE), pygame.SRCALPHA)
+    cx=cy=SIZE//2; R=255
+
+    f  = pygame.freetype.SysFont("Nirmala UI",26,bold=True)
+    f2 = pygame.freetype.SysFont("Nirmala UI",19,bold=True)
+
+    # ring gradient
+    for r in range(R-40, R+40):
+        pygame.draw.circle(
+            surf,
+            (10,10+r//4,120+r//3,255),
+            (cx,cy),
+            r,
+            width=2
+        )
+
+    # signs
     for i in range(12):
-        ang=90-i*30
-        x=cx+(radius+15)*math.cos(math.radians(ang))
-        y=cy-(radius+15)*math.sin(math.radians(ang))
-        d.text((x,y),SIGNS[i],fill="white")
+        ang = math.radians(90-i*30)
+        x = cx+(R+25)*math.cos(ang)
+        y = cy-(R+25)*math.sin(ang)
+        f.render_to(surf,(x,y),SIGNS[i],(240,240,240))
 
-    for pname,sid in positions.items():
-        ang=90-sid; r=radius
-        x=cx+r*math.cos(math.radians(ang))
-        y=cy-r*math.sin(math.radians(ang))
+        pygame.draw.line(
+            surf,(240,240,40),
+            (cx,cy),
+            (cx+(R-15)*math.cos(ang),cy-(R-15)*math.sin(ang)),2
+        )
 
-        d.ellipse([x-15,y-15,x+15,y+15],
-                  fill=PLANET_COLOR[pname])
-        d.text((x,y),PLANET_SYMBOL_OVERRIDE[pname],
-               fill="black")
+    # planets
+    for pname in pos:
+        sid=pos[pname]
+        ang=math.radians(90-sid)
+        x = cx+(R-15)*math.cos(ang)
+        y = cy-(R-15)*math.sin(ang)
 
-        nak, lord, pd=nakshatra_info(sid)
-        d.text((x,y-30),nak,fill="yellow")
+        color = pygame.Color(PLANET_COLOR[pname])
+        pygame.draw.circle(surf,color,(int(x),int(y)),20)
+
+        symbol = PLANET_SYMBOL[pname]
+        f.render_to(surf,(x-12,y-14),symbol,(0,0,0))
+
+        nak,lord,pd = nakshatra_info(sid)
+        f2.render_to(surf,(x-25,y-45),nak,(255,230,160))
 
         if retro[pname]:
-            d.text((x,y+28),"℞",fill="red")
+            pygame.draw.circle(
+                surf,(255,60,60,90),(int(x),int(y)),28,3
+            )
+            f2.render_to(surf,(x-6,y+26),"℞",(255,80,80))
 
-    return img
+    return surf
 
-# ------------------------------------------------------
+# ---------------------------------------------------------------------
 # STREAMLIT UI
-# ------------------------------------------------------
-st.title("वेदिक ग्रह घड़ी — 3D Hindi UI")
+# ---------------------------------------------------------------------
+st.title("वेदिक ग्रह घड़ी — Streamlit Version (3D Hindi UI)")
+
 if st.button("Refresh"):
     st.rerun()
 
-pos, retro, now=compute_positions()
+pos, retro, now = compute_positions()
 
-col1,col2=st.columns([1.4,1])
+col1, col2 = st.columns([1.5,1])
 
 with col1:
-    im=draw_chart(pos,retro)
-    st.image(im, use_container_width=True)
+    surface = draw_chart(pos,retro)
+    arr = pygame.surfarray.array3d(surface)
+    arr = np.rot90(arr)
+    st.image(arr,use_container_width=True)
 
 with col2:
-    st.subheader("Planets Table")
+    st.subheader("Planet Table")
     rows=[]
-    for pname in pos:
-        lon=pos[pname]
+    for p in pos:
+        lon=pos[p]
         nak,lord,pd=nakshatra_info(lon)
         rows.append([
-            pname,
-            PLANET_SYMBOL_OVERRIDE[pname],
+            p,
+            PLANET_SYMBOL[p],
             f"{lon:.4f}°",
             SIGNS[int(lon//30)],
             nak,
-            "Retro" if retro[pname] else "Direct"
+            "Retro" if retro[p] else "Direct"
         ])
     st.dataframe(rows,
-        column_config={
-            0:"Planet",1:"Symbol",2:"Longitude",
-            3:"Rashi",4:"Nakshatra",5:"Motion"
-        }, hide_index=True)
+         hide_index=True,
+         column_config={
+            0:"ग्रह",1:"प्रतीक",2:"Longitude",
+            3:"राशि",4:"नक्षत्र",5:"Motion"
+         })
 
-st.info(f"Last Updated: {now.strftime('%d-%b-%Y %H:%M:%S')}")
-
-st.experimental_rerun()
+st.info("Last updated: " + now.strftime("%d-%b-%Y %H:%M:%S IST"))
