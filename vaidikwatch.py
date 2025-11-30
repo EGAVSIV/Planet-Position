@@ -41,13 +41,13 @@ NAKSHATRAS = [
 
 PLANETS = [
 ("सूर्य", swe.SUN, "☀️"),
-("चन्द्र", swe.MOON,"☽"),
-("मंगल", swe.MARS,"♂"),
-("बुध", swe.MERCURY,"☿"),
-("बृहस्पति", swe.JUPITER,"♃"),
-("शुक्र", swe.VENUS,"♀"),
-("शनि", swe.SATURN,"♄"),
-("राहु", swe.TRUE_NODE,"☊")
+("चन्द्र", swe.MOON,"☀️"),
+("मंगल", swe.MARS,"☀️"),
+("बुध", swe.MERCURY,"☀️"),
+("बृहस्पति", swe.JUPITER,"☀️"),
+("शुक्र", swe.VENUS,"☀️"),
+("शनि", swe.SATURN,"☀️"),
+("राहु", swe.TRUE_NODE,"☀️")
 ]
 
 COL = {
