@@ -5,10 +5,11 @@ import pygame
 import pygame.freetype
 import swisseph as swe
 import pytz, datetime, math
-from streamlit_autorefresh import st_autorefresh
+
 
 # Auto Refresh every 60 sec
-st_autorefresh(interval=60 * 1000)
+st.experimental_rerun()
+
 
 st.set_page_config(page_title="वेदिक ग्रह घड़ी", layout="wide")
 
@@ -121,6 +122,18 @@ def draw_chart(pos,retro):
             f2.render_to(surf,(x-6,y+26),"℞",(255,80,80))
 
     return surf
+
+st.markdown(
+    """
+    <script>
+        setTimeout(function(){
+            window.location.reload(1);
+        }, 60000);
+    </script>
+    """,
+    unsafe_allow_html=True
+)
+
 
 # ------------------------ UI ------------------------
 st.markdown("<h1 style='color:yellow'>वेदिक ग्रह घड़ी</h1>",unsafe_allow_html=True)
