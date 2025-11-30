@@ -1,19 +1,32 @@
 import streamlit as st
 import numpy as np
-from PIL import Image
 import pygame
 import pygame.freetype
 import swisseph as swe
 import pytz, datetime, math
 
 
-# Auto Refresh every 60 sec
-st.experimental_rerun()
-
-
+# ==========================================================
+# PAGE CONFIG
+# ==========================================================
 st.set_page_config(page_title="वेदिक ग्रह घड़ी", layout="wide")
 
-# ------------------------ CONFIG ------------------------
+
+# ==========================================================
+# AUTO REFRESH EVERY 60s (No external library)
+# ==========================================================
+st.markdown("""
+<script>
+setTimeout(function(){
+    window.location.reload();
+}, 60000);
+</script>
+""", unsafe_allow_html=True)
+
+
+# ==========================================================
+# CONSTANTS & SETTINGS
+# ==========================================================
 LAT = 19.0760
 LON = 72.8777
 ELEV = 14
@@ -33,12 +46,16 @@ NAKSHATRAS = [
 ("पूर्वभाद्रपदा","बृहस्पति"),("उत्तरभाद्रपदा","शनि"),("रेवती","बुध"),
 ]
 
-
 PLANETS = {
-"सूर्य":(swe.SUN,"🜚"),"चन्द्र":(swe.MOON,"☽"),"मंगल":(swe.MARS,"♂"),
-"बुध":(swe.MERCURY,"☿"),"बृहस्पति":(swe.JUPITER,"♃"),
-"शुक्र":(swe.VENUS,"♀"),"शनि":(swe.SATURN,"♄"),
-"राहु":(swe.TRUE_NODE,"☊")
+"सूर्य":(swe.SUN,"🜚"),"चन्द्र":(swe.MOON,"☽"),
+"मंगल":(swe.MARS,"♂"),"बुध":(swe.MERCURY,"☿"),
+"बृहस्पति":(swe.JUPITER,"♃"),"शुक्र":(swe.VENUS,"♀"),
+"शनि":(swe.SATURN,"♄"),"राहु":(swe.TRUE_NODE,"☊")
+}
+
+PLANET_SYMBOL = {
+"सूर्य":"🜚","चन्द्र":"☽","मंगल":"♂","बुध":"☿","बृहस्पति":"♃",
+"शुक्र":"♀","शनि":"♄","राहु":"☊","केतु":"☋",
 }
 
 PLANET_COLOR={
@@ -49,16 +66,21 @@ PLANET_COLOR={
 
 swe.set_sid_mode(swe.SIDM_LAHIRI,0,0)
 
-# ------------------------ Compute Positions ------------------------
+
+# ==========================================================
+# ASTRO CORE
+# ==========================================================
 def compute_positions(custom_dt=None):
     if custom_dt is None:
         ist = pytz.timezone("Asia/Kolkata")
         custom_dt = datetime.datetime.now(ist)
 
-    jd = swe.julday(custom_dt.year,
-                    custom_dt.month,
-                    custom_dt.day,
-                    custom_dt.hour + custom_dt.minute/60) - (5.5/24)
+    jd = swe.julday(
+        custom_dt.year,
+        custom_dt.month,
+        custom_dt.day,
+        custom_dt.hour + custom_dt.minute/60
+    ) - (5.5/24)
 
     pos={}; retro={}
 
@@ -74,17 +96,22 @@ def compute_positions(custom_dt=None):
     retro["केतु"]=retro["राहु"]
     return pos,retro,custom_dt
 
-# ---------------- Nakshatra ----------------
+
 def nakshatra_info(lon):
     each=13+1/3
     idx=int(lon//each)%27
     pd=int((lon%each)//(each/4))+1
     return *NAKSHATRAS[idx], pd
 
-# ---------------- DRAW PYGAME CHART ----------------
-pygame.init(); pygame.freetype.init()
+
+# ==========================================================
+# DRAW PYGAME CHART
+# ==========================================================
+pygame.init()
+pygame.freetype.init()
 
 def draw_chart(pos,retro):
+
     SIZE = 820
     surf = pygame.Surface((SIZE,SIZE), pygame.SRCALPHA)
     cx=cy=SIZE//2; R=255
@@ -93,9 +120,7 @@ def draw_chart(pos,retro):
     f2 = pygame.freetype.SysFont("Nirmala UI",19,bold=True)
 
     for r in range(R-40, R+40):
-        pygame.draw.circle(
-            surf,(10,10+r//4,120+r//3,255),(cx,cy),r,2
-        )
+        pygame.draw.circle(surf,(10,10+r//4,120+r//3,255),(cx,cy),r,2)
 
     for i in range(12):
         ang = math.radians(90-i*30)
@@ -106,6 +131,7 @@ def draw_chart(pos,retro):
     for pname in pos:
         sid=pos[pname]
         ang=math.radians(90-sid)
+
         x = cx+(R-15)*math.cos(ang)
         y = cy-(R-15)*math.sin(ang)
 
@@ -123,22 +149,12 @@ def draw_chart(pos,retro):
 
     return surf
 
-st.markdown(
-    """
-    <script>
-        setTimeout(function(){
-            window.location.reload(1);
-        }, 60000);
-    </script>
-    """,
-    unsafe_allow_html=True
-)
 
-
-# ------------------------ UI ------------------------
+# ==========================================================
+# STREAMLIT UI
+# ==========================================================
 st.markdown("<h1 style='color:yellow'>वेदिक ग्रह घड़ी</h1>",unsafe_allow_html=True)
 
-# Date + Time Selector
 colA,colB,colC = st.columns(3)
 
 sel_date = colA.date_input("Select Date")
@@ -148,10 +164,10 @@ if colC.button("Now"):
     sel_date = datetime.date.today()
     sel_time = datetime.datetime.now().time()
 
-# combine selected date + time
 dt = datetime.datetime.combine(sel_date, sel_time)
 
 pos,retro,used_time = compute_positions(dt)
+
 
 col1,col2 = st.columns([1.5,1])
 
@@ -167,7 +183,9 @@ with col2:
     for p in pos:
         lon=pos[p]
         nak,lord,pd=nakshatra_info(lon)
-        rows.append([p,
+
+        rows.append([
+            p,
             PLANET_SYMBOL[p],
             f"{lon:.4f}°",
             SIGNS[int(lon//30)],
@@ -178,4 +196,3 @@ with col2:
     st.dataframe(rows)
 
 st.success("Updated: " + used_time.strftime("%d-%b-%Y %H:%M:%S"))
-
