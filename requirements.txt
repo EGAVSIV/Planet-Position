@@ -13,7 +13,8 @@ pillow
 pytz
 swisseph
 numpy
-st_autorefresh
+streamlit-autorefresh
+
 
 
 
