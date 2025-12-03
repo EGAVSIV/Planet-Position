@@ -1,15 +1,12 @@
 import streamlit as st
-import numpy as np
-from PIL import Image, ImageDraw, ImageFont
 import swisseph as swe
-import pytz, datetime, math
+import datetime, pytz, math
 
-# ====================== CONFIG ======================
-st.set_page_config(page_title="वेदिक ग्रह घड़ी — वेब संस्करण", layout="wide")
+st.set_page_config(page_title="🪐 वेदिक ग्रह घड़ी — वेब संस्करण", layout="wide")
 
-FONT_LARGE  = ImageFont.truetype("fonts/NotoSansDevanagari-Regular.ttf", 32)
-FONT_MEDIUM = ImageFont.truetype("fonts/NotoSansDevanagari-Regular.ttf", 22)
-FONT_SMALL  = ImageFont.truetype("fonts/NotoSansDevanagari-Regular.ttf", 15)
+# -------------------------------------
+# ASTRO DATA
+# -------------------------------------
 
 SIGNS = ["मेष","वृषभ","मिथुन","कर्क","सिंह","कन्या",
          "तुला","वृश्चिक","धनु","मकर","कुंभ","मीन"]
@@ -23,7 +20,7 @@ NAKSHATRAS = [
 ("विशाखा","बृहस्पति"),("अनुराधा","शनि"),("ज्येष्ठा","बुध"),
 ("मूला","केतु"),("पूर्वाषाढा","शुक्र"),("उत्तराषाढा","सूर्य"),
 ("श्रवण","चन्द्र"),("धनिष्ठा","मंगल"),("शतभिषा","राहु"),
-("पूर्वभाद्रपदा","बृहस्पति"),("उत्तरभाद्रपदा","शनि"),("रेवती","बुध"),
+("पूर्वभाद्रपदा","बृहस्पति"),("उत्तरभाद्रपदा","शनि"),("रेवती","बुध")
 ]
 
 PLANETS = [
@@ -38,120 +35,129 @@ PLANETS = [
 ]
 
 COL = {
-"सूर्य":"#FFC06B","चन्द्र":"#CFE9FF","मंगल":"#FF8A8A",
-"बुध":"#B6FF9C","बृहस्पति":"#FFD88A","शुक्र":"#F9B0FF",
-"शनि":"#C0C8FF","राहु":"#FFCF66","केतु":"#FFCF66"
+"सूर्य":"#ffcc66","चन्द्र":"#cce6ff","मंगल":"#ff9999",
+"बुध":"#ccffcc","बृहस्पति":"#ffe6b3","शुक्र":"#ffccff",
+"शनि":"#c2c2ff","राहु":"#ffd27f","केतु":"#ffd27f"
 }
 
 swe.set_sid_mode(swe.SIDM_LAHIRI,0,0)
 
-# ====================== ASTRO ======================
+# -------------------------------------
+# ASTRO FUNCTIONS
+# -------------------------------------
+
 def get_positions(dt):
     jd = swe.julday(dt.year, dt.month, dt.day,
-                    dt.hour+dt.minute/60) - 5.5/24
-    pos={}
+                    dt.hour + dt.minute/60) - 5.5/24
+    pos = {}
+    for name, code, sym in PLANETS:
+        r = swe.calc_ut(jd, code)
+        ay = swe.get_ayanamsa_ut(jd)
+        pos[name] = (r[0][0] - ay) % 360
 
-    for name,code,sym in PLANETS:
-        r=swe.calc_ut(jd,code)
-        ay=swe.get_ayanamsa_ut(jd)
-        pos[name] = (r[0][0]-ay)%360
-
-    pos["केतु"] = (pos["राहु"]+180)%360
+    pos["केतु"] = (pos["राहु"] + 180) % 360
     return pos
 
-def nakshatra(lon):
-    each = 13+1/3
-    idx = int(lon//each)%27
+
+def nakshatra_of(lon):
+    size = 13 + 1/3
+    idx = int(lon // size) % 27
     return NAKSHATRAS[idx][0]
 
-# ====================== DRAW FUNCTIONS ======================
-def draw_ring():
-    img = Image.new("RGBA",(950,950),(10,12,18))
-    d = ImageDraw.Draw(img)
-    cx=cy=475
-    R1=380
-    R2=420
+# -------------------------------------
+# SVG GENERATOR (CIRCULAR CHAKRA)
+# -------------------------------------
 
-    for i in range(80):
-        col=(30,40+i*2,110+i*2)
-        d.ellipse((cx-R2+i,cy-R2+i,cx+R2-i,cy+R2-i),
-                  outline=col,width=2)
+def generate_svg(pos):
 
-    # 12 Radial Lines
+    svg = """
+    <svg width="650" height="650" viewBox="0 0 650 650" style="margin:auto; display:block">
+        <circle cx="325" cy="325" r="300" stroke="#999" stroke-width="4" fill="none"/>
+
+        <!-- Zodiac Segments -->
+    """
+
+    # Draw 12 zodiac divisions
     for i in range(12):
-        ang=math.radians(90-i*30)
-        x=cx+R1*math.cos(ang)
-        y=cy-R1*math.sin(ang)
-        d.line((cx,cy,x,y),fill="yellow",width=3)
+        angle_deg = 90 - (i*30)
+        rad = math.radians(angle_deg)
+        x = 325 + 300 * math.cos(rad)
+        y = 325 - 300 * math.sin(rad)
 
-    # Center text
-    d.text((cx,cy-20),"वेदिक घड़ी",font=FONT_LARGE,fill="white",anchor="mm")
-    d.text((cx,cy+14),"(लाहिड़ी अयनांश)",font=FONT_SMALL,fill="white",anchor="mm")
+        svg += f"""
+        <line x1="325" y1="325" x2="{x}" y2="{y}"
+              stroke="#ffaa00" stroke-width="3"/>
+        """
 
-    return img
+        # Print zodiac name midway
+        x2 = 325 + 200 * math.cos(rad)
+        y2 = 325 - 200 * math.sin(rad)
 
-def draw_planets(img,pos):
-    d = ImageDraw.Draw(img)
-    cx=cy=475
-    R=300
+        svg += f"""
+        <text x="{x2}" y="{y2}" fill="#00e6ff" font-size="22" text-anchor="middle"
+              dominant-baseline="middle">{SIGNS[i]}</text>
+        """
 
-    for name,code,sym in PLANETS:
-        lon=pos[name]
-        ang=math.radians(90-lon)
+    # Planets
+    for name, code, sym in PLANETS:
+        lon = pos[name]
+        ang = math.radians(90 - lon)
+        px = 325 + 240 * math.cos(ang)
+        py = 325 - 240 * math.sin(ang)
 
-        x=cx+R*math.cos(ang)
-        y=cy-R*math.sin(ang)
+        nak = nakshatra_of(lon)
+        color = COL[name]
 
-        # planet circle
-        d.ellipse((x-22,y-22,x+22,y+22),
-                  fill=COL[name],outline="black")
+        svg += f"""
+        <circle cx="{px}" cy="{py}" r="26" fill="{color}" stroke="black" stroke-width="2"/>
+        <text x="{px}" y="{py}" font-size="22" text-anchor="middle"
+              dominant-baseline="middle">{sym}</text>
 
-        d.text((x,y),sym,font=FONT_MEDIUM,fill="black",anchor="mm")
-        d.text((x,y+32),name,font=FONT_SMALL,fill="white",anchor="mm")
-        d.text((x,y-32),nakshatra(lon),font=FONT_SMALL,fill="#ffeb99",anchor="mm")
+        <text x="{px}" y="{py + 36}" fill="white" font-size="18"
+              text-anchor="middle" dominant-baseline="middle">{name}</text>
 
-    return img
+        <text x="{px}" y="{py - 36}" fill="#fff099" font-size="16"
+              text-anchor="middle" dominant-baseline="middle">{nak}</text>
+        """
 
-# ====================== UI ======================
-st.title("🪐 वेदिक ग्रह घड़ी — Streamlit")
+    svg += "</svg>"
+    return svg
 
-c1,c2,c3=st.columns(3)
 
-dt_date=c1.date_input("तारीख़ चुनें")
-dt_time=c2.time_input("समय चुनें")
+# -------------------------------------
+# STREAMLIT UI
+# -------------------------------------
 
-if c3.button("अब"):
-    now=datetime.datetime.now(pytz.timezone("Asia/Kolkata"))
-    dt_date=now.date()
-    dt_time=now.time()
+st.title("🪐 वेदिक ग्रह घड़ी — Circular Chakra HTML Version")
 
-dt=datetime.datetime.combine(dt_date,dt_time)
+col1, col2, col3 = st.columns(3)
+date = col1.date_input("तारीख़ चुनें")
+time = col2.time_input("समय चुनें")
 
-pos=get_positions(dt)
+if col3.button("अब"):
+    now = datetime.datetime.now(pytz.timezone("Asia/Kolkata"))
+    date, time = now.date(), now.time()
 
-# chart
-ring=draw_ring()
-full=draw_planets(ring,pos)
+dt = datetime.datetime.combine(date, time)
+pos = get_positions(dt)
 
-##########################################################################
-# DISPLAY
-##########################################################################
+# Chakra Output
+svg = generate_svg(pos)
+st.components.v1.html(svg, height=700)
 
-colA,colB=st.columns([2,1])
-
-colA.image(full,use_container_width=True)
-
-# table
+# Table
 st.subheader("ग्रह तालिका")
-table=[]
-for p,code,sym in PLANETS:
+
+table = []
+for p, code, sym in PLANETS:
     table.append([
-        p,sym,
-        f"{pos[p]:.4f}°",
+        p,
+        sym,
+        f"{pos[p]:.2f}°",
         SIGNS[int(pos[p]//30)],
-        nakshatra(pos[p])
+        nakshatra_of(pos[p])
     ])
 
 st.table(table)
 
-st.success("समय (IST): "+dt.strftime("%d-%b-%Y %H:%M:%S"))
+st.success("समय (IST): " + dt.strftime("%d-%b-%Y %H:%M:%S"))
