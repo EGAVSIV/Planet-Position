@@ -73,10 +73,8 @@ def get_positions(dt_utc):
     return pos
 
 def nakshatra_pada(lon):
-    size = 13 + 1/3
-    idx = int(lon // size)
-    pada = int((lon % size) // (size/4)) + 1
-    return NAKSHATRAS[idx][0], pada
+    return nakshatra_name, pada
+
 
 def get_tithi(pos):
     diff = (pos["चन्द्र"] - pos["सूर्य"]) % 360
