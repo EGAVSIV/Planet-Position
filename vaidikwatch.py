@@ -190,5 +190,5 @@ st.subheader("ग्रह तालिका")
 rows=[]
 for p,_,sym in PLANETS:
     nak,pada = nakshatra_pada(pos[p])
-    rows.append([p,sym,f"{pos[p]:.2f}°",SIGNS[int(pos[p]//30)],nak,f"पाद {pada}"])
+    rows.append([p,sym,f"{pos[p]:.2f}°",SIGNS[int(pos[p]//30)],nak,f"पद {pada}"])
 st.table(rows)
