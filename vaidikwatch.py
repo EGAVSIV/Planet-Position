@@ -144,7 +144,15 @@ st.title("🪐 वेदिक ग्रह घड़ी — गौरव सि
 
 col1, col2, col3 = st.columns(3)
 
-date = col1.date_input("तारीख़ चुनें")
+today = datetime.date.today()
+
+date = col1.date_input(
+    "तारीख़ चुनें",
+    value=today,
+    min_value=today - datetime.timedelta(days=365*100),
+    max_value=today + datetime.timedelta(days=365*100)
+)
+
 time = col2.time_input("समय चुनें")
 
 if col3.button("अब"):
