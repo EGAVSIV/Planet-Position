@@ -84,7 +84,19 @@ def get_tithi(pos):
 
 def get_karan(pos):
     diff = (pos["चन्द्र"] - pos["सूर्य"]) % 360
-    return KARANS[int((diff % 12) // 6 + (diff // 12)*2) % 60]
+    half_tithi = int(diff // 6)  # 0–59
+
+    # Repeating karanas
+    repeating = ["बव","बालव","कौलव","तैतिल","गर","वणिज","विष्टि"]
+
+    # Special ending karanas
+    special = ["शकुनि","चतुष्पद","नाग","किंस्तुघ्न"]
+
+    if half_tithi >= 56:
+        return special[half_tithi - 56]
+    else:
+        return repeating[(half_tithi + 1) % 7]
+
 
 def get_lagna(dt_utc):
     jd = swe.julday(dt_utc.year, dt_utc.month, dt_utc.day,
