@@ -47,7 +47,7 @@ swe.set_sid_mode(swe.SIDM_LAHIRI,0,0)
 
 def get_positions(dt):
     jd = swe.julday(dt.year, dt.month, dt.day,
-                    dt.hour + dt.minute/60) - 5.5/24
+                    dt.hour + dt.minute/60)
     pos = {}
     for name, code, sym in PLANETS:
         r = swe.calc_ut(jd, code)
@@ -151,8 +151,13 @@ if col3.button("अब"):
     now = datetime.datetime.now(pytz.timezone("Asia/Kolkata"))
     date, time = now.date(), now.time()
 
-dt = datetime.datetime.combine(date, time)
-pos = get_positions(dt)
+ist = pytz.timezone("Asia/Kolkata")
+dt_ist = ist.localize(datetime.datetime.combine(date, time))
+
+# Convert to UTC for Swiss Ephemeris
+dt_utc = dt_ist.astimezone(pytz.utc)
+
+pos = get_positions(dt_utc)
 
 # Chakra Display
 svg = generate_svg(pos)
@@ -172,4 +177,5 @@ for p, code, sym in PLANETS:
 
 st.table(table)
 
-st.success("समय (IST): " + dt.strftime("%d-%b-%Y %H:%M:%S"))
+st.success("समय (IST): " + dt_ist.strftime("%d-%b-%Y %H:%M:%S"))
+
