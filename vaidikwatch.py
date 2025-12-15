@@ -148,6 +148,7 @@ def generate_svg(pos, lagna_lon, dt_ist):
 # -----------------------------
 st.title("🪐 वेदिक ग्रह घड़ी — गौरव सिंह यादव")
 
+
 c1,c2,c3 = st.columns(3)
 today = datetime.date.today()
 
