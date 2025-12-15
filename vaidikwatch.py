@@ -114,46 +114,91 @@ def generate_svg(pos, lagna_lon, dt_ist):
     time_text = dt_ist.strftime("%d %b %Y  %H:%M IST")
 
     svg = f"""
-    <svg width="700" height="740" viewBox="0 0 700 740" style="display:block;margin:auto">
+    <svg width="700" height="760" viewBox="0 0 700 760" style="display:block;margin:auto">
 
+    <!-- Selected Time -->
     <text x="350" y="30" fill="#00ffcc" font-size="22" text-anchor="middle">
-    {time_text}
+        {time_text}
     </text>
 
-    <circle cx="350" cy="370" r="330" fill="#0a0f1e" stroke="#4da6ff" stroke-width="3"/>
-    <circle cx="350" cy="370" r="270" fill="#000814" stroke="#888" stroke-width="2"/>
+    <!-- Outer & Inner Circles -->
+    <circle cx="350" cy="380" r="330" fill="#0a0f1e" stroke="#4da6ff" stroke-width="3"/>
+    <circle cx="350" cy="380" r="270" fill="#000814" stroke="#888" stroke-width="2"/>
     """
 
+    # Zodiac divisions + names
     for i in range(12):
         ang = math.radians(90 - i*30)
-        x = 350 + 260*math.cos(ang)
-        y = 370 - 260*math.sin(ang)
-        svg += f'<line x1="350" y1="370" x2="{x}" y2="{y}" stroke="#f7d000" stroke-width="2"/>'
-        svg += f'<text x="{350+200*math.cos(ang)}" y="{370-200*math.sin(ang)}" fill="#00e6ff" font-size="22" text-anchor="middle">{SIGNS[i]}</text>'
+        x = 350 + 260 * math.cos(ang)
+        y = 380 - 260 * math.sin(ang)
 
-    # Lagna Highlight
+        svg += f"""
+        <line x1="350" y1="380" x2="{x}" y2="{y}"
+              stroke="#f7d000" stroke-width="2"/>
+
+        <text x="{350 + 200 * math.cos(ang)}"
+              y="{380 - 200 * math.sin(ang)}"
+              fill="#00e6ff" font-size="22"
+              text-anchor="middle" dominant-baseline="middle">
+              {SIGNS[i]}
+        </text>
+        """
+
+    # 🔴 Lagna Highlight Line
     la = math.radians(90 - lagna_lon)
-    svg += f'<line x1="350" y1="370" x2="{350+310*math.cos(la)}" y2="{370-310*math.sin(la)}" stroke="red" stroke-width="5"/>'
+    svg += f"""
+    <line x1="350" y1="380"
+          x2="{350 + 310 * math.cos(la)}"
+          y2="{380 - 310 * math.sin(la)}"
+          stroke="red" stroke-width="5"/>
+    """
 
+    # Planets (SYMBOL + NAME + NAKSHATRA)
     for name, code, sym in PLANETS:
         lon = pos[name]
         ang = math.radians(90 - lon)
-        px = 350 + 210*math.cos(ang)
-        py = 370 - 210*math.sin(ang)
-        nak,_ = nakshatra_pada(lon)
 
+        px = 350 + 210 * math.cos(ang)
+        py = 380 - 210 * math.sin(ang)
+
+        nak = nakshatra_of(lon)
+        color = COL[name]
+
+        # Moon highlight
         ring = ""
-        if name=="चन्द्र":
-            ring = f'<circle cx="{px}" cy="{py}" r="36" fill="none" stroke="yellow" stroke-width="4"/>'
+        if name == "चन्द्र":
+            ring = f"""
+            <circle cx="{px}" cy="{py}" r="36"
+                    fill="none" stroke="yellow" stroke-width="4"/>
+            """
 
         svg += f"""
         {ring}
-        <circle cx="{px}" cy="{py}" r="26" fill="{COL[name]}" stroke="black"/>
-        <text x="{px}" y="{py}" font-size="20" text-anchor="middle">{sym}</text>
+        <circle cx="{px}" cy="{py}" r="26"
+                fill="{color}" stroke="black" stroke-width="2"/>
+
+        <!-- Planet Symbol -->
+        <text x="{px}" y="{py}" font-size="20" font-weight="bold"
+              text-anchor="middle" dominant-baseline="middle">
+              {sym}
+        </text>
+
+        <!-- Planet Name (RESTORED) -->
+        <text x="{px}" y="{py + 40}" fill="white" font-size="16"
+              text-anchor="middle">
+              {name}
+        </text>
+
+        <!-- Nakshatra -->
+        <text x="{px}" y="{py - 40}" fill="#ffeb99" font-size="14"
+              text-anchor="middle">
+              {nak}
+        </text>
         """
 
     svg += "</svg>"
     return svg
+
 
 # -----------------------------
 # UI
