@@ -187,5 +187,17 @@ if __name__ == "__main__":
     send_telegram_image("panchang.png", caption="🌟 Panchang Snapshot")
 
 
+st.markdown("""
+---
+**Designed by:-  
+Gaurav Singh Yadav**   
+🩷💛🩵💙🩶💜🤍🤎💖  Built With Love 🫶  
+Energy | Commodity | Quant Intelligence 📶  
+📱 +91-8003994518 〽️   
+📧 yadav.gauravsingh@gmail.com ™️
+""")
+
+
+
 
 
