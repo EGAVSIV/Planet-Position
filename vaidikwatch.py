@@ -186,3 +186,14 @@ for p, code, sym in PLANETS:
 st.table(table)
 
 st.success("समय (IST): " + dt_ist.strftime("%d-%b-%Y %H:%M:%S"))
+
+
+st.markdown("""
+---
+**Designed by:-  
+Gaurav Singh Yadav**   
+🩷💛🩵💙🩶💜🤍🤎💖  Built With Love 🫶  
+Energy | Commodity | Quant Intelligence 📶  
+📱 +91-8003994518 〽️   
+📧 yadav.gauravsingh@gmail.com ™️
+""")
