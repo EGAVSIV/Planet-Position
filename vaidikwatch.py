@@ -214,22 +214,13 @@ st.success("समय (IST): " + dt_ist.strftime("%d-%b-%Y %H:%M:%S"))
 
 st.markdown("""
 ---
-<div style="text-align:center">
+### 👤 **Gaurav Singh Yadav**  
+**Quant Trader | Energy & Commodity Intelligence**
 
-<h3>🚀 Designed by <b>Gaurav Singh Yadav</b></h3>
+📈 Market Analytics • Order Flow • Derivatives  
+📞 +91-8003994518  
+📧 yadav.gauravsingh@gmail.com  
 
-<p style="font-size:16px">
-🩷💛🩵💙🩶💜🤍🤎💖 <br>
-<b>Built With Love & Market Wisdom</b> 🫶
-</p>
+<sub>Built with ❤️ using Python & Streamlit</sub>
+""")
 
-<p>
-📊 Energy | Commodity | Quant Intelligence <br>
-📱 +91-8003994518 <br>
-📧 yadav.gauravsingh@gmail.com
-</p>
-
-<small>Turning Order Flow into Opportunity</small>
-
-</div>
-""", unsafe_allow_html=True)
