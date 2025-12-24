@@ -26,7 +26,7 @@ if not st.session_state.authenticated:
 
     st.stop()
 
-st.set_page_config(page_title=" वेदिक ग्रह घड़ी🪐 — वेब संस्करण", layout="wide",page_icon="🪐")
+st.set_page_config(page_title=" वेदिक ग्रह घड़ी⏲️ — वेब संस्करण", layout="wide",page_icon="🪐")
 
 # -----------------------------
 # ASTRO DATA
