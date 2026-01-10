@@ -116,16 +116,19 @@ def generate_svg(pos):
         ang = math.radians(90 - lon)
         px = 350 + 200 * math.cos(ang)
         py = 350 - 200 * math.sin(ang)
-
-
         svg += f"""
-        <circle cx="{px}" cy="{py}" r="14" fill="#ffd27f"/>
+        <circle cx="{px}" cy="{py}" r="11" fill="#79e887"/>
         <text x="{px}" y="{py}"
-        font-size="14"
-        font-weight="bold"
-        text-anchor="middle"
-        dominant-baseline="middle">{sym}</text>
-"""
+        font-size="11"
+          fill="black"
+          text-anchor="middle"
+          dominant-baseline="middle">{sym}</text>
+
+        """
+
+    svg += "</svg>"
+    return svg
+
 
 
 # ================= UI =================
