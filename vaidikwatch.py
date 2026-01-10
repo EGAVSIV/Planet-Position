@@ -976,9 +976,6 @@ else:
 
 
 
-st.markdown("""
-<hr style="border:1px solid #1f2a44; margin-top:30px;">
-
 <div style="
     text-align:center;
     padding:22px 18px;
