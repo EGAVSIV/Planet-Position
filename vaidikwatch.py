@@ -163,7 +163,7 @@ with st.sidebar:
     # ================= QUOTE LANGUAGE =================
     st.markdown("---")
     quote_lang = st.radio(
-        "Quote Language",
+        "उद्धरण भाषा/Quote Language",
         ["हिंदी", "English"],
         horizontal=True
     )
