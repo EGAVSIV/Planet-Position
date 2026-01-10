@@ -2,6 +2,7 @@ import streamlit as st
 import swisseph as swe
 import datetime, pytz, math
 import pandas as pd
+from collections import defaultdict
 import hashlib
 
 # ================= LOGIN =================
