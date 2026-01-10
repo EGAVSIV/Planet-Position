@@ -101,7 +101,9 @@ def get_positions(dt_utc):
 
     return pos, retro, jd
 
-def generate_svg(pos):
+def generate_svg(pos, retro):
+    from collections import defaultdict
+
     cx, cy = 350, 350
 
     # Radii
@@ -110,7 +112,7 @@ def generate_svg(pos):
     LINE_R  = 260
     TEXT_R  = 210
     BASE_PLANET_R = 200
-    STACK_GAP = 18   # spacing between stacked planets
+    STACK_GAP = 18
 
     svg = f"""
     <svg width="700" height="700" viewBox="0 0 700 700"
@@ -131,7 +133,7 @@ def generate_svg(pos):
     """
 
     # =================================================
-    # 🔶 RASHI DIVIDER LINES (0°, 30°, 60°...)
+    # 🔶 RASHI DIVIDER LINES
     # =================================================
     for i in range(12):
         ang = math.radians(90 - i * 30)
@@ -146,7 +148,7 @@ def generate_svg(pos):
         """
 
     # =================================================
-    # 🔷 RASHI NAMES (CENTERED AT +15°)
+    # 🔷 RASHI NAMES (CENTERED)
     # =================================================
     for i in range(12):
         ang = math.radians(90 - (i * 30 + 15))
@@ -165,21 +167,22 @@ def generate_svg(pos):
         """
 
     # =================================================
-    # 🪐 PLANET PLOTTING — NO OVERLAP (RASHI GROUPING)
+    # 🪐 PLANETS (INCLUDING KETU) — NO OVERLAP
     # =================================================
-    from collections import defaultdict
+
     groups = defaultdict(list)
 
-    # group planets by rashi (30° buckets)
+    # --- Main planets ---
     for name, code, sym in PLANETS:
-        lon = pos[name]
-        rashi = int(lon // 30)
+        rashi = int(pos[name] // 30)
         groups[rashi].append((name, sym))
 
-    # plot planets stacked inward per rashi
+    # --- ADD KETU ---
+    groups[int(pos["केतु"] // 30)].append(("केतु", "के."))
+
+    # --- Draw planets ---
     for rashi, plist in groups.items():
 
-        # center angle of the rashi (15°)
         ang = math.radians(90 - (rashi * 30 + 15))
 
         for i, (name, sym) in enumerate(plist):
@@ -188,10 +191,13 @@ def generate_svg(pos):
             px = cx + r * math.cos(ang)
             py = cy - r * math.sin(ang)
 
+            # 🔴 Retrograde = Red | 🟢 Direct = Green
+            color = "#ff4d4d" if retro.get(name, False) else "#79e887"
+
             svg += f"""
             <circle cx="{px}" cy="{py}"
                     r="11"
-                    fill="#79e887"
+                    fill="{color}"
                     stroke="#0b3d1f"
                     stroke-width="1"/>
 
@@ -207,6 +213,7 @@ def generate_svg(pos):
 
     svg += "</svg>"
     return svg
+
 
 
 
