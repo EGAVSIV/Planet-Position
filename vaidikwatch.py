@@ -452,6 +452,10 @@ ZODIACS = [
     "Libra","Scorpio","Sagittarius","Capricorn","Aquarius","Pisces"
 ]
 
+def angular_diff(a, b):
+    d = abs(a - b) % 360
+    return min(d, 360 - d)
+
 ASPECTS = {
     "Conjunction": {z: z for z in ZODIACS},
 
@@ -470,6 +474,52 @@ ASPECTS = {
         "Pisces": "Virgo"
     }
 }
+
+def upcoming_aspects(start_dt_utc, days=5, step_minutes=60):
+    events = []
+
+    total_steps = int((days * 24 * 60) / step_minutes)
+
+    for step in range(total_steps):
+        dt = start_dt_utc + datetime.timedelta(minutes=step * step_minutes)
+        pos, _, _ = get_positions(dt)
+
+        planets = list(pos.keys())
+
+        for i in range(len(planets)):
+            for j in range(i + 1, len(planets)):
+                p1, p2 = planets[i], planets[j]
+                diff = angular_diff(pos[p1], pos[p2])
+
+                # Conjunction
+                if diff <= 1:
+                    events.append({
+                        "aspect": "Conjunction",
+                        "planets": f"{p1} ☌ {p2}",
+                        "time": dt
+                    })
+
+                # Opposition
+                elif abs(diff - 180) <= 1:
+                    events.append({
+                        "aspect": "Opposition",
+                        "planets": f"{p1} ☍ {p2}",
+                        "time": dt
+                    })
+
+    return events
+def unique_events(events):
+    seen = set()
+    final = []
+
+    for e in events:
+        key = (e["aspect"], e["planets"])
+        if key not in seen:
+            seen.add(key)
+            final.append(e)
+
+    return final
+
 def zodiac_sign(deg):
     return ZODIACS[int(deg // 30)]
 def detect_aspects(pos):
@@ -492,18 +542,21 @@ def detect_aspects(pos):
                 events.append(f"{p1} ☍ {p2} (Opposition {s1}–{s2})")
 
     return events
-st.subheader("🔭 Planetary Aspects")
+st.subheader("🔭 Upcoming Planetary Aspects")
 
-events = detect_aspects(pos)
+events = upcoming_aspects(dt_utc, days=5)
+events = unique_events(events)
 
-if events:
-    for e in events:
-        st.markdown(f"- {e}")
+if not events:
+    st.caption("No major conjunctions or oppositions in the next few days.")
 else:
-    st.caption("No major conjunctions or oppositions today.")
+    for e in events:
+        ist_time = e["time"].astimezone(pytz.timezone("Asia/Kolkata"))
+        st.markdown(
+            f"**{e['planets']}** — {e['aspect']}  \n"
+            f"🕒 {ist_time.strftime('%d-%b-%Y %H:%M IST')}"
+        )
 
-
-st.success("IST समय: " + dt_ist.strftime("%d-%b-%Y %H:%M:%S"))
 
 st.markdown("""
 ---
