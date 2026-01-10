@@ -117,7 +117,7 @@ def generate_svg(pos):
         px = 350 + 200 * math.cos(ang)
         py = 350 - 200 * math.sin(ang)
         svg += f"""
-        <circle cx="{px}" cy="{py}" r="11" fill="#ffd27f"/>
+        <circle cx="{px}" cy="{py}" r="11" fill="#79e887"/>
         <text x="{px}" y="{py}" text-anchor="middle" dominant-baseline="middle">{sym}</text>
         """
 
