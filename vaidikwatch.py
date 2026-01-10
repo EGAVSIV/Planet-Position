@@ -147,7 +147,7 @@ def generate_svg(pos):
             {SIGNS[i]}
         </text>
         """
-        svg += "</svg>"
+    svg += "</svg>"
     return svg
 
 
