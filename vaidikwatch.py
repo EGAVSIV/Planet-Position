@@ -115,7 +115,8 @@ def generate_svg(pos):
     """
 
     for i in range(12):
-        ang = math.radians(90 - i*30)
+        ang = math.radians(90 - (i*30 + 15))
+
         x = 350 + 260 * math.cos(ang)
         y = 350 - 260 * math.sin(ang)
         svg += f"<line x1='350' y1='350' x2='{x}' y2='{y}' stroke='#ffd700'/>"
