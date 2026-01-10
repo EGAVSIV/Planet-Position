@@ -132,8 +132,8 @@ today = datetime.date.today()
 date = c1.date_input(
     "तारीख़",
     value=today,
-    min_value=None,     # ✅ NO PAST LIMIT
-    max_value=None      # ✅ NO FUTURE LIMIT
+    min_value=today - datetime.timedelta(days=365*500),     # ✅ NO PAST LIMIT
+    max_value=today + datetime.timedelta(days=365*500)     # ✅ NO FUTURE LIMIT
 )
 
 time = c2.time_input("समय")
