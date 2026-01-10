@@ -631,6 +631,19 @@ def detect_amavasya_purnima(start_dt_utc, days=30, step_minutes=15):
     return events
 
 
+ASPECT_STYLE = {
+    "Conjunction": {
+        "icon": "🟢",
+        "color": "#2ecc71"   # green
+    },
+    "Opposition": {
+        "icon": "🔴",
+        "color": "#e74c3c"   # red
+    }
+}
+
+
+
 st.subheader("🌙 Amavasya & Purnima (Upcoming)")
 
 events = detect_amavasya_purnima(dt_utc, days=30)
@@ -657,8 +670,8 @@ st.subheader("🔭 Upcoming Conjunctions & Oppositions (Next 10 Days)")
 
 events = upcoming_aspects(
     start_dt_utc=dt_utc,
-    days=10,              # ✅ NEXT 10 DAYS
-    step_minutes=30       # Safe & accurate
+    days=10,
+    step_minutes=30
 )
 
 ist = pytz.timezone("Asia/Kolkata")
@@ -668,10 +681,38 @@ if not events:
 else:
     for e in events:
         t = e["time"].astimezone(ist)
+        style = ASPECT_STYLE[e["aspect"]]
+
         st.markdown(
-            f"**{e['planets']}** — {e['aspect']}  \n"
-            f"🕒 {t.strftime('%d-%b-%Y %H:%M IST')}"
+            f"""
+            <div style="
+                margin-bottom: 12px;
+                padding: 12px;
+                border-radius: 10px;
+                background: #0b132b;
+                border-left: 6px solid {style['color']};
+                box-shadow: 0 0 12px rgba(0,0,0,0.4);
+            ">
+                <div style="
+                    font-size: 16px;
+                    font-weight: 600;
+                    color: {style['color']};
+                ">
+                    {style['icon']} {e['planets']} — {e['aspect']}
+                </div>
+
+                <div style="
+                    margin-top: 6px;
+                    font-size: 14px;
+                    color: #dddddd;
+                ">
+                    🕒 {t.strftime('%d-%b-%Y %H:%M IST')}
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True
         )
+
 
 
 
