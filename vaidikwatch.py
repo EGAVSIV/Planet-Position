@@ -37,6 +37,16 @@ LAT, LON = 19.07598, 72.87766  # Mumbai
 FLAGS = swe.FLG_SWIEPH | swe.FLG_SIDEREAL
 swe.set_sid_mode(swe.SIDM_LAHIRI)
 
+# ================= SESSION DEFAULTS =================
+if "sel_date" not in st.session_state:
+    st.session_state.sel_date = datetime.date.today()
+
+if "sel_time" not in st.session_state:
+    st.session_state.sel_time = datetime.datetime.now(
+        pytz.timezone("Asia/Kolkata")
+    ).time()
+
+
 # ================= DATA =================
 SIGNS = ["मेष","वृषभ","मिथुन","कर्क","सिंह","कन्या",
          "तुला","वृश्चिक","धनु","मकर","कुंभ","मीन"]
