@@ -401,7 +401,8 @@ if live_clock_on:
     st.caption("Live IST: " + now_ist.strftime("%H:%M:%S"))
 
     time.sleep(1)
-    st.experimental_rerun()
+    st.rerun()
+
 
 
 
