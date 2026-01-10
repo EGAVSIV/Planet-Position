@@ -171,7 +171,7 @@ def generate_svg(pos):
     for name, code, sym in PLANETS:
         lon = pos[name]
         rashi = int(lon // 30)
-        groups[key].append((name, sym)
+        groups[rashi].append((name, sym, lon))
 
     for deg, plist in groups.items():
         ang = math.radians(90 - deg)
