@@ -675,6 +675,7 @@ events = upcoming_aspects(
 )
 
 ist = pytz.timezone("Asia/Kolkata")
+now_ist = datetime.datetime.now(ist)
 
 ASPECT_STYLE = {
     "Conjunction": {"icon": "🟢", "color": "#2ecc71"},
@@ -684,42 +685,79 @@ ASPECT_STYLE = {
 if not events:
     st.caption("No major conjunctions or oppositions in the next 10 days.")
 else:
-    html_blocks = ""
-
+    # -------- GROUP EVENTS BY DATE --------
+    grouped = defaultdict(list)
     for e in events:
-        t = e["time"].astimezone(ist)
-        style = ASPECT_STYLE[e["aspect"]]
+        t_ist = e["time"].astimezone(ist)
+        grouped[t_ist.date()].append((e, t_ist))
 
-        html_blocks += f"""
-        <div style="
-            margin-bottom: 14px;
-            padding: 12px 14px;
-            border-radius: 10px;
-            background: #0b132b;
-            border-left: 6px solid {style['color']};
-            box-shadow: 0 0 12px rgba(0,0,0,0.45);
-            font-family: sans-serif;
-        ">
-            <div style="
-                font-size: 16px;
-                font-weight: 600;
-                color: {style['color']};
-            ">
-                {style['icon']} {e['planets']} — {e['aspect']}
-            </div>
+    html = """
+    <style>
+    @keyframes blink {
+        0% { box-shadow: 0 0 6px red; }
+        50% { box-shadow: 0 0 18px red; }
+        100% { box-shadow: 0 0 6px red; }
+    }
+    </style>
+    """
 
-            <div style="
-                margin-top: 6px;
-                font-size: 14px;
-                color: #dddddd;
-            ">
-                🕒 {t.strftime('%d-%b-%Y %H:%M IST')}
-            </div>
-        </div>
+    for event_date in sorted(grouped.keys()):
+        html += f"""
+        <h4 style="color:#00e6ff; margin:12px 0 6px 0;">
+            📅 {event_date.strftime('%d %b %Y')}
+        </h4>
         """
 
-    # 🔥 Render ALL cards in ONE HTML container
-    st.components.v1.html(html_blocks, height=420, scrolling=True)
+        for e, t in grouped[event_date]:
+            style = ASPECT_STYLE[e["aspect"]]
+            delta = t - now_ist
+            hours_left = delta.total_seconds() / 3600
+
+            # -------- COUNTDOWN --------
+            if delta.total_seconds() > 0:
+                days = delta.days
+                hrs, rem = divmod(delta.seconds, 3600)
+                mins = rem // 60
+                countdown = f"{days}d {hrs}h {mins}m"
+            else:
+                countdown = "Started"
+
+            # -------- BLINK IF < 24 HRS --------
+            blink = "animation: blink 1.2s infinite;" if 0 < hours_left <= 24 else ""
+
+            html += f"""
+            <div style="
+                margin-bottom: 14px;
+                padding: 12px 14px;
+                border-radius: 10px;
+                background: #0b132b;
+                border-left: 6px solid {style['color']};
+                {blink}
+            ">
+                <div style="
+                    font-size: 16px;
+                    font-weight: 600;
+                    color: {style['color']};
+                ">
+                    {style['icon']} {e['planets']} — {e['aspect']}
+                </div>
+
+                <div style="margin-top:4px; font-size:14px; color:#dddddd;">
+                    🕒 {t.strftime('%H:%M IST')}
+                </div>
+
+                <div style="
+                    margin-top:4px;
+                    font-size:13px;
+                    color:#ffcc00;
+                ">
+                    ⏳ {countdown}
+                </div>
+            </div>
+            """
+
+    st.components.v1.html(html, height=520, scrolling=True)
+
 
 
 
