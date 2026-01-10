@@ -969,67 +969,14 @@ else:
             </div>
             """
 
-    st.components.v1.html(html, height=520, scrolling=True)
-
-
-
-
-
 
 st.markdown("""
-<div style="
-    text-align:center;
-    padding:22px 18px;
-    border-radius:16px;
-    background: linear-gradient(145deg, #0b132b, #1c2541);
-    box-shadow: 0 0 20px rgba(63,169,245,0.35);
-">
-
-    <div style="
-        font-size:26px;
-        font-weight:800;
-        color:#ffd166;
-        letter-spacing:1.5px;
-        margin-bottom:6px;
-        text-shadow: 0 0 6px rgba(255,209,102,0.6);
-    ">
-        गौरव यादव
-    </div>
-
-    <div style="
-        width:60px;
-        height:2px;
-        margin:8px auto 12px auto;
-        background: linear-gradient(to right, transparent, #9bf6ff, transparent);
-    "></div>
-
-    <div style="
-        font-size:17px;
-        font-weight:600;
-        color:#9bf6ff;
-        margin-bottom:12px;
-    ">
-        क्वांट ट्रेडर | ऊर्जा एवं कमोडिटी इंटेलिजेंस
-    </div>
-
-    <div style="
-        font-size:15px;
-        color:#f1f1f1;
-        margin-bottom:10px;
-    ">
-        📧 <span style="color:#ffd166;">yadav.gauravsingh@gmail.com</span>
-    </div>
-
-    <div style="
-        font-size:13px;
-        color:#cfcfcf;
-        opacity:0.9;
-        letter-spacing:0.4px;
-    ">
-        ❤️ Swiss Ephemeris एवं Streamlit का उपयोग करके निर्मित
-    </div>
-
-</div>
-""", unsafe_allow_html=True)
-
+---
+**Designed by:-  
+Gaurav Singh Yadav**   
+🩷💛🩵💙🩶💜🤍🤎💖  Built With Love 🫶  
+Energy | Commodity | Quant Intelligence 📶  
+📱 +91-8003994518 〽️   
+📧 yadav.gauravsingh@gmail.com ™️
+""")
 
