@@ -31,7 +31,7 @@ if not st.session_state.authenticated:
 
 # ================= CONFIG =================
 st.set_page_config(
-    page_title="🪐 वेदिक ग्रह घड़ी — Drik Panchang",
+    page_title="🪐 वेदिक ग्रह घड़ी — द्रिक पंचांग",
     layout="wide",
     page_icon="🪐"
 )
