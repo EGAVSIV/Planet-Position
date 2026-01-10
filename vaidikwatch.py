@@ -475,39 +475,56 @@ ASPECTS = {
     }
 }
 
-def upcoming_aspects(start_dt_utc, days=5, step_minutes=60):
+def upcoming_aspects(start_dt_utc, days=5, step_minutes=30):
     events = []
+    seen = set()
 
     total_steps = int((days * 24 * 60) / step_minutes)
+    prev_pos = None
 
     for step in range(total_steps):
         dt = start_dt_utc + datetime.timedelta(minutes=step * step_minutes)
         pos, _, _ = get_positions(dt)
+
+        if prev_pos is None:
+            prev_pos = pos
+            continue
 
         planets = list(pos.keys())
 
         for i in range(len(planets)):
             for j in range(i + 1, len(planets)):
                 p1, p2 = planets[i], planets[j]
-                diff = angular_diff(pos[p1], pos[p2])
 
-                # Conjunction
-                if diff <= 1:
-                    events.append({
-                        "aspect": "Conjunction",
-                        "planets": f"{p1} ☌ {p2}",
-                        "time": dt
-                    })
+                prev_diff = angular_diff(prev_pos[p1], prev_pos[p2])
+                curr_diff = angular_diff(pos[p1], pos[p2])
 
-                # Opposition
-                elif abs(diff - 180) <= 1:
-                    events.append({
-                        "aspect": "Opposition",
-                        "planets": f"{p1} ☍ {p2}",
-                        "time": dt
-                    })
+                # -------- CONJUNCTION START --------
+                if prev_diff > 1 and curr_diff <= 1:
+                    key = (p1, p2, "Conjunction")
+                    if key not in seen:
+                        seen.add(key)
+                        events.append({
+                            "aspect": "Conjunction",
+                            "planets": f"{p1} ☌ {p2}",
+                            "time": dt
+                        })
+
+                # -------- OPPOSITION START --------
+                if prev_diff < 179 and curr_diff >= 179:
+                    key = (p1, p2, "Opposition")
+                    if key not in seen:
+                        seen.add(key)
+                        events.append({
+                            "aspect": "Opposition",
+                            "planets": f"{p1} ☍ {p2}",
+                            "time": dt
+                        })
+
+        prev_pos = pos
 
     return events
+
 def unique_events(events):
     seen = set()
     final = []
@@ -548,13 +565,15 @@ def moon_sun_diff(moon_deg, sun_deg):
     return min(diff, 360 - diff)
 
 
-def detect_amavasya_purnima(start_dt_utc, days=30, step_minutes=30):
+def detect_amavasya_purnima(start_dt_utc, days=30, step_minutes=15):
     events = {
         "Amavasya": {"start": None, "end": None},
         "Purnima": {"start": None, "end": None}
     }
 
     total_steps = int((days * 24 * 60) / step_minutes)
+
+    prev_diff = None
 
     for step in range(total_steps):
         dt = start_dt_utc + datetime.timedelta(minutes=step * step_minutes)
@@ -564,25 +583,53 @@ def detect_amavasya_purnima(start_dt_utc, days=30, step_minutes=30):
         sun = pos["सूर्य"]
         diff = moon_sun_diff(moon, sun)
 
-        # ================= AMAVASYA =================
-        if events["Amavasya"]["start"] is None and diff <= 12:
+        # ---------- AMAVASYA ----------
+        # Start when diff crosses BELOW 12°
+        if (
+            prev_diff is not None
+            and prev_diff > 12
+            and diff <= 12
+            and events["Amavasya"]["start"] is None
+        ):
             events["Amavasya"]["start"] = dt
 
-        if events["Amavasya"]["start"] and events["Amavasya"]["end"] is None and diff <= 0.2:
+        # End when diff crosses BELOW 0.5°
+        if (
+            events["Amavasya"]["start"]
+            and prev_diff is not None
+            and prev_diff > 0.5
+            and diff <= 0.5
+            and events["Amavasya"]["end"] is None
+        ):
             events["Amavasya"]["end"] = dt
 
-        # ================= PURNIMA =================
-        if events["Purnima"]["start"] is None and abs(diff - 180) <= 12:
+        # ---------- PURNIMA ----------
+        # Start when diff crosses ABOVE 168°
+        if (
+            prev_diff is not None
+            and prev_diff < 168
+            and diff >= 168
+            and events["Purnima"]["start"] is None
+        ):
             events["Purnima"]["start"] = dt
 
-        if events["Purnima"]["start"] and events["Purnima"]["end"] is None and abs(diff - 180) <= 0.2:
+        # End when diff crosses ABOVE 179.5°
+        if (
+            events["Purnima"]["start"]
+            and prev_diff is not None
+            and prev_diff < 179.5
+            and diff >= 179.5
+            and events["Purnima"]["end"] is None
+        ):
             events["Purnima"]["end"] = dt
 
-        # Stop early if both found
+        prev_diff = diff
+
         if all(v["end"] for v in events.values()):
             break
 
     return events
+
 
 st.subheader("🌙 Amavasya & Purnima (Upcoming)")
 
@@ -604,6 +651,24 @@ for name, data in events.items():
         )
     else:
         st.caption(f"{name} not found in the next 30 days.")
+
+
+st.subheader("🔭 Upcoming Conjunctions & Oppositions")
+
+events = upcoming_aspects(dt_utc, days=5)
+
+ist = pytz.timezone("Asia/Kolkata")
+
+if not events:
+    st.caption("No major conjunctions or oppositions in the next few days.")
+else:
+    for e in events:
+        t = e["time"].astimezone(ist)
+        st.markdown(
+            f"**{e['planets']}** — {e['aspect']}  \n"
+            f"🕒 {t.strftime('%d-%b-%Y %H:%M IST')}"
+        )
+
 
 
 
