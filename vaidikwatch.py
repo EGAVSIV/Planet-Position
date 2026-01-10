@@ -112,25 +112,25 @@ NAME_STYLES = [
         "font": "'Segoe UI', sans-serif",
         "color": "#00e6ff",
         "weight": "400",
-        "text": "Gaurav Singh Yadav गौरव सिंह यादव"
+        "text":"Gaurav Singh Yadav<br><span style='font-size:16px; opacity:0.85;'>गौरव सिंह यादव</span>"
     },
     {
         "font": "'Georgia', serif",
         "color": "#ffd166",
         "weight": "400",
-        "text": "Gaurav Singh Yadav गौरव सिंह यादव"
+        "text": "Gaurav Singh Yadav<br><span style='font-size:16px; opacity:0.85;'>गौरव सिंह यादव</span>"
     },
     {
         "font": "'Courier New', monospace",
         "color": "#9bf6ff",
         "weight": "400",
-        "text": "Gaurav Singh Yadav गौरव सिंह यादव"
+        "text":"Gaurav Singh Yadav<br><span style='font-size:16px; opacity:0.85;'>गौरव सिंह यादव</span>"
     },
     {
         "font": "'Trebuchet MS', sans-serif",
         "color": "#caffbf",
         "weight": "400",
-        "text": "GAURAV SINGH YADAV गौरव सिंह यादव"
+        "text": "Gaurav Singh Yadav<br><span style='font-size:16px; opacity:0.85;'>गौरव सिंह यादव</span>"
     }
 ]
 
