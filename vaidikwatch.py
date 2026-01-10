@@ -147,13 +147,14 @@ time = c2.time_input("समय",value=st.session_state.sel_time)
 
 if c3.button("अब"):
     now = datetime.datetime.now(pytz.timezone("Asia/Kolkata"))
-    date, time = now.date(), now.time()
     st.session_state.sel_date = now.date()
     st.session_state.sel_time = now.time()
     st.rerun()
 
 ist = pytz.timezone("Asia/Kolkata")
 dt_ist = ist.localize(datetime.datetime.combine(date, time))
+dt_utc = dt_ist.astimezone(pytz.utc)   # ✅ REQUIRED
+
  
 
 
