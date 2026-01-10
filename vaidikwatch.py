@@ -172,25 +172,25 @@ with right:
     rows = []
 
 # --- Main planets ---
-for p, code, sym in PLANETS:
-    nak, lord, pada = nakshatra_pada(pos[p])
-    rows.append([
-        p,
-        f"{pos[p]:.2f}°",
-        SIGNS[int(pos[p]//30)],
-        f"{nak} (पाद {pada})",
-        "🔁 वक्री" if retro[p] else "➡️ मार्गी"
-    ])
+    for p, code, sym in PLANETS:
+        nak, lord, pada = nakshatra_pada(pos[p])
+        rows.append([
+            p,
+            f"{pos[p]:.2f}°",
+            SIGNS[int(pos[p]//30)],
+            f"{nak} (पाद {pada})",
+            "🔁 वक्री" if retro[p] else "➡️ मार्गी"
+        ])
 
-# --- ADD KETU (Shadow Planet) ---
-nak, lord, pada = nakshatra_pada(pos["केतु"])
-rows.append([
-    "केतु",
-    f"{pos['केतु']:.2f}°",
-    SIGNS[int(pos["केतु"]//30)],
-    f"{nak} (पाद {pada})",
-    "🔁 वक्री" if retro["केतु"] else "➡️ मार्गी"
-    ])
+    # --- ADD KETU (Shadow Planet) ---
+    nak, lord, pada = nakshatra_pada(pos["केतु"])
+    rows.append([
+            "केतु",
+        f"{pos['केतु']:.2f}°",
+        SIGNS[int(pos["केतु"]//30)],
+        f"{nak} (पाद {pada})",
+        "🔁 वक्री" if retro["केतु"] else "➡️ मार्गी"
+        ])
 
 
     st.table(pd.DataFrame(
