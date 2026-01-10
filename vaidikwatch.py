@@ -386,8 +386,12 @@ st.markdown("""
 
 
 
+# ================= LIVE CLOCK ENGINE =================
 if live_clock_on:
-    st.autorefresh(interval=1000, key="live_clock")
+
+    # init tick
+    if "clock_tick" not in st.session_state:
+        st.session_state.clock_tick = 0
 
     svg, now_ist = generate_mini_clock()
 
@@ -401,6 +405,11 @@ if live_clock_on:
     )
 
     st.caption("Live IST: " + now_ist.strftime("%H:%M:%S"))
+
+    # auto refresh every 1 second
+    st.session_state.clock_tick += 1
+    st.rerun()
+
 
 
 
