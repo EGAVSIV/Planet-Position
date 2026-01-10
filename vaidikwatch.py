@@ -676,6 +676,11 @@ events = upcoming_aspects(
 
 ist = pytz.timezone("Asia/Kolkata")
 
+ASPECT_STYLE = {
+    "Conjunction": {"icon": "🟢", "color": "#2ecc71"},
+    "Opposition": {"icon": "🔴", "color": "#e74c3c"}
+}
+
 if not events:
     st.caption("No major conjunctions or oppositions in the next 10 days.")
 else:
@@ -686,12 +691,12 @@ else:
         st.markdown(
             f"""
             <div style="
-                margin-bottom: 12px;
-                padding: 12px;
+                margin-bottom: 14px;
+                padding: 12px 14px;
                 border-radius: 10px;
                 background: #0b132b;
                 border-left: 6px solid {style['color']};
-                box-shadow: 0 0 12px rgba(0,0,0,0.4);
+                box-shadow: 0 0 12px rgba(0,0,0,0.45);
             ">
                 <div style="
                     font-size: 16px;
@@ -710,8 +715,9 @@ else:
                 </div>
             </div>
             """,
-            unsafe_allow_html=True
+            unsafe_allow_html=True   # ✅ THIS FIXES YOUR ISSUE
         )
+
 
 
 
