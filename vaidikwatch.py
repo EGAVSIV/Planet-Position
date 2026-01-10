@@ -847,12 +847,18 @@ def nakshatra_name(deg):
 def upcoming_sign_nakshatra_changes(start_dt_utc, days=10, step_minutes=30):
     events = []
     seen = set()
+    now_utc = datetime.datetime.now(pytz.utc)
 
     total_steps = int((days * 24 * 60) / step_minutes)
     prev_pos = None
 
     for step in range(total_steps):
         dt = start_dt_utc + datetime.timedelta(minutes=step * step_minutes)
+
+        # 🚫 BLOCK PAST EVENTS
+        if dt <= now_utc:
+            continue
+
         pos, _, _ = get_positions(dt)
 
         if prev_pos is None:
@@ -860,7 +866,6 @@ def upcoming_sign_nakshatra_changes(start_dt_utc, days=10, step_minutes=30):
             continue
 
         for planet in pos.keys():
-            # -------- ZODIAC CHANGE --------
             prev_sign = zodiac_name(prev_pos[planet])
             curr_sign = zodiac_name(pos[planet])
 
@@ -876,7 +881,6 @@ def upcoming_sign_nakshatra_changes(start_dt_utc, days=10, step_minutes=30):
                         "time": dt
                     })
 
-            # -------- NAKSHATRA CHANGE --------
             prev_nak = nakshatra_name(prev_pos[planet])
             curr_nak = nakshatra_name(pos[planet])
 
@@ -896,13 +900,17 @@ def upcoming_sign_nakshatra_changes(start_dt_utc, days=10, step_minutes=30):
 
     return events
 
+
 st.subheader("🪐 Planetary Transitions (Next 10 Days)")
 
+now_utc = datetime.datetime.now(pytz.utc)
+
 events = upcoming_sign_nakshatra_changes(
-    start_dt_utc=dt_utc,
+    start_dt_utc=now_utc,
     days=10,
     step_minutes=30
 )
+
 
 ist = pytz.timezone("Asia/Kolkata")
 now_ist = datetime.datetime.now(ist)
