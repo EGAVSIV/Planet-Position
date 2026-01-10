@@ -631,16 +631,6 @@ def detect_amavasya_purnima(start_dt_utc, days=30, step_minutes=15):
     return events
 
 
-ASPECT_STYLE = {
-    "Conjunction": {
-        "icon": "🟢",
-        "color": "#2ecc71"   # green
-    },
-    "Opposition": {
-        "icon": "🔴",
-        "color": "#e74c3c"   # red
-    }
-}
 
 
 
@@ -688,40 +678,34 @@ else:
         t = e["time"].astimezone(ist)
         style = ASPECT_STYLE[e["aspect"]]
 
-        st.markdown(
-            f"""
+        html = f"""
+        <div style="
+            margin-bottom: 14px;
+            padding: 12px 14px;
+            border-radius: 10px;
+            background: #0b132b;
+            border-left: 6px solid {style['color']};
+            box-shadow: 0 0 12px rgba(0,0,0,0.45);
+        ">
             <div style="
-                margin-bottom: 14px;
-                padding: 12px 14px;
-                border-radius: 10px;
-                background: #0b132b;
-                border-left: 6px solid {style['color']};
-                box-shadow: 0 0 12px rgba(0,0,0,0.45);
+                font-size: 16px;
+                font-weight: 600;
+                color: {style['color']};
             ">
-                <div style="
-                    font-size: 16px;
-                    font-weight: 600;
-                    color: {style['color']};
-                ">
-                    {style['icon']} {e['planets']} — {e['aspect']}
-                </div>
-
-                <div style="
-                    margin-top: 6px;
-                    font-size: 14px;
-                    color: #dddddd;
-                ">
-                    🕒 {t.strftime('%d-%b-%Y %H:%M IST')}
-                </div>
+                {style['icon']} {e['planets']} — {e['aspect']}
             </div>
-            """,
-            unsafe_allow_html=True   # ✅ THIS FIXES YOUR ISSUE
-        )
 
+            <div style="
+                margin-top: 6px;
+                font-size: 14px;
+                color: #dddddd;
+            ">
+                🕒 {t.strftime('%d-%b-%Y %H:%M IST')}
+            </div>
+        </div>
+        """
 
-
-
-
+        st.markdown(html, unsafe_allow_html=True)
 
 
 
