@@ -34,8 +34,40 @@ st.set_page_config(
     layout="wide",
     page_icon="🪐"
 )
+# ================= LOCATION DATA =================
+LOCATIONS = {
+    "Andhra Pradesh – Amaravati": (16.5412, 80.5154),
+    "Assam – Dispur": (26.1445, 91.7362),
+    "Bihar – Patna": (25.5941, 85.1376),
+    "Gujarat – Gandhinagar": (23.2156, 72.6369),
+    "Haryana – Chandigarh": (30.7333, 76.7794),
+    "Karnataka – Bengaluru": (12.9716, 77.5946),
+    "Kerala – Thiruvananthapuram": (8.5241, 76.9366),
+    "Madhya Pradesh – Bhopal": (23.2599, 77.4126),
+    "Maharashtra – Mumbai": (19.0760, 72.8777),
+    "Odisha – Bhubaneswar": (20.2961, 85.8245),
+    "Punjab – Chandigarh": (30.7333, 76.7794),
+    "Rajasthan – Jaipur": (26.9124, 75.7873),
+    "Tamil Nadu – Chennai": (13.0827, 80.2707),
+    "Telangana – Hyderabad": (17.3850, 78.4867),
+    "Uttar Pradesh – Lucknow": (26.8467, 80.9462),
+    "West Bengal – Kolkata": (22.5726, 88.3639),
+}
+with st.sidebar:
+    st.markdown("### 📍 स्थान चयन (Location)")
+    selected_location = st.selectbox(
+        "राज्य / राजधानी चुनें",
+        list(LOCATIONS.keys()),
+        index=list(LOCATIONS.keys()).index("Maharashtra – Mumbai")
+    )
 
-LAT, LON = 19.07598, 72.87766  # Mumbai
+    LAT, LON = LOCATIONS[selected_location]
+
+    st.caption(f"Latitude: {LAT}°")
+    st.caption(f"Longitude: {LON}°")
+
+
+#LAT, LON = 19.07598, 72.87766  # Mumbai
 FLAGS = swe.FLG_SWIEPH | swe.FLG_SIDEREAL
 swe.set_sid_mode(swe.SIDM_LAHIRI)
 
