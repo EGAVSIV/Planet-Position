@@ -106,6 +106,34 @@ LOCATIONS = {
     "Uttar Pradesh – Lucknow": (26.8467, 80.9462),
     "West Bengal – Kolkata": (22.5726, 88.3639),
 }
+
+NAME_STYLES = [
+    {
+        "font": "'Segoe UI', sans-serif",
+        "color": "#00e6ff",
+        "weight": "700",
+        "text": "Gaurav Singh Yadav"
+    },
+    {
+        "font": "'Georgia', serif",
+        "color": "#ffd166",
+        "weight": "600",
+        "text": "Gaurav Singh Yadav"
+    },
+    {
+        "font": "'Courier New', monospace",
+        "color": "#9bf6ff",
+        "weight": "500",
+        "text": "Gaurav Singh Yadav"
+    },
+    {
+        "font": "'Trebuchet MS', sans-serif",
+        "color": "#caffbf",
+        "weight": "700",
+        "text": "GAURAV SINGH YADAV"
+    }
+]
+
 if "quote_index" not in st.session_state:
     st.session_state.quote_index = 0
 
@@ -134,6 +162,43 @@ with st.sidebar:
         ["Hindi", "English"],
         horizontal=True
     )
+
+    # ================= NAME ROTATOR =================
+    st.markdown("---")
+
+    st_autorefresh(interval=5000, key="name_refresh")
+
+    st.session_state.name_style_idx = (
+        st.session_state.name_style_idx + 1
+    ) % len(NAME_STYLES)
+
+    style = NAME_STYLES[st.session_state.name_style_idx]
+
+    st.markdown(
+        f"""
+        <div style="
+            margin-top: 10px;
+            padding: 16px;
+            border-radius: 14px;
+            background: linear-gradient(145deg, #0e162e, #1b2a4a);
+            box-shadow: 0 0 18px rgba(63,169,245,0.45);
+            text-align: center;
+        ">
+            <div style="
+                font-family: {style['font']};
+                font-size: 18px;
+                font-weight: {style['weight']};
+                color: {style['color']};
+                letter-spacing: 1px;
+                transition: all 0.6s ease-in-out;
+            ">
+                {style['text']}
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
 
     ACTIVE_QUOTES = QUOTES if quote_lang == "Hindi" else EN_QUOTES
 
