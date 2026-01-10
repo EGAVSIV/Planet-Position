@@ -119,7 +119,7 @@ def generate_svg(pos):
         svg += f"""
         <circle cx="{px}" cy="{py}" r="11" fill="#79e887"/>
         <text x="{px}" y="{py}"
-        font-size="14"
+        font-size="11"
           fill="black"
           text-anchor="middle"
           dominant-baseline="middle">{sym}</text>
