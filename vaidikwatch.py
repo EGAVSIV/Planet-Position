@@ -684,11 +684,13 @@ ASPECT_STYLE = {
 if not events:
     st.caption("No major conjunctions or oppositions in the next 10 days.")
 else:
+    html_blocks = ""
+
     for e in events:
         t = e["time"].astimezone(ist)
         style = ASPECT_STYLE[e["aspect"]]
 
-        html = f"""
+        html_blocks += f"""
         <div style="
             margin-bottom: 14px;
             padding: 12px 14px;
@@ -696,6 +698,7 @@ else:
             background: #0b132b;
             border-left: 6px solid {style['color']};
             box-shadow: 0 0 12px rgba(0,0,0,0.45);
+            font-family: sans-serif;
         ">
             <div style="
                 font-size: 16px;
@@ -715,7 +718,9 @@ else:
         </div>
         """
 
-        st.markdown(html, unsafe_allow_html=True)
+    # 🔥 Render ALL cards in ONE HTML container
+    st.components.v1.html(html_blocks, height=420, scrolling=True)
+
 
 
 
