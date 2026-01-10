@@ -653,14 +653,18 @@ for name, data in events.items():
         st.caption(f"{name} not found in the next 30 days.")
 
 
-st.subheader("🔭 Upcoming Conjunctions & Oppositions")
+st.subheader("🔭 Upcoming Conjunctions & Oppositions (Next 10 Days)")
 
-events = upcoming_aspects(dt_utc, days=5)
+events = upcoming_aspects(
+    start_dt_utc=dt_utc,
+    days=10,              # ✅ NEXT 10 DAYS
+    step_minutes=30       # Safe & accurate
+)
 
 ist = pytz.timezone("Asia/Kolkata")
 
 if not events:
-    st.caption("No major conjunctions or oppositions in the next few days.")
+    st.caption("No major conjunctions or oppositions in the next 10 days.")
 else:
     for e in events:
         t = e["time"].astimezone(ist)
@@ -668,6 +672,7 @@ else:
             f"**{e['planets']}** — {e['aspect']}  \n"
             f"🕒 {t.strftime('%d-%b-%Y %H:%M IST')}"
         )
+
 
 
 
