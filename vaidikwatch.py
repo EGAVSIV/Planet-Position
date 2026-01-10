@@ -117,6 +117,7 @@ with st.sidebar:
             font-size: 20px;
             line-height: 1.6;
             text-align: center;
+            font-weight: 500;
             box-shadow: 0 0 15px rgba(63,169,245,0.35);
         ">
             💬 <em>{QUOTES[st.session_state.quote_index]}</em>
