@@ -90,7 +90,7 @@ with st.sidebar:
     # ================= QUOTE ROTATOR =================
     st.markdown("---")
 
-    st_autorefresh(interval=15000, key="quote_refresh")
+    st_autorefresh(interval=5000, key="quote_refresh")
 
     st.session_state.quote_index = (
         st.session_state.quote_index + 1
