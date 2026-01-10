@@ -363,7 +363,7 @@ with right:
         ["समय (IST)", dt_ist.strftime("%d-%b-%Y %H:%M")]
     ]
 
-st.table(pd.DataFrame(summary, columns=["तत्व", "मान"]))
+#st.table(pd.DataFrame(summary, columns=["तत्व", "मान"]))
 
     st.table(pd.DataFrame(summary, columns=["तत्व", "मान"]))
 
