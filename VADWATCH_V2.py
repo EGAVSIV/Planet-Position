@@ -7,6 +7,7 @@ import math
 import pandas as pd
 from collections import defaultdict
 import hashlib
+from streamlit_autorefresh import st_autorefresh
 
 # ================= PAGE CONFIG (MUST BE FIRST) =================
 st.set_page_config(
@@ -233,13 +234,39 @@ with right:
 with st.sidebar:
     live_clock_on = st.toggle("Enable Live Clock", value=False)
 
+
+
+# ================= LIVE CLOCK ENGINE =================
 if live_clock_on:
-    st.autorefresh(interval=1000, key="live_clock")
+    st_autorefresh(interval=1000, key="live_clock")
+
     svg, now_ist = generate_mini_clock()
-    st.components.v1.html(svg, height=300)
+
+    st.components.v1.html(
+        f"""
+        <div style="
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 260px;
+            height: 260px;
+            background: rgba(5, 11, 24, 0.95);
+            border-radius: 50%;
+            border: 3px solid #3fa9f5;
+            box-shadow: 0 0 25px rgba(63,169,245,0.6);
+            z-index: 9999;
+        ">
+            {svg}
+        </div>
+        """,
+        height=300
+    )
+
     st.caption("Live IST: " + now_ist.strftime("%H:%M:%S"))
 
-st.success("IST समय: " + dt_ist.strftime("%d-%b-%Y %H:%M:%S"))
+st_autorefresh(interval=1000, key="live_clock")
+
+
 
 st.markdown("""
 ---
