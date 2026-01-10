@@ -286,7 +286,8 @@ date = c1.date_input(
     max_value=today + datetime.timedelta(days=365*500)     # ✅ NO FUTURE LIMIT
 )
 
-time = c2.time_input("समय",value=st.session_state.sel_time)
+sel_time = c2.time_input("समय", value=st.session_state.sel_time)
+
 
 if c3.button("अब"):
     now = datetime.datetime.now(pytz.timezone("Asia/Kolkata"))
@@ -295,7 +296,7 @@ if c3.button("अब"):
     st.rerun()
 
 ist = pytz.timezone("Asia/Kolkata")
-dt_ist = ist.localize(datetime.datetime.combine(date, time))
+dt_ist = ist.localize(datetime.datetime.combine(date, sel_time))
 dt_utc = dt_ist.astimezone(pytz.utc)   # ✅ REQUIRED
 
  
