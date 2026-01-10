@@ -447,6 +447,62 @@ with right:
         columns=["ग्रह","डिग्री","राशि","नक्षत्र","स्थिति"]
     ))
 
+ZODIACS = [
+    "Aries","Taurus","Gemini","Cancer","Leo","Virgo",
+    "Libra","Scorpio","Sagittarius","Capricorn","Aquarius","Pisces"
+]
+
+ASPECTS = {
+    "Conjunction": {z: z for z in ZODIACS},
+
+    "Opposition": {
+        "Aries": "Libra",
+        "Taurus": "Scorpio",
+        "Gemini": "Sagittarius",
+        "Cancer": "Capricorn",
+        "Leo": "Aquarius",
+        "Virgo": "Pisces",
+        "Libra": "Aries",
+        "Scorpio": "Taurus",
+        "Sagittarius": "Gemini",
+        "Capricorn": "Cancer",
+        "Aquarius": "Leo",
+        "Pisces": "Virgo"
+    }
+}
+def zodiac_sign(deg):
+    return ZODIACS[int(deg // 30)]
+def detect_aspects(pos):
+    events = []
+
+    planets = list(pos.keys())
+
+    for i in range(len(planets)):
+        for j in range(i + 1, len(planets)):
+            p1, p2 = planets[i], planets[j]
+            s1 = zodiac_sign(pos[p1])
+            s2 = zodiac_sign(pos[p2])
+
+            # Conjunction
+            if s1 == s2:
+                events.append(f"{p1} ☌ {p2} (Conjunction in {s1})")
+
+            # Opposition
+            elif ASPECTS["Opposition"].get(s1) == s2:
+                events.append(f"{p1} ☍ {p2} (Opposition {s1}–{s2})")
+
+    return events
+st.subheader("🔭 Planetary Aspects")
+
+events = detect_aspects(pos)
+
+if events:
+    for e in events:
+        st.markdown(f"- {e}")
+else:
+    st.caption("No major conjunctions or oppositions today.")
+
+
 st.success("IST समय: " + dt_ist.strftime("%d-%b-%Y %H:%M:%S"))
 
 st.markdown("""
