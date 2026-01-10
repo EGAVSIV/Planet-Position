@@ -542,20 +542,63 @@ def detect_aspects(pos):
                 events.append(f"{p1} ☍ {p2} (Opposition {s1}–{s2})")
 
     return events
-st.subheader("🔭 Upcoming Planetary Aspects")
 
-events = upcoming_aspects(dt_utc, days=5)
-events = unique_events(events)
+def detect_amavasya_purnima(start_dt_utc, days=30, step_minutes=30):
+    events = {
+        "Amavasya": {"start": None, "end": None},
+        "Purnima": {"start": None, "end": None}
+    }
 
-if not events:
-    st.caption("No major conjunctions or oppositions in the next few days.")
-else:
-    for e in events:
-        ist_time = e["time"].astimezone(pytz.timezone("Asia/Kolkata"))
+    total_steps = int((days * 24 * 60) / step_minutes)
+
+    for step in range(total_steps):
+        dt = start_dt_utc + datetime.timedelta(minutes=step * step_minutes)
+        pos, _, _ = get_positions(dt)
+
+        moon = pos["चन्द्र"]
+        sun = pos["सूर्य"]
+        diff = moon_sun_diff(moon, sun)
+
+        # ================= AMAVASYA =================
+        if events["Amavasya"]["start"] is None and diff <= 12:
+            events["Amavasya"]["start"] = dt
+
+        if events["Amavasya"]["start"] and events["Amavasya"]["end"] is None and diff <= 0.5:
+            events["Amavasya"]["end"] = dt
+
+        # ================= PURNIMA =================
+        if events["Purnima"]["start"] is None and abs(diff - 180) <= 12:
+            events["Purnima"]["start"] = dt
+
+        if events["Purnima"]["start"] and events["Purnima"]["end"] is None and abs(diff - 180) <= 0.5:
+            events["Purnima"]["end"] = dt
+
+        # Stop early if both found
+        if all(v["end"] for v in events.values()):
+            break
+
+    return events
+
+st.subheader("🌙 Amavasya & Purnima (Upcoming)")
+
+events = detect_amavasya_purnima(dt_utc, days=30)
+
+ist = pytz.timezone("Asia/Kolkata")
+
+for name, data in events.items():
+    if data["start"] and data["end"]:
+        start_ist = data["start"].astimezone(ist)
+        end_ist = data["end"].astimezone(ist)
+
         st.markdown(
-            f"**{e['planets']}** — {e['aspect']}  \n"
-            f"🕒 {ist_time.strftime('%d-%b-%Y %H:%M IST')}"
+            f"""
+            **{name}**
+            - 🟢 Start : {start_ist.strftime('%d-%b-%Y %H:%M IST')}
+            - 🔴 End   : {end_ist.strftime('%d-%b-%Y %H:%M IST')}
+            """
         )
+    else:
+        st.caption(f"{name} not found in the next 30 days.")
 
 
 st.markdown("""
