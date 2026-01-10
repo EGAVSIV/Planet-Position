@@ -4,7 +4,7 @@ import datetime, pytz, math
 import pandas as pd
 import hashlib
 
-# ---------------- PASSWORD HASH ----------------
+# ================= LOGIN =================
 def hash_pwd(pwd):
     return hashlib.sha256(pwd.encode()).hexdigest()
 
@@ -15,7 +15,6 @@ if "authenticated" not in st.session_state:
 
 if not st.session_state.authenticated:
     st.title("🔐 Login Required")
-
     u = st.text_input("Username")
     p = st.text_input("Password", type="password")
 
@@ -25,16 +24,20 @@ if not st.session_state.authenticated:
             st.rerun()
         else:
             st.error("Invalid credentials")
-
     st.stop()
 
+# ================= CONFIG =================
 st.set_page_config(
-    page_title="वेदिक ग्रह घड़ी — वेब संस्करण",
+    page_title="🪐 वेदिक ग्रह घड़ी — Drik Panchang",
     layout="wide",
     page_icon="🪐"
 )
 
-# ---------------- ASTRO DATA ----------------
+LAT, LON = 19.07598, 72.87766  # Mumbai
+FLAGS = swe.FLG_SWIEPH | swe.FLG_SIDEREAL
+swe.set_sid_mode(swe.SIDM_LAHIRI)
+
+# ================= DATA =================
 SIGNS = ["मेष","वृषभ","मिथुन","कर्क","सिंह","कन्या",
          "तुला","वृश्चिक","धनु","मकर","कुंभ","मीन"]
 
@@ -61,50 +64,52 @@ PLANETS = [
 ("राहु", swe.MEAN_NODE,"☊")
 ]
 
-swe.set_sid_mode(swe.SIDM_LAHIRI)
+# ================= FUNCTIONS =================
+def nakshatra_pada(lon):
+    nak_size = 13 + 1/3
+    pada_size = nak_size / 4
+    idx = int(lon // nak_size) % 27
+    pada = int((lon % nak_size) // pada_size) + 1
+    return NAKSHATRAS[idx][0], NAKSHATRAS[idx][1], pada
 
-# ---------------- FUNCTIONS ----------------
 def get_positions(dt_utc):
     jd = swe.julday(dt_utc.year, dt_utc.month, dt_utc.day,
                     dt_utc.hour + dt_utc.minute/60)
 
-    pos = {}
-    retro = {}
+    pos, retro = {}, {}
+    ay = swe.get_ayanamsa_ut(jd)
 
     for name, code, sym in PLANETS:
         r, _ = swe.calc_ut(jd, code)
-        ay = swe.get_ayanamsa_ut(jd)
-
         lon = (r[0] - ay) % 360
-        speed = r[3]
-
         pos[name] = lon
-        retro[name] = speed < 0   # 🔁 Retrograde check
+        retro[name] = r[3] < 0
 
     pos["केतु"] = (pos["राहु"] + 180) % 360
     retro["केतु"] = retro["राहु"]
 
-    return pos, retro
+    return pos, retro, jd
 
-
-def nakshatra_of(lon):
-    size = 13 + 1/3
-    idx = int(lon // size) % 27
-    return NAKSHATRAS[idx][0], NAKSHATRAS[idx][1]
-
-# ---------------- SVG ----------------
+# ================= BLUE CLOCK SVG =================
 def generate_svg(pos):
     svg = """
-    <svg width="700" height="700" viewBox="0 0 700 700" style="display:block;margin:auto">
-    <circle cx="350" cy="350" r="300" fill="#0a0f1e" stroke="#888" stroke-width="3"/>
+    <svg width="700" height="700" viewBox="0 0 700 700" style="margin:auto;display:block">
+    <defs>
+        <radialGradient id="glow">
+            <stop offset="70%" stop-color="#0a1e3a"/>
+            <stop offset="100%" stop-color="#3fa9f5"/>
+        </radialGradient>
+    </defs>
+    <circle cx="350" cy="350" r="330" fill="url(#glow)"/>
+    <circle cx="350" cy="350" r="270" fill="#050b18" stroke="#88c9ff" stroke-width="3"/>
     """
 
     for i in range(12):
         ang = math.radians(90 - i*30)
         x = 350 + 260 * math.cos(ang)
         y = 350 - 260 * math.sin(ang)
-        svg += f"<line x1='350' y1='350' x2='{x}' y2='{y}' stroke='#ffaa00'/>"
-        svg += f"<text x='{350 + 220 * math.cos(ang)}' y='{350 - 220 * math.sin(ang)}' fill='cyan'>{SIGNS[i]}</text>"
+        svg += f"<line x1='350' y1='350' x2='{x}' y2='{y}' stroke='#ffd700'/>"
+        svg += f"<text x='{350 + 210*math.cos(ang)}' y='{350 - 210*math.sin(ang)}' fill='#00e6ff' font-size='22' text-anchor='middle'>{SIGNS[i]}</text>"
 
     for name, code, sym in PLANETS:
         lon = pos[name]
@@ -119,13 +124,12 @@ def generate_svg(pos):
     svg += "</svg>"
     return svg
 
-# ---------------- UI ----------------
-st.title("🪐 वेदिक ग्रह घड़ी — गौरव सिंह यादव")
+# ================= UI =================
+st.title("🪐 वेदिक ग्रह घड़ी — Drik Panchang")
 
 c1, c2, c3 = st.columns(3)
-
 today = datetime.date.today()
-date = c1.date_input("तारीख़", value=today)
+date = c1.date_input("तारीख़", today)
 time = c2.time_input("समय")
 
 if c3.button("अब"):
@@ -136,66 +140,57 @@ ist = pytz.timezone("Asia/Kolkata")
 dt_ist = ist.localize(datetime.datetime.combine(date, time))
 dt_utc = dt_ist.astimezone(pytz.utc)
 
-pos, retro = get_positions(dt_utc)
+pos, retro, jd = get_positions(dt_utc)
 
-# ---------------- LAYOUT ----------------
+# ===== CORRECT DRIK PANCHANG LAGNA =====
+ascmc, _ = swe.houses_ex(jd, LAT, LON, b'P', FLAGS)
+lagna_deg = ascmc[0] % 360
+lagna_sign = SIGNS[int(lagna_deg // 30)]
+
+# ================= LAYOUT =================
 left, right = st.columns([2, 1])
 
-# LEFT — CHAKRA
 with left:
-    svg = generate_svg(pos)
-    st.components.v1.html(svg, height=720)
+    st.components.v1.html(generate_svg(pos), height=720)
 
-# RIGHT — ASTRO TABLE
 with right:
-    st.subheader("🌙 ज्योतिष विवरण")
+    st.subheader("🌙 ज्योतिष सार")
 
-    # Lagna
-    jd = swe.julday(dt_utc.year, dt_utc.month, dt_utc.day,
-                    dt_utc.hour + dt_utc.minute/60)
-    ascmc, _ = swe.houses(jd, 19.07598, 72.87766)
-    lagna_deg = ascmc[0] % 360
-    lagna_sign = SIGNS[int(lagna_deg // 30)]
-
-    moon_nak, moon_lord = nakshatra_of(pos["चन्द्र"])
+    moon_nak, moon_lord, moon_pada = nakshatra_pada(pos["चन्द्र"])
 
     summary = [
         ["चन्द्र नक्षत्र", moon_nak],
+        ["नक्षत्र पाद", moon_pada],
         ["नक्षत्र स्वामी", moon_lord],
         ["लग्न", lagna_sign],
         ["लग्न अंश", f"{lagna_deg:.2f}°"],
         ["समय (IST)", dt_ist.strftime("%d-%b-%Y %H:%M")]
     ]
-
     st.table(pd.DataFrame(summary, columns=["तत्व", "मान"]))
 
     st.subheader("🪐 ग्रह स्थिति")
-
     rows = []
     for p, code, sym in PLANETS:
-        nak, lord = nakshatra_of(pos[p])
+        nak, lord, pada = nakshatra_pada(pos[p])
         rows.append([
             p,
             f"{pos[p]:.2f}°",
-            SIGNS[int(pos[p] // 30)],
-            nak,
+            SIGNS[int(pos[p]//30)],
+            f"{nak} (पाद {pada})",
             "🔁 वक्री" if retro[p] else "➡️ मार्गी"
         ])
 
     st.table(pd.DataFrame(
         rows,
-        columns=["ग्रह", "डिग्री", "राशि", "नक्षत्र", "स्थिति"]
+        columns=["ग्रह","डिग्री","राशि","नक्षत्र","स्थिति"]
     ))
 
 st.success("IST समय: " + dt_ist.strftime("%d-%b-%Y %H:%M:%S"))
 
 st.markdown("""
 ---
-### 👤 *Gaurav Singh Yadav*  
-**Quant Trader | Energy & Commodity Intelligence**
-
-📞 +91-8003994518  
+### *Gaurav Singh Yadav*  
+**Quant Trader | Energy & Commodity Intelligence**  
 📧 yadav.gauravsingh@gmail.com  
-
-<sub>Built with ❤️ using Python, Swiss Ephemeris & Streamlit</sub>
+<sub>Built with ❤️ using Swiss Ephemeris & Streamlit</sub>
 """)
