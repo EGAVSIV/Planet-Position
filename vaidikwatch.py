@@ -59,6 +59,30 @@ QUOTES = [
     "हर दिन एक नया मौका है खुद को बेहतर बनाने का"
 ]
 
+EN_QUOTES = [
+    "Discipline is choosing between what you want now and what you want most.",
+    "Success is built quietly while the world is sleeping.",
+    "Your future depends on what you do today, not tomorrow.",
+    "Consistency beats motivation every single time.",
+    "Hard work makes luck predictable.",
+    "Don’t wait for opportunity. Create it.",
+    "The pain you feel today will be your strength tomorrow.",
+    "Focus on progress, not perfection.",
+    "Small steps daily create massive results.",
+    "Your mindset decides your market results.",
+    "Dreams don’t work unless you do.",
+    "Patience is also a trading strategy.",
+    "Risk is unavoidable, regret is optional.",
+    "Winners manage emotions, losers manage excuses.",
+    "Time rewards discipline, not desperation.",
+    "Stay humble, stay hungry.",
+    "Success loves preparation.",
+    "Your habits define your destiny.",
+    "Master yourself before mastering markets.",
+    "Calm minds make powerful decisions."
+]
+
+
 
 if "quote_index" not in st.session_state:
     st.session_state.quote_index = 0
@@ -82,6 +106,12 @@ LOCATIONS = {
     "Uttar Pradesh – Lucknow": (26.8467, 80.9462),
     "West Bengal – Kolkata": (22.5726, 88.3639),
 }
+if "quote_index" not in st.session_state:
+    st.session_state.quote_index = 0
+
+if "quote_lang" not in st.session_state:
+    st.session_state.quote_lang = "Hindi"
+
 with st.sidebar:
     # ================= LOCATION =================
     st.markdown("### 📍 स्थान चयन (Location)")
@@ -97,14 +127,22 @@ with st.sidebar:
     st.caption(f"Latitude: {LAT:.4f}°")
     st.caption(f"Longitude: {LON:.4f}°")
 
-    # ================= QUOTE ROTATOR =================
+    # ================= QUOTE LANGUAGE =================
     st.markdown("---")
+    quote_lang = st.radio(
+        "Quote Language",
+        ["Hindi", "English"],
+        horizontal=True
+    )
 
+    ACTIVE_QUOTES = QUOTES if quote_lang == "Hindi" else EN_QUOTES
+
+    # ================= QUOTE ROTATOR =================
     st_autorefresh(interval=5000, key="quote_refresh")
 
     st.session_state.quote_index = (
         st.session_state.quote_index + 1
-    ) % len(QUOTES)
+    ) % len(ACTIVE_QUOTES)
 
     st.markdown(
         f"""
@@ -120,11 +158,12 @@ with st.sidebar:
             font-weight: 500;
             box-shadow: 0 0 15px rgba(63,169,245,0.35);
         ">
-            💬 <em>{QUOTES[st.session_state.quote_index]}</em>
+            💬 <em>{ACTIVE_QUOTES[st.session_state.quote_index]}</em>
         </div>
         """,
         unsafe_allow_html=True
     )
+
 
 
 #LAT, LON = 19.07598, 72.87766  # Mumbai
