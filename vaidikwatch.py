@@ -979,7 +979,7 @@ else:
 st.markdown("""
 ---
 ### *गौरव यादव*  
-**Quant Trader | Energy & Commodity Intelligence**  
+**क्वांट ट्रेडर | ऊर्जा एवं कमोडिटी इंटेलिजेंस**  
 📧 yadav.gauravsingh@gmail.com  
 <sub>Built with ❤️ using Swiss Ephemeris & Streamlit</sub>
 
