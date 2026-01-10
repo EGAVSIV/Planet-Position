@@ -980,8 +980,8 @@ st.markdown("""
 ---
 ### *गौरव यादव*  
 **क्वांट ट्रेडर | ऊर्जा एवं कमोडिटी इंटेलिजेंस**  
-📧 yadav.gauravsingh@gmail.com  
-<sub>Built with ❤️ using Swiss Ephemeris & Streamlit</sub>
+📧 yadav.gauravsingh@gmail.com
+❤️ Swiss Ephemeris एवं Streamlit का उपयोग करके निर्मित
 
 """)
 
