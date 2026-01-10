@@ -982,4 +982,5 @@ st.markdown("""
 **Quant Trader | Energy & Commodity Intelligence**  
 📧 yadav.gauravsingh@gmail.com  
 <sub>Built with ❤️ using Swiss Ephemeris & Streamlit</sub>
+st.components.v1.html(html, height=520, scrolling=True)
 """)
