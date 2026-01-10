@@ -169,7 +169,7 @@ def generate_svg(pos):
     # Group planets by close longitude (0.5° tolerance)
     groups = defaultdict(list)
     for name, code, sym in PLANETS:
-        key = round(pos[name], 1)   # group nearby degrees
+        lon = pos[name]
         rashi = int(lon // 30)
         groups[key].append((name, sym)
 
