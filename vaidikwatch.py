@@ -111,24 +111,21 @@ def generate_svg(pos):
         svg += f"<line x1='350' y1='350' x2='{x}' y2='{y}' stroke='#ffd700'/>"
         svg += f"<text x='{350 + 210*math.cos(ang)}' y='{350 - 210*math.sin(ang)}' fill='#00e6ff' font-size='22' text-anchor='middle'>{SIGNS[i]}</text>"
 
-    for deg, plist in planet_groups.items():
-        base_ang = math.radians(90 - deg)
+    for name, code, sym in PLANETS:
+        lon = pos[name]
+        ang = math.radians(90 - lon)
+        px = 350 + 200 * math.cos(ang)
+        py = 350 - 200 * math.sin(ang)
 
-        for i, (name, sym) in enumerate(plist):
-            # radial offset (stacking)
-            radius = 200 + (i * 18)   # 🔥 spacing
 
-            px = 350 + radius * math.cos(base_ang)
-            py = 350 - radius * math.sin(base_ang)
-
-            svg += f"""
-            <circle cx="{px}" cy="{py}" r="14" fill="#ffd27f"/>
-            <text x="{px}" y="{py}"
-                  font-size="14"
-                  font-weight="bold"
-                  text-anchor="middle"
-                  dominant-baseline="middle">{sym}</text>
-            """
+        svg += f"""
+        <circle cx="{px}" cy="{py}" r="14" fill="#ffd27f"/>
+        <text x="{px}" y="{py}"
+        font-size="14"
+        font-weight="bold"
+        text-anchor="middle"
+        dominant-baseline="middle">{sym}</text>
+"""
 
 
 # ================= UI =================
