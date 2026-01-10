@@ -224,7 +224,7 @@ with st.sidebar:
             border-radius: 10px;
             background: linear-gradient(145deg, #0b132b, #1c2541);
             color: #f5f5f5;
-            font-size: 2px;
+            font-size: 11px;
             line-height: 1.6;
             text-align: center;
             font-weight: 500;
