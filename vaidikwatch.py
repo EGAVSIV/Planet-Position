@@ -154,7 +154,7 @@ dt_ist = ist.localize(datetime.datetime.combine(date, time))
 st.session_state.sel_date = now.date()
 st.session_state.sel_time = now.time()
 st.rerun() 
-dt_utc = dt_ist.astimezone(pytz.utc)
+
 
 pos, retro, jd = get_positions(dt_utc)
 
