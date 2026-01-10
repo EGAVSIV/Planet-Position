@@ -112,25 +112,25 @@ NAME_STYLES = [
         "font": "'Segoe UI', sans-serif",
         "color": "#00e6ff",
         "weight": "400",
-        "text": "Gaurav Singh Yadav"
+        "text": "Gaurav Singh Yadav गौरव सिंह यादव"
     },
     {
         "font": "'Georgia', serif",
         "color": "#ffd166",
         "weight": "400",
-        "text": "Gaurav Singh Yadav"
+        "text": "Gaurav Singh Yadav गौरव सिंह यादव"
     },
     {
         "font": "'Courier New', monospace",
         "color": "#9bf6ff",
         "weight": "400",
-        "text": "Gaurav Singh Yadav"
+        "text": "Gaurav Singh Yadav गौरव सिंह यादव"
     },
     {
         "font": "'Trebuchet MS', sans-serif",
         "color": "#caffbf",
         "weight": "400",
-        "text": "GAURAV SINGH YADAV"
+        "text": "GAURAV SINGH YADAV गौरव सिंह यादव"
     }
 ]
 
