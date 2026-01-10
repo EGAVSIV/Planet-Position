@@ -171,7 +171,7 @@ def generate_svg(pos):
     for name, code, sym in PLANETS:
         key = round(pos[name], 1)   # group nearby degrees
         rashi = int(lon // 30)
-        groups[key].append((name, sym))
+        groups[key].append((name, sym)
 
     for deg, plist in groups.items():
         ang = math.radians(90 - deg)
