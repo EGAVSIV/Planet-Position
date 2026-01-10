@@ -575,7 +575,7 @@ def detect_amavasya_purnima(start_dt_utc, days=30, step_minutes=30):
         if events["Purnima"]["start"] is None and abs(diff - 180) <= 12:
             events["Purnima"]["start"] = dt
 
-        if events["Purnima"]["start"] and events["Purnima"]["end"] is None and abs(diff - 180) <= 0.5:
+        if events["Purnima"]["start"] and events["Purnima"]["end"] is None and abs(diff - 180) <= 0.1:
             events["Purnima"]["end"] = dt
 
         # Stop early if both found
