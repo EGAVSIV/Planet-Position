@@ -27,15 +27,14 @@ if not st.session_state.authenticated:
             st.error("Invalid credentials")
     st.stop()
 
-# ================= PAGE CONFIG =================
+# ================= CONFIG =================
 st.set_page_config(
     page_title="🪐 वेदिक ग्रह घड़ी — Drik Panchang",
     layout="wide",
     page_icon="🪐"
 )
 
-# ================= ASTRO CONFIG =================
-LAT, LON = 19.07598, 72.87766
+LAT, LON = 19.07598, 72.87766  # Mumbai
 FLAGS = swe.FLG_SWIEPH | swe.FLG_SIDEREAL
 swe.set_sid_mode(swe.SIDM_LAHIRI)
 
@@ -47,6 +46,7 @@ if "sel_time" not in st.session_state:
     st.session_state.sel_time = datetime.datetime.now(
         pytz.timezone("Asia/Kolkata")
     ).time()
+
 
 # ================= DATA =================
 SIGNS = ["मेष","वृषभ","मिथुन","कर्क","सिंह","कन्या",
@@ -77,24 +77,23 @@ PLANETS = [
 
 # ================= FUNCTIONS =================
 def nakshatra_pada(lon):
-    size = 13 + 1/3
-    pada = size / 4
-    idx = int(lon // size) % 27
-    pad = int((lon % size) // pada) + 1
-    return NAKSHATRAS[idx][0], NAKSHATRAS[idx][1], pad
+    nak_size = 13 + 1/3
+    pada_size = nak_size / 4
+    idx = int(lon // nak_size) % 27
+    pada = int((lon % nak_size) // pada_size) + 1
+    return NAKSHATRAS[idx][0], NAKSHATRAS[idx][1], pada
 
 def get_positions(dt_utc):
-    jd = swe.julday(
-        dt_utc.year, dt_utc.month, dt_utc.day,
-        dt_utc.hour + dt_utc.minute/60
-    )
+    jd = swe.julday(dt_utc.year, dt_utc.month, dt_utc.day,
+                    dt_utc.hour + dt_utc.minute/60)
 
     pos, retro = {}, {}
     ay = swe.get_ayanamsa_ut(jd)
 
     for name, code, sym in PLANETS:
         r, _ = swe.calc_ut(jd, code)
-        pos[name] = (r[0] - ay) % 360
+        lon = (r[0] - ay) % 360
+        pos[name] = lon
         retro[name] = r[3] < 0
 
     pos["केतु"] = (pos["राहु"] + 180) % 360
@@ -102,85 +101,137 @@ def get_positions(dt_utc):
 
     return pos, retro, jd
 
-# ================= MINI LIVE CLOCK =================
-def generate_mini_clock():
-    ist = pytz.timezone("Asia/Kolkata")
-    now_ist = datetime.datetime.now(ist)
-    pos, retro, _ = get_positions(now_ist.astimezone(pytz.utc))
-
-    cx, cy = 150, 150
-    R = 85
-
-    svg = f"""
-    <svg width="260" height="260" viewBox="0 0 300 300">
-        <circle cx="{cx}" cy="{cy}" r="140" fill="#050b18" stroke="#3fa9f5" stroke-width="4"/>
-        <circle cx="{cx}" cy="{cy}" r="110" fill="none" stroke="#88c9ff" stroke-width="2"/>
-    """
-
-    for i in range(12):
-        a = math.radians(90 - i*30)
-        x = cx + 110*math.cos(a)
-        y = cy - 110*math.sin(a)
-        svg += f"<line x1='{cx}' y1='{cy}' x2='{x}' y2='{y}' stroke='#ffd700'/>"
-
-    for name, code, sym in PLANETS:
-        a = math.radians(90 - pos[name])
-        px = cx + R*math.cos(a)
-        py = cy - R*math.sin(a)
-        color = "#ff4d4d" if retro[name] else "#79e887"
-        svg += f"<circle cx='{px}' cy='{py}' r='6' fill='{color}'/>"
-        svg += f"<text x='{px}' y='{py+2}' font-size='7' text-anchor='middle'>{sym}</text>"
-
-    svg += "</svg>"
-    return svg, now_ist
-
-# ================= MAIN CLOCK SVG =================
 def generate_svg(pos, retro):
+    from collections import defaultdict
+
     cx, cy = 350, 350
+
+    # Radii
+    OUTER_R = 330
+    INNER_R = 270
+    LINE_R  = 260
+    TEXT_R  = 210
+    BASE_PLANET_R = 200
+    STACK_GAP = 18
+
     svg = f"""
-    <svg width="700" height="700" viewBox="0 0 700 700">
+    <svg width="700" height="700" viewBox="0 0 700 700"
+         style="margin:auto;display:block">
+
     <defs>
-        <radialGradient id="g">
+        <radialGradient id="glow">
             <stop offset="70%" stop-color="#0a1e3a"/>
             <stop offset="100%" stop-color="#3fa9f5"/>
         </radialGradient>
     </defs>
-    <circle cx="{cx}" cy="{cy}" r="330" fill="url(#g)"/>
-    <circle cx="{cx}" cy="{cy}" r="270" fill="#050b18" stroke="#88c9ff" stroke-width="3"/>
+
+    <circle cx="{cx}" cy="{cy}" r="{OUTER_R}" fill="url(#glow)"/>
+    <circle cx="{cx}" cy="{cy}" r="{INNER_R}"
+            fill="#050b18"
+            stroke="#88c9ff"
+            stroke-width="3"/>
     """
 
+    # =================================================
+    # 🔶 RASHI DIVIDER LINES
+    # =================================================
     for i in range(12):
-        a = math.radians(90 - i*30)
-        svg += f"<line x1='{cx}' y1='{cy}' x2='{cx+260*math.cos(a)}' y2='{cy-260*math.sin(a)}' stroke='#ffd700'/>"
+        ang = math.radians(90 - i * 30)
+        x = cx + LINE_R * math.cos(ang)
+        y = cy - LINE_R * math.sin(ang)
 
+        svg += f"""
+        <line x1="{cx}" y1="{cy}"
+              x2="{x}" y2="{y}"
+              stroke="#ffd700"
+              stroke-width="2"/>
+        """
+
+    # =================================================
+    # 🔷 RASHI NAMES (CENTERED)
+    # =================================================
     for i in range(12):
-        a = math.radians(90 - (i*30+15))
-        svg += f"<text x='{cx+210*math.cos(a)}' y='{cy-210*math.sin(a)}' fill='#00e6ff' font-size='22' text-anchor='middle'>{SIGNS[i]}</text>"
+        ang = math.radians(90 - (i * 30 + 15))
+        x = cx + TEXT_R * math.cos(ang)
+        y = cy - TEXT_R * math.sin(ang)
+
+        svg += f"""
+        <text x="{x}" y="{y}"
+              fill="#00e6ff"
+              font-size="22"
+              font-weight="bold"
+              text-anchor="middle"
+              dominant-baseline="middle">
+            {SIGNS[i]}
+        </text>
+        """
+
+    # =================================================
+    # 🪐 PLANETS (INCLUDING KETU) — NO OVERLAP
+    # =================================================
 
     groups = defaultdict(list)
-    for n,_,s in PLANETS:
-        groups[int(pos[n]//30)].append((n,s))
-    groups[int(pos["केतु"]//30)].append(("केतु","के."))
 
-    for r, plist in groups.items():
-        a = math.radians(90 - (r*30+15))
-        for i,(n,s) in enumerate(plist):
-            rr = 200 - i*18
-            x = cx + rr*math.cos(a)
-            y = cy - rr*math.sin(a)
-            col = "#ff4d4d" if retro.get(n,False) else "#79e887"
-            svg += f"<circle cx='{x}' cy='{y}' r='11' fill='{col}'/>"
-            svg += f"<text x='{x}' y='{y}' font-size='11' text-anchor='middle'>{s}</text>"
+    # --- Main planets ---
+    for name, code, sym in PLANETS:
+        rashi = int(pos[name] // 30)
+        groups[rashi].append((name, sym))
+
+    # --- ADD KETU ---
+    groups[int(pos["केतु"] // 30)].append(("केतु", "के."))
+
+    # --- Draw planets ---
+    for rashi, plist in groups.items():
+
+        ang = math.radians(90 - (rashi * 30 + 15))
+
+        for i, (name, sym) in enumerate(plist):
+            r = BASE_PLANET_R - i * STACK_GAP
+
+            px = cx + r * math.cos(ang)
+            py = cy - r * math.sin(ang)
+
+            # 🔴 Retrograde = Red | 🟢 Direct = Green
+            color = "#ff4d4d" if retro.get(name, False) else "#79e887"
+
+            svg += f"""
+            <circle cx="{px}" cy="{py}"
+                    r="11"
+                    fill="{color}"
+                    stroke="#0b3d1f"
+                    stroke-width="1"/>
+
+            <text x="{px}" y="{py}"
+                  font-size="11"
+                  font-weight="bold"
+                  fill="black"
+                  text-anchor="middle"
+                  dominant-baseline="middle">
+                {sym}
+            </text>
+            """
 
     svg += "</svg>"
     return svg
 
+
+
+
+
+
 # ================= UI =================
 st.title("🪐 वेदिक ग्रह घड़ी — Drik Panchang")
 
-c1,c2,c3 = st.columns(3)
-date = c1.date_input("तारीख़", st.session_state.sel_date)
-time_sel = c2.time_input("समय", st.session_state.sel_time)
+c1, c2, c3 = st.columns(3)
+today = datetime.date.today()
+date = c1.date_input(
+    "तारीख़",
+    value=st.session_state.sel_date,
+    min_value=today - datetime.timedelta(days=365*500),     # ✅ NO PAST LIMIT
+    max_value=today + datetime.timedelta(days=365*500)     # ✅ NO FUTURE LIMIT
+)
+
+time = c2.time_input("समय",value=st.session_state.sel_time)
 
 if c3.button("अब"):
     now = datetime.datetime.now(pytz.timezone("Asia/Kolkata"))
@@ -188,31 +239,71 @@ if c3.button("अब"):
     st.session_state.sel_time = now.time()
     st.rerun()
 
-dt_ist = pytz.timezone("Asia/Kolkata").localize(
-    datetime.datetime.combine(date, time_sel)
-)
-pos, retro, jd = get_positions(dt_ist.astimezone(pytz.utc))
+ist = pytz.timezone("Asia/Kolkata")
+dt_ist = ist.localize(datetime.datetime.combine(date, time))
+dt_utc = dt_ist.astimezone(pytz.utc)   # ✅ REQUIRED
 
-left,right = st.columns([2,1])
+ 
+
+
+pos, retro, jd = get_positions(dt_utc)
+
+# ===== CORRECT DRIK PANCHANG LAGNA =====
+ascmc, _ = swe.houses_ex(jd, LAT, LON, b'P', FLAGS)
+lagna_deg = ascmc[0] % 360
+lagna_sign = SIGNS[int(lagna_deg // 30)]
+
+# ================= LAYOUT =================
+left, right = st.columns([2, 1])
+
 with left:
     st.components.v1.html(generate_svg(pos, retro), height=720)
 
-with st.sidebar:
-    st.markdown("### ⏱️ Live Planet Clock")
-    live = st.toggle("Enable Live Clock", False)
 
-if live:
-    st.autorefresh(interval=1000, key="clock")
-    svg, now = generate_mini_clock()
-    st.markdown(f"""
-    <div style="position:fixed;bottom:20px;right:20px;
-         width:260px;height:260px;border-radius:50%;
-         background:#050b18;border:3px solid #3fa9f5;
-         box-shadow:0 0 25px rgba(63,169,245,0.6);z-index:9999">
-         {svg}
-    </div>
-    """, unsafe_allow_html=True)
-    st.caption("Live IST: " + now.strftime("%H:%M:%S"))
+with right:
+    st.subheader("🌙 ज्योतिष सार")
+
+    moon_nak, moon_lord, moon_pada = nakshatra_pada(pos["चन्द्र"])
+
+    summary = [
+        ["चन्द्र नक्षत्र", moon_nak],
+        ["नक्षत्र पद", moon_pada],
+        ["नक्षत्र स्वामी", moon_lord],
+        ["लग्न", lagna_sign],
+        ["लग्न अंश", f"{lagna_deg:.2f}°"],
+        ["समय (IST)", dt_ist.strftime("%d-%b-%Y %H:%M")]
+    ]
+    st.table(pd.DataFrame(summary, columns=["तत्व", "मान"]))
+
+    st.subheader("🪐 ग्रह स्थिति")
+    rows = []
+
+# --- Main planets ---
+    for p, code, sym in PLANETS:
+        nak, lord, pada = nakshatra_pada(pos[p])
+        rows.append([
+            p,
+            f"{pos[p]:.2f}°",
+            SIGNS[int(pos[p]//30)],
+            f"{nak} (पद {pada})",
+            "🔁 वक्री" if retro[p] else "➡️ मार्गी"
+        ])
+
+    # --- ADD KETU (Shadow Planet) ---
+    nak, lord, pada = nakshatra_pada(pos["केतु"])
+    rows.append([
+            "केतु",
+        f"{pos['केतु']:.2f}°",
+        SIGNS[int(pos["केतु"]//30)],
+        f"{nak} (पद {pada})",
+        "🔁 वक्री" if retro["केतु"] else "➡️ मार्गी"
+        ])
+
+
+    st.table(pd.DataFrame(
+        rows,
+        columns=["ग्रह","डिग्री","राशि","नक्षत्र","स्थिति"]
+    ))
 
 st.success("IST समय: " + dt_ist.strftime("%d-%b-%Y %H:%M:%S"))
 
