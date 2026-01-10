@@ -129,7 +129,13 @@ st.title("🪐 वेदिक ग्रह घड़ी — Drik Panchang")
 
 c1, c2, c3 = st.columns(3)
 today = datetime.date.today()
-date = c1.date_input("तारीख़", today)
+date = c1.date_input(
+    "तारीख़",
+    value=today,
+    min_value=None,     # ✅ NO PAST LIMIT
+    max_value=None      # ✅ NO FUTURE LIMIT
+)
+
 time = c2.time_input("समय")
 
 if c3.button("अब"):
