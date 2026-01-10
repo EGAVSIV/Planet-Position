@@ -56,12 +56,12 @@ NAKSHATRAS = [
 PLANETS = [
 ("सूर्य", swe.SUN, "सूर्य"),
 ("चन्द्र", swe.MOON,"चन्द्र"),
-("मंगल", swe.MARS,"♂"),
-("बुध", swe.MERCURY,"☿"),
-("बृहस्पति", swe.JUPITER,"♃"),
-("शुक्र", swe.VENUS,"♀"),
-("शनि", swe.SATURN,"♄"),
-("राहु", swe.MEAN_NODE,"☊")
+("मंगल", swe.MARS,"मंगल"),
+("बुध", swe.MERCURY,"बुध"),
+("बृहस्पति", swe.JUPITER,"बृहस्पति"),
+("शुक्र", swe.VENUS,"शुक्"),
+("शनि", swe.SATURN,"शनि"),
+("राहु", swe.MEAN_NODE,"राहु")
 ]
 
 # ================= FUNCTIONS =================
