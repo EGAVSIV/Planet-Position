@@ -100,53 +100,98 @@ def get_positions(dt_utc):
 
     return pos, retro, jd
 
-# ================= BLUE CLOCK SVG =================
 def generate_svg(pos):
-    svg = """
-    <svg width="700" height="700" viewBox="0 0 700 700" style="margin:auto;display:block">
+    cx, cy = 350, 350
+    OUTER_R = 330
+    INNER_R = 270
+    LINE_R  = 260
+    TEXT_R  = 210
+    PLANET_R = 200
+
+    svg = f"""
+    <svg width="700" height="700" viewBox="0 0 700 700"
+         style="margin:auto;display:block">
+
     <defs>
         <radialGradient id="glow">
             <stop offset="70%" stop-color="#0a1e3a"/>
             <stop offset="100%" stop-color="#3fa9f5"/>
         </radialGradient>
     </defs>
-    <circle cx="350" cy="350" r="330" fill="url(#glow)"/>
-    <circle cx="350" cy="350" r="270" fill="#050b18" stroke="#88c9ff" stroke-width="3"/>
+
+    <!-- Outer glow -->
+    <circle cx="{cx}" cy="{cy}" r="{OUTER_R}" fill="url(#glow)"/>
+
+    <!-- Inner base -->
+    <circle cx="{cx}" cy="{cy}" r="{INNER_R}"
+            fill="#050b18"
+            stroke="#88c9ff"
+            stroke-width="3"/>
     """
 
+    # =================================================
+    # 🔶 RASHI DIVIDERS (0°, 30°, 60° ...)
+    # =================================================
     for i in range(12):
-
-    # -----------------------------
-    # 1️⃣ Divider line (UNCHANGED)
-    # -----------------------------
         line_ang = math.radians(90 - i * 30)
 
-        x_line = 350 + 260 * math.cos(line_ang)
-        y_line = 350 - 260 * math.sin(line_ang)
+        x_line = cx + LINE_R * math.cos(line_ang)
+        y_line = cy - LINE_R * math.sin(line_ang)
 
         svg += f"""
-        <line x1="350" y1="350"
+        <line x1="{cx}" y1="{cy}"
               x2="{x_line}" y2="{y_line}"
-              stroke="#ffd700" stroke-width="2"/>
+              stroke="#ffd700"
+              stroke-width="2"/>
         """
 
-        # -----------------------------
-        # 2️⃣ Rashi name (CENTERED)
-        # -----------------------------
+    # =================================================
+    # 🔷 RASHI NAMES (CENTERED AT +15°)
+    # =================================================
+    for i in range(12):
         text_ang = math.radians(90 - (i * 30 + 15))
 
-        x_text = 350 + 210 * math.cos(text_ang)
-        y_text = 350 - 210 * math.sin(text_ang)
+        x_text = cx + TEXT_R * math.cos(text_ang)
+        y_text = cy - TEXT_R * math.sin(text_ang)
 
         svg += f"""
         <text x="{x_text}" y="{y_text}"
               fill="#00e6ff"
               font-size="22"
+              font-weight="bold"
               text-anchor="middle"
               dominant-baseline="middle">
             {SIGNS[i]}
         </text>
         """
+
+    # =================================================
+    # 🪐 PLANET POSITIONS (VG POSITION)
+    # =================================================
+    for name, code, sym in PLANETS:
+        lon = pos[name]
+        ang = math.radians(90 - lon)
+
+        px = cx + PLANET_R * math.cos(ang)
+        py = cy - PLANET_R * math.sin(ang)
+
+        svg += f"""
+        <circle cx="{px}" cy="{py}"
+                r="11"
+                fill="#79e887"
+                stroke="#0b3d1f"
+                stroke-width="1"/>
+
+        <text x="{px}" y="{py}"
+              font-size="11"
+              font-weight="bold"
+              fill="black"
+              text-anchor="middle"
+              dominant-baseline="middle">
+            {sym}
+        </text>
+        """
+
     svg += "</svg>"
     return svg
 
