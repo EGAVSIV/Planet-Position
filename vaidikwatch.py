@@ -362,7 +362,26 @@ with right:
 
 with st.sidebar:
     st.markdown("### ⏱️ Live Planet Clock")
+    live_clock_on = st.toggle("Enable Live Clock", value=False)
     clock_container = st.empty()
+    
+st.markdown("""
+<style>
+#mini-clock {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 260px;
+    height: 260px;
+    background: rgba(5, 11, 24, 0.95);
+    border-radius: 50%;
+    border: 3px solid #3fa9f5;
+    box-shadow: 0 0 25px rgba(63,169,245,0.6);
+    z-index: 9999;
+}
+</style>
+""", unsafe_allow_html=True)
+
 
 
 
@@ -373,8 +392,22 @@ clock_container.components.v1.html(svg, height=320)
 
 st.caption("Live IST: " + now_ist.strftime("%H:%M:%S"))
 
-time.sleep(1)
-st.experimental_rerun()
+if live_clock_on:
+    svg, now_ist = generate_mini_clock()
+
+    st.markdown(
+        f"""
+        <div id="mini-clock">
+            {svg}
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+    st.caption("Live IST: " + now_ist.strftime("%H:%M:%S"))
+
+    time.sleep(1)
+    st.experimental_rerun()
 
 
 st.success("IST समय: " + dt_ist.strftime("%d-%b-%Y %H:%M:%S"))
