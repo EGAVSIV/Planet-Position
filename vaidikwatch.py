@@ -363,7 +363,7 @@ with right:
 with st.sidebar:
     st.markdown("### ⏱️ Live Planet Clock")
     live_clock_on = st.toggle("Enable Live Clock", value=False)
-    clock_container = st.empty()
+  
     
 st.markdown("""
 <style>
@@ -401,6 +401,7 @@ if live_clock_on:
 
     time.sleep(1)
     st.experimental_rerun()
+
 
 
 
