@@ -115,30 +115,39 @@ def generate_svg(pos):
     """
 
     for i in range(12):
-        ang = math.radians(90 - (i*30 + 15))
 
-        x = 350 + 260 * math.cos(ang)
-        y = 350 - 260 * math.sin(ang)
-        svg += f"<line x1='350' y1='350' x2='{x}' y2='{y}' stroke='#ffd700'/>"
-        svg += f"<text x='{350 + 210*math.cos(ang)}' y='{350 - 210*math.sin(ang)}' fill='#00e6ff' font-size='22' text-anchor='middle'>{SIGNS[i]}</text>"
+    # -----------------------------
+    # 1️⃣ Divider line (UNCHANGED)
+    # -----------------------------
+        line_ang = math.radians(90 - i * 30)
 
-    for name, code, sym in PLANETS:
-        lon = pos[name]
-        ang = math.radians(90 - lon)
-        px = 350 + 200 * math.cos(ang)
-        py = 350 - 200 * math.sin(ang)
+        x_line = 350 + 260 * math.cos(line_ang)
+        y_line = 350 - 260 * math.sin(line_ang)
+
         svg += f"""
-        <circle cx="{px}" cy="{py}" r="11" fill="#79e887"/>
-        <text x="{px}" y="{py}"
-        font-size="11"
-          fill="black"
-          text-anchor="middle"
-          dominant-baseline="middle">{sym}</text>
-
+        <line x1="350" y1="350"
+              x2="{x_line}" y2="{y_line}"
+              stroke="#ffd700" stroke-width="2"/>
         """
 
-    svg += "</svg>"
-    return svg
+        # -----------------------------
+        # 2️⃣ Rashi name (CENTERED)
+        # -----------------------------
+        text_ang = math.radians(90 - (i * 30 + 15))
+
+        x_text = 350 + 210 * math.cos(text_ang)
+        y_text = 350 - 210 * math.sin(text_ang)
+
+        svg += f"""
+        <text x="{x_text}" y="{y_text}"
+              fill="#00e6ff"
+              font-size="22"
+              text-anchor="middle"
+              dominant-baseline="middle">
+            {SIGNS[i]}
+        </text>
+        """
+
 
 
 
