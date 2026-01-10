@@ -54,7 +54,7 @@ NAKSHATRAS = [
 ]
 
 PLANETS = [
-("सूर्य", swe.SUN, "☉"),
+("सूर्य", swe.SUN, "सूर्य"),
 ("चन्द्र", swe.MOON,"☽"),
 ("मंगल", swe.MARS,"♂"),
 ("बुध", swe.MERCURY,"☿"),
