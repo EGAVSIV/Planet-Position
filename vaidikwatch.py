@@ -976,6 +976,7 @@ else:
 
 
 
+st.markdown("""
 <div style="
     text-align:center;
     padding:22px 18px;
@@ -1029,5 +1030,6 @@ else:
     </div>
 
 </div>
+""", unsafe_allow_html=True)
 
 
