@@ -114,7 +114,7 @@ def generate_svg(pos):
     <circle cx="350" cy="350" r="270" fill="#050b18" stroke="#88c9ff" stroke-width="3"/>
     """
 
-for i in range(12):
+    for i in range(12):
 
     # -----------------------------
     # 1️⃣ Divider line (UNCHANGED)
