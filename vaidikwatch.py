@@ -759,6 +759,137 @@ else:
     st.components.v1.html(html, height=520, scrolling=True)
 
 
+NAK_SIZE = 13 + 1/3
+
+def zodiac_index(deg):
+    return int(deg // 30)
+
+def nakshatra_index(deg):
+    return int(deg // NAK_SIZE)
+
+def zodiac_name(deg):
+    return SIGNS[zodiac_index(deg)]
+
+def nakshatra_name(deg):
+    return NAKSHATRAS[nakshatra_index(deg)][0]
+
+
+def upcoming_sign_nakshatra_changes(start_dt_utc, days=10, step_minutes=30):
+    events = []
+    seen = set()
+
+    total_steps = int((days * 24 * 60) / step_minutes)
+    prev_pos = None
+
+    for step in range(total_steps):
+        dt = start_dt_utc + datetime.timedelta(minutes=step * step_minutes)
+        pos, _, _ = get_positions(dt)
+
+        if prev_pos is None:
+            prev_pos = pos
+            continue
+
+        for planet in pos.keys():
+            # -------- ZODIAC CHANGE --------
+            prev_sign = zodiac_name(prev_pos[planet])
+            curr_sign = zodiac_name(pos[planet])
+
+            if prev_sign != curr_sign:
+                key = (planet, "Zodiac", curr_sign)
+                if key not in seen:
+                    seen.add(key)
+                    events.append({
+                        "type": "Zodiac Change",
+                        "planet": planet,
+                        "from": prev_sign,
+                        "to": curr_sign,
+                        "time": dt
+                    })
+
+            # -------- NAKSHATRA CHANGE --------
+            prev_nak = nakshatra_name(prev_pos[planet])
+            curr_nak = nakshatra_name(pos[planet])
+
+            if prev_nak != curr_nak:
+                key = (planet, "Nakshatra", curr_nak)
+                if key not in seen:
+                    seen.add(key)
+                    events.append({
+                        "type": "Nakshatra Change",
+                        "planet": planet,
+                        "from": prev_nak,
+                        "to": curr_nak,
+                        "time": dt
+                    })
+
+        prev_pos = pos
+
+    return events
+
+st.subheader("🪐 Planetary Transitions (Next 10 Days)")
+
+events = upcoming_sign_nakshatra_changes(
+    start_dt_utc=dt_utc,
+    days=10,
+    step_minutes=30
+)
+
+ist = pytz.timezone("Asia/Kolkata")
+now_ist = datetime.datetime.now(ist)
+
+if not events:
+    st.caption("No planetary sign or nakshatra changes in the next 10 days.")
+else:
+    grouped = defaultdict(list)
+    for e in events:
+        t = e["time"].astimezone(ist)
+        grouped[t.date()].append((e, t))
+
+    html = ""
+
+    for d in sorted(grouped.keys()):
+        html += f"""
+        <h4 style="color:#00e6ff; margin:12px 0 6px 0;">
+            📅 {d.strftime('%d %b %Y')}
+        </h4>
+        """
+
+        for e, t in grouped[d]:
+            delta = t - now_ist
+            hrs_left = delta.total_seconds() / 3600
+
+            blink = "animation: blink 1.2s infinite;" if 0 < hrs_left <= 24 else ""
+
+            badge_color = "#3498db" if e["type"] == "Zodiac Change" else "#9b59b6"
+            icon = "♈" if e["type"] == "Zodiac Change" else "🌟"
+
+            html += f"""
+            <div style="
+                margin-bottom: 12px;
+                padding: 12px 14px;
+                border-radius: 10px;
+                background: #0b132b;
+                border-left: 6px solid {badge_color};
+                {blink}
+            ">
+                <div style="font-size:16px; font-weight:600; color:{badge_color};">
+                    {icon} {e['planet']} — {e['type']}
+                </div>
+
+                <div style="font-size:14px; color:#dddddd; margin-top:4px;">
+                    {e['from']} → <b>{e['to']}</b>
+                </div>
+
+                <div style="font-size:13px; color:#ffcc00; margin-top:4px;">
+                    🕒 {t.strftime('%H:%M IST')}
+                </div>
+            </div>
+            """
+
+    st.components.v1.html(html, height=520, scrolling=True)
+
+
+
 
 
 
