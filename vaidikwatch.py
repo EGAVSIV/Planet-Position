@@ -257,7 +257,8 @@ lagna_sign = SIGNS[int(lagna_deg // 30)]
 left, right = st.columns([2, 1])
 
 with left:
-    st.components.v1.html(generate_svg(pos), height=720)
+    st.components.v1.html(generate_svg(pos, retro), height=720)
+
 
 with right:
     st.subheader("🌙 ज्योतिष सार")
