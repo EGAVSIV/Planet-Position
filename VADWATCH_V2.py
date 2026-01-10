@@ -161,6 +161,86 @@ if live:
 
 st.success("IST समय: " + dt_ist.strftime("%d-%b-%Y %H:%M:%S"))
 
+def generate_mini_clock():
+    ist = pytz.timezone("Asia/Kolkata")
+    now_ist = datetime.datetime.now(ist)
+    now_utc = now_ist.astimezone(pytz.utc)
+
+    pos, retro, _ = get_positions(now_utc)
+
+    cx, cy = 130, 130
+    BASE_R = 75
+
+    svg = f"""
+    <svg width="260" height="260" viewBox="0 0 260 260">
+        <circle cx="{cx}" cy="{cy}" r="120"
+                fill="#050b18"
+                stroke="#3fa9f5"
+                stroke-width="3"/>
+
+        <circle cx="{cx}" cy="{cy}" r="95"
+                fill="none"
+                stroke="#88c9ff"
+                stroke-width="2"/>
+    """
+
+    # Rashi dividers
+    for i in range(12):
+        ang = math.radians(90 - i * 30)
+        x = cx + 95 * math.cos(ang)
+        y = cy - 95 * math.sin(ang)
+        svg += f"<line x1='{cx}' y1='{cy}' x2='{x}' y2='{y}' stroke='#ffd700'/>"
+
+    # Planets
+    for name, code, sym in PLANETS:
+        ang = math.radians(90 - pos[name])
+        px = cx + BASE_R * math.cos(ang)
+        py = cy - BASE_R * math.sin(ang)
+        color = "#ff4d4d" if retro.get(name, False) else "#79e887"
+
+        svg += f"""
+        <circle cx="{px}" cy="{py}" r="5" fill="{color}"/>
+        <text x="{px}" y="{py+2}" font-size="7"
+              text-anchor="middle" fill="black">{sym}</text>
+        """
+
+    svg += "</svg>"
+    return svg, now_ist
+
+
+with st.sidebar:
+    st.markdown("### ⏱️ Live Planet Clock")
+    live_clock_on = st.toggle("Enable Live Clock", value=False)
+
+# ================= LIVE MINI CLOCK =================
+if live_clock_on:
+    st_autorefresh(interval=1000, key="mini_clock")
+
+    svg, now_ist = generate_mini_clock()
+
+    st.components.v1.html(
+        f"""
+        <div style="
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 260px;
+            height: 260px;
+            background: rgba(5, 11, 24, 0.95);
+            border-radius: 50%;
+            border: 3px solid #3fa9f5;
+            box-shadow: 0 0 25px rgba(63,169,245,0.6);
+            z-index: 9999;
+        ">
+            {svg}
+        </div>
+        """,
+        height=300
+    )
+
+    st.caption("Live IST: " + now_ist.strftime("%H:%M:%S"))
+
+
 st.markdown("""
 ---
 ### *Gaurav Singh Yadav*
