@@ -101,6 +101,59 @@ def get_positions(dt_utc):
 
     return pos, retro, jd
 
+def generate_mini_clock():
+    ist = pytz.timezone("Asia/Kolkata")
+    now_ist = datetime.datetime.now(ist)
+    now_utc = now_ist.astimezone(pytz.utc)
+
+    pos, retro, _ = get_positions(now_utc)
+
+    cx, cy = 150, 150
+    BASE_R = 85
+
+    svg = f"""
+    <svg width="300" height="300" viewBox="0 0 300 300"
+         style="margin:auto;display:block">
+
+    <circle cx="{cx}" cy="{cy}" r="140"
+            fill="#050b18"
+            stroke="#3fa9f5"
+            stroke-width="4"/>
+
+    <circle cx="{cx}" cy="{cy}" r="110"
+            fill="none"
+            stroke="#88c9ff"
+            stroke-width="2"/>
+    """
+
+    # Divider lines
+    for i in range(12):
+        ang = math.radians(90 - i * 30)
+        x = cx + 110 * math.cos(ang)
+        y = cy - 110 * math.sin(ang)
+        svg += f"<line x1='{cx}' y1='{cy}' x2='{x}' y2='{y}' stroke='#ffd700'/>"
+
+    # Planets (simple — no stacking needed in mini)
+    for name, code, sym in PLANETS:
+        lon = pos[name]
+        ang = math.radians(90 - lon)
+        px = cx + BASE_R * math.cos(ang)
+        py = cy - BASE_R * math.sin(ang)
+
+        color = "#ff4d4d" if retro.get(name, False) else "#79e887"
+
+        svg += f"""
+        <circle cx="{px}" cy="{py}" r="6" fill="{color}"/>
+        <text x="{px}" y="{py+2}"
+              font-size="7"
+              text-anchor="middle"
+              fill="black">{sym}</text>
+        """
+
+    svg += "</svg>"
+    return svg, now_ist
+
+
 def generate_svg(pos, retro):
     from collections import defaultdict
 
