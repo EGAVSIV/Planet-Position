@@ -579,26 +579,21 @@ def detect_amavasya_purnima(start_dt_utc, days=30, step_minutes=30):
 
     return events
 
-st.subheader("🌙 Amavasya & Purnima (Upcoming)")
+st.subheader("🔭 Upcoming Planetary Aspects")
 
-events = detect_amavasya_purnima(dt_utc, days=30)
+events = upcoming_aspects(dt_utc, days=5)
+events = unique_events(events)
 
-ist = pytz.timezone("Asia/Kolkata")
-
-for name, data in events.items():
-    if data["start"] and data["end"]:
-        start_ist = data["start"].astimezone(ist)
-        end_ist = data["end"].astimezone(ist)
-
+if not events:
+    st.caption("No major conjunctions or oppositions in the next few days.")
+else:
+    for e in events:
+        ist_time = e["time"].astimezone(pytz.timezone("Asia/Kolkata"))
         st.markdown(
-            f"""
-            **{name}**
-            - 🟢 Start : {start_ist.strftime('%d-%b-%Y %H:%M IST')}
-            - 🔴 End   : {end_ist.strftime('%d-%b-%Y %H:%M IST')}
-            """
+            f"**{e['planets']}** — {e['aspect']}  \n"
+            f"🕒 {ist_time.strftime('%d-%b-%Y %H:%M IST')}"
         )
-    else:
-        st.caption(f"{name} not found in the next 30 days.")
+
 
 
 st.markdown("""
