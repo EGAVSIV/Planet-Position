@@ -107,7 +107,8 @@ def generate_svg(pos):
     INNER_R = 270
     LINE_R  = 260
     TEXT_R  = 210
-    PLANET_R = 200
+    BASE_PLANET_R = 200
+    STACK_GAP = 18   # 👈 spacing between overlapping planets
 
     svg = f"""
     <svg width="700" height="700" viewBox="0 0 700 700"
@@ -120,10 +121,7 @@ def generate_svg(pos):
         </radialGradient>
     </defs>
 
-    <!-- Outer glow -->
     <circle cx="{cx}" cy="{cy}" r="{OUTER_R}" fill="url(#glow)"/>
-
-    <!-- Inner base -->
     <circle cx="{cx}" cy="{cy}" r="{INNER_R}"
             fill="#050b18"
             stroke="#88c9ff"
@@ -131,17 +129,16 @@ def generate_svg(pos):
     """
 
     # =================================================
-    # 🔶 RASHI DIVIDERS (0°, 30°, 60° ...)
+    # 🔶 RASHI DIVIDER LINES (0°, 30°, 60°)
     # =================================================
     for i in range(12):
-        line_ang = math.radians(90 - i * 30)
-
-        x_line = cx + LINE_R * math.cos(line_ang)
-        y_line = cy - LINE_R * math.sin(line_ang)
+        ang = math.radians(90 - i * 30)
+        x = cx + LINE_R * math.cos(ang)
+        y = cy - LINE_R * math.sin(ang)
 
         svg += f"""
         <line x1="{cx}" y1="{cy}"
-              x2="{x_line}" y2="{y_line}"
+              x2="{x}" y2="{y}"
               stroke="#ffd700"
               stroke-width="2"/>
         """
@@ -150,13 +147,12 @@ def generate_svg(pos):
     # 🔷 RASHI NAMES (CENTERED AT +15°)
     # =================================================
     for i in range(12):
-        text_ang = math.radians(90 - (i * 30 + 15))
-
-        x_text = cx + TEXT_R * math.cos(text_ang)
-        y_text = cy - TEXT_R * math.sin(text_ang)
+        ang = math.radians(90 - (i * 30 + 15))
+        x = cx + TEXT_R * math.cos(ang)
+        y = cy - TEXT_R * math.sin(ang)
 
         svg += f"""
-        <text x="{x_text}" y="{y_text}"
+        <text x="{x}" y="{y}"
               fill="#00e6ff"
               font-size="22"
               font-weight="bold"
@@ -167,31 +163,41 @@ def generate_svg(pos):
         """
 
     # =================================================
-    # 🪐 PLANET POSITIONS (VG POSITION)
+    # 🪐 PLANETS — OVERLAP SAFE (VG POSITION)
     # =================================================
+
+    # Group planets by close longitude (0.5° tolerance)
+    groups = defaultdict(list)
     for name, code, sym in PLANETS:
-        lon = pos[name]
-        ang = math.radians(90 - lon)
+        key = round(pos[name], 1)   # group nearby degrees
+        groups[key].append((name, sym))
 
-        px = cx + PLANET_R * math.cos(ang)
-        py = cy - PLANET_R * math.sin(ang)
+    for deg, plist in groups.items():
+        ang = math.radians(90 - deg)
 
-        svg += f"""
-        <circle cx="{px}" cy="{py}"
-                r="11"
-                fill="#79e887"
-                stroke="#0b3d1f"
-                stroke-width="1"/>
+        for i, (name, sym) in enumerate(plist):
+            # 👇 push inward for overlaps
+            r = BASE_PLANET_R - i * STACK_GAP
 
-        <text x="{px}" y="{py}"
-              font-size="11"
-              font-weight="bold"
-              fill="black"
-              text-anchor="middle"
-              dominant-baseline="middle">
-            {sym}
-        </text>
-        """
+            px = cx + r * math.cos(ang)
+            py = cy - r * math.sin(ang)
+
+            svg += f"""
+            <circle cx="{px}" cy="{py}"
+                    r="11"
+                    fill="#79e887"
+                    stroke="#0b3d1f"
+                    stroke-width="1"/>
+
+            <text x="{px}" y="{py}"
+                  font-size="11"
+                  font-weight="bold"
+                  fill="black"
+                  text-anchor="middle"
+                  dominant-baseline="middle">
+                {sym}
+            </text>
+            """
 
     svg += "</svg>"
     return svg
