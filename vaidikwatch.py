@@ -389,26 +389,33 @@ st.markdown("""
 # ================= LIVE CLOCK ENGINE =================
 if live_clock_on:
 
-    # init tick
-    if "clock_tick" not in st.session_state:
-        st.session_state.clock_tick = 0
+if live_clock_on:
+    st.autorefresh(interval=1000, key="live_clock")
 
     svg, now_ist = generate_mini_clock()
 
-    st.markdown(
+    st.components.v1.html(
         f"""
-        <div id="mini-clock">
+        <div style="
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 260px;
+            height: 260px;
+            background: rgba(5, 11, 24, 0.95);
+            border-radius: 50%;
+            border: 3px solid #3fa9f5;
+            box-shadow: 0 0 25px rgba(63,169,245,0.6);
+            z-index: 9999;
+        ">
             {svg}
         </div>
         """,
-        unsafe_allow_html=True
+        height=300
     )
 
     st.caption("Live IST: " + now_ist.strftime("%H:%M:%S"))
 
-    # auto refresh every 1 second
-    st.session_state.clock_tick += 1
-    st.rerun()
 
 
 
