@@ -140,6 +140,11 @@ if "quote_index" not in st.session_state:
 if "quote_lang" not in st.session_state:
     st.session_state.quote_lang = "Hindi"
 
+# MUST EXIST BEFORE SIDEBAR
+if "name_style_idx" not in st.session_state:
+    st.session_state.name_style_idx = 0
+
+
 with st.sidebar:
     # ================= LOCATION =================
     st.markdown("### 📍 स्थान चयन (Location)")
