@@ -184,6 +184,37 @@ def generate_svg(pos, retro):
     svg += "</svg>"
     return svg
 
+st.subheader("🪐 ग्रह स्थिति")
+
+rows = []
+
+# Main planets
+for p, code, sym in PLANETS:
+    nak, lord, pada = nakshatra_pada(pos[p])
+    rows.append([
+        p,
+        f"{pos[p]:.2f}°",
+        SIGNS[int(pos[p] // 30)],
+        f"{nak} (पद {pada})",
+        "🔁 वक्री" if retro[p] else "➡️ मार्गी"
+    ])
+
+# Ketu
+nak, lord, pada = nakshatra_pada(pos["केतु"])
+rows.append([
+    "केतु",
+    f"{pos['केतु']:.2f}°",
+    SIGNS[int(pos["केतु"] // 30)],
+    f"{nak} (पद {pada})",
+    "🔁 वक्री" if retro["केतु"] else "➡️ मार्गी"
+])
+
+st.table(pd.DataFrame(
+    rows,
+    columns=["ग्रह", "डिग्री", "राशि", "नक्षत्र", "स्थिति"]
+))
+
+
 # ================= UI =================
 st.title("🪐 वेदिक ग्रह घड़ी — Drik Panchang")
 
