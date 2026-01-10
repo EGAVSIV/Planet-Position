@@ -18,7 +18,8 @@ streamlit
 pytz
 pyswisseph
 reportlab
-collections
+
+
 
 
 
