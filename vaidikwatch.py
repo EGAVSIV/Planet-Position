@@ -358,6 +358,23 @@ with right:
         columns=["ग्रह","डिग्री","राशि","नक्षत्र","स्थिति"]
     ))
 
+with st.sidebar:
+    st.markdown("### ⏱️ Live Planet Clock")
+    clock_container = st.empty()
+
+
+
+clock_container = st.empty()
+
+svg, now_ist = generate_mini_clock()
+clock_container.components.v1.html(svg, height=320)
+
+st.caption("Live IST: " + now_ist.strftime("%H:%M:%S"))
+
+time.sleep(1)
+st.experimental_rerun()
+
+
 st.success("IST समय: " + dt_ist.strftime("%d-%b-%Y %H:%M:%S"))
 
 st.markdown("""
