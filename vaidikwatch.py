@@ -170,6 +170,7 @@ def generate_svg(pos):
     groups = defaultdict(list)
     for name, code, sym in PLANETS:
         key = round(pos[name], 1)   # group nearby degrees
+        rashi = int(lon // 30)
         groups[key].append((name, sym))
 
     for deg, plist in groups.items():
