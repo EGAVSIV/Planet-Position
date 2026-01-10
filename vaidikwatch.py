@@ -103,12 +103,14 @@ def get_positions(dt_utc):
 
 def generate_svg(pos):
     cx, cy = 350, 350
+
+    # Radii
     OUTER_R = 330
     INNER_R = 270
     LINE_R  = 260
     TEXT_R  = 210
     BASE_PLANET_R = 200
-    STACK_GAP = 18   # 👈 spacing between overlapping planets
+    STACK_GAP = 18   # spacing between stacked planets
 
     svg = f"""
     <svg width="700" height="700" viewBox="0 0 700 700"
@@ -129,7 +131,7 @@ def generate_svg(pos):
     """
 
     # =================================================
-    # 🔶 RASHI DIVIDER LINES (0°, 30°, 60°)
+    # 🔶 RASHI DIVIDER LINES (0°, 30°, 60°...)
     # =================================================
     for i in range(12):
         ang = math.radians(90 - i * 30)
@@ -163,21 +165,24 @@ def generate_svg(pos):
         """
 
     # =================================================
-    # 🪐 PLANETS — OVERLAP SAFE (VG POSITION)
+    # 🪐 PLANET PLOTTING — NO OVERLAP (RASHI GROUPING)
     # =================================================
-
-    # Group planets by close longitude (0.5° tolerance)
+    from collections import defaultdict
     groups = defaultdict(list)
+
+    # group planets by rashi (30° buckets)
     for name, code, sym in PLANETS:
         lon = pos[name]
         rashi = int(lon // 30)
-        groups[rashi].append((name, sym, lon))
+        groups[rashi].append((name, sym))
 
-    for deg, plist in groups.items():
-        ang = math.radians(90 - deg)
+    # plot planets stacked inward per rashi
+    for rashi, plist in groups.items():
+
+        # center angle of the rashi (15°)
+        ang = math.radians(90 - (rashi * 30 + 15))
 
         for i, (name, sym) in enumerate(plist):
-            # 👇 push inward for overlaps
             r = BASE_PLANET_R - i * STACK_GAP
 
             px = cx + r * math.cos(ang)
@@ -202,6 +207,7 @@ def generate_svg(pos):
 
     svg += "</svg>"
     return svg
+
 
 
 
