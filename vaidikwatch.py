@@ -361,9 +361,6 @@ with right:
         columns=["ग्रह","डिग्री","राशि","नक्षत्र","स्थिति"]
     ))
 
-with st.sidebar:
-    st.markdown("### ⏱️ Live Planet Clock")
-    live_clock_on = st.toggle("Enable Live Clock", value=False)
   
     
 st.markdown("""
@@ -386,9 +383,12 @@ st.markdown("""
 
 
 
-# ================= LIVE CLOCK ENGINE =================
-if live_clock_on:
+with st.sidebar:
+    st.markdown("### ⏱️ Live Planet Clock")
+    live_clock_on = st.toggle("Enable Live Clock", value=False)
 
+
+# ================= LIVE MINI CLOCK =================
 if live_clock_on:
     st.autorefresh(interval=1000, key="live_clock")
 
@@ -415,6 +415,9 @@ if live_clock_on:
     )
 
     st.caption("Live IST: " + now_ist.strftime("%H:%M:%S"))
+
+
+
 
 
 
