@@ -977,11 +977,52 @@ else:
 
 
 st.markdown("""
----
-### *गौरव यादव*  
-**क्वांट ट्रेडर | ऊर्जा एवं कमोडिटी इंटेलिजेंस**  
-📧 yadav.gauravsingh@gmail.com
-❤️ Swiss Ephemeris एवं Streamlit का उपयोग करके निर्मित
+<hr style="border:1px solid #1f2a44; margin-top:30px;">
 
-""")
+<div style="
+    text-align:center;
+    padding:20px;
+    border-radius:14px;
+    background: linear-gradient(145deg, #0b132b, #1c2541);
+    box-shadow: 0 0 18px rgba(63,169,245,0.35);
+">
+
+    <div style="
+        font-size:24px;
+        font-weight:700;
+        color:#ffd166;
+        letter-spacing:1px;
+        margin-bottom:6px;
+    ">
+        गौरव यादव
+    </div>
+
+    <div style="
+        font-size:16px;
+        font-weight:600;
+        color:#9bf6ff;
+        margin-bottom:10px;
+    ">
+        क्वांट ट्रेडर | ऊर्जा एवं कमोडिटी इंटेलिजेंस
+    </div>
+
+    <div style="
+        font-size:15px;
+        color:#f1f1f1;
+        margin-bottom:8px;
+    ">
+        📧 <span style="color:#ffd166;">yadav.gauravsingh@gmail.com</span>
+    </div>
+
+    <div style="
+        font-size:13px;
+        color:#cfcfcf;
+        opacity:0.9;
+    ">
+        ❤️ Swiss Ephemeris एवं Streamlit का उपयोग करके निर्मित
+    </div>
+
+</div>
+""", unsafe_allow_html=True)
+
 
