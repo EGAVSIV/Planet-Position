@@ -138,12 +138,12 @@ c1, c2, c3 = st.columns(3)
 today = datetime.date.today()
 date = c1.date_input(
     "तारीख़",
-    value=today,
+    value=st.session_state.sel_date,
     min_value=today - datetime.timedelta(days=365*500),     # ✅ NO PAST LIMIT
     max_value=today + datetime.timedelta(days=365*500)     # ✅ NO FUTURE LIMIT
 )
 
-time = c2.time_input("समय")
+time = c2.time_input("समय",value=st.session_state.sel_time)
 
 if c3.button("अब"):
     now = datetime.datetime.now(pytz.timezone("Asia/Kolkata"))
