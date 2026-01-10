@@ -630,6 +630,16 @@ def detect_amavasya_purnima(start_dt_utc, days=30, step_minutes=15):
 
     return events
 
+ASPECT_STYLE = {
+    "Conjunction": {
+        "icon": "🟢",
+        "color": "#2ecc71"   # green
+    },
+    "Opposition": {
+        "icon": "🔴",
+        "color": "#e74c3c"   # red
+    }
+}
 
 
 
