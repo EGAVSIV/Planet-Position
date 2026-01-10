@@ -543,6 +543,11 @@ def detect_aspects(pos):
 
     return events
 
+def moon_sun_diff(moon_deg, sun_deg):
+    diff = (moon_deg - sun_deg) % 360
+    return min(diff, 360 - diff)
+
+
 def detect_amavasya_purnima(start_dt_utc, days=30, step_minutes=30):
     events = {
         "Amavasya": {"start": None, "end": None},
