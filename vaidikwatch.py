@@ -387,6 +387,8 @@ st.markdown("""
 
 
 if live_clock_on:
+    st.autorefresh(interval=1000, key="live_clock")
+
     svg, now_ist = generate_mini_clock()
 
     st.markdown(
@@ -400,8 +402,6 @@ if live_clock_on:
 
     st.caption("Live IST: " + now_ist.strftime("%H:%M:%S"))
 
-    time.sleep(1)
-    st.rerun()
 
 
 
