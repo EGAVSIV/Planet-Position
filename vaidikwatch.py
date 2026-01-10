@@ -114,7 +114,7 @@ with st.sidebar:
             border-radius: 10px;
             background: linear-gradient(145deg, #0b132b, #1c2541);
             color: #f5f5f5;
-            font-size: 15px;
+            font-size: 20px;
             line-height: 1.6;
             text-align: center;
             box-shadow: 0 0 15px rgba(63,169,245,0.35);
