@@ -994,35 +994,60 @@ def build_house_rashi_map(lagna_sign):
 def planet_house(planet_deg, lagna_deg):
     return int(((planet_deg - lagna_deg) % 360) // 30) + 1
 
-def draw_north_indian_kundali_FINAL():
+def draw_north_indian_kundali_CORRECT():
     svg = """
     <svg width="700" height="700" viewBox="0 0 700 700">
 
-    <!-- Outer Rectangle -->
-    <rect x="50" y="50" width="600" height="600"
-          fill="white" stroke="#ff7a00" stroke-width="3"/>
+      <!-- Outer square (diamond frame effect comes from diagonals) -->
+      <rect x="50" y="50" width="600" height="600"
+            fill="white" stroke="#ff7a00" stroke-width="3"/>
 
-    <!-- X diagonals (corner to corner) -->
-    <line x1="50" y1="50" x2="650" y2="650"
-          stroke="#ff7a00" stroke-width="3"/>
-    <line x1="650" y1="50" x2="50" y2="650"
-          stroke="#ff7a00" stroke-width="3"/>
+      <!-- Main diagonals (corner to corner) -->
+      <line x1="50"  y1="350" x2="350" y2="50"
+            stroke="#ff7a00" stroke-width="3"/>
+      <line x1="350" y1="50"  x2="650" y2="350"
+            stroke="#ff7a00" stroke-width="3"/>
+      <line x1="650" y1="350" x2="350" y2="650"
+            stroke="#ff7a00" stroke-width="3"/>
+      <line x1="350" y1="650" x2="50"  y2="350"
+            stroke="#ff7a00" stroke-width="3"/>
 
-    <!-- Central Rhombus (Diamond) -->
-    <line x1="350" y1="200" x2="500" y2="350"
-          stroke="#ff7a00" stroke-width="3"/>
-    <line x1="500" y1="350" x2="350" y2="500"
-          stroke="#ff7a00" stroke-width="3"/>
-    <line x1="350" y1="500" x2="200" y2="350"
-          stroke="#ff7a00" stroke-width="3"/>
-    <line x1="200" y1="350" x2="350" y2="200"
-          stroke="#ff7a00" stroke-width="3"/>
+      <!-- Inner diagonals (center diamond) -->
+      <line x1="200" y1="200" x2="500" y2="500"
+            stroke="#ff7a00" stroke-width="3"/>
+      <line x1="500" y1="200" x2="200" y2="500"
+            stroke="#ff7a00" stroke-width="3"/>
 
-    <!-- Center label (verification) -->
-    <text x="350" y="360" text-anchor="middle"
-          font-size="16" fill="#ff7a00">
-        Rising Sign / 1st House
-    </text>
+      <!-- House labels (approx positions, adjust x/y as you like) -->
+      <!-- 1st house center diamond -->
+      <text x="350" y="360" text-anchor="middle"
+            font-size="18" fill="#ff7a00">Rising / 1st</text>
+
+      <!-- Top middle (12th) -->
+      <text x="350" y="140" text-anchor="middle"
+            font-size="16" fill="#ff7a00">12th</text>
+
+      <!-- Top‑left (2nd) -->
+      <text x="230" y="190" font-size="16" fill="#ff7a00">2nd</text>
+
+      <!-- Left‑middle (3rd & 4th) -->
+      <text x="150" y="300" font-size="16" fill="#ff7a00">3rd</text>
+      <text x="150" y="420" font-size="16" fill="#ff7a00">4th</text>
+
+      <!-- Bottom‑left (5th & 6th) -->
+      <text x="230" y="540" font-size="16" fill="#ff7a00">5th</text>
+      <text x="330" y="610" text-anchor="middle"
+            font-size="16" fill="#ff7a00">6th</text>
+
+      <!-- Bottom‑right (7th & 8th) -->
+      <text x="370" y="610" text-anchor="middle"
+            font-size="16" fill="#ff7a00">7th</text>
+      <text x="470" y="540" font-size="16" fill="#ff7a00">8th</text>
+
+      <!-- Right‑middle (9th & 10th & 11th) -->
+      <text x="560" y="420" font-size="16" fill="#ff7a00">9th</text>
+      <text x="560" y="300" font-size="16" fill="#ff7a00">10th</text>
+      <text x="470" y="190" font-size="16" fill="#ff7a00">11th</text>
 
     </svg>
     """
