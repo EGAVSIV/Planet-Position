@@ -34,7 +34,7 @@ st.set_page_config(
     page_title="🪐 वेदिक ग्रह घड़ी — द्रिक पंचांग",
     layout="wide",
     page_icon="🪐"
-)
+)    
 
 # ================= ROTATING QUOTES =================
 QUOTES = [
@@ -167,6 +167,7 @@ with st.sidebar:
         ["हिंदी", "English"],
         horizontal=True
     )
+    st.session_state.quote_lang = quote_lang   # ✅ STORE IT
 
     # ================= NAME ROTATOR =================
     st.markdown("---")
