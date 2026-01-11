@@ -1063,11 +1063,3 @@ st.components.v1.html(
     height=720
 )
 
-**Designed by:-  
-Gaurav Singh Yadav**   
-🩷💛🩵💙🩶💜🤍🤎💖  Built With Love 🫶  
-Energy | Commodity | Quant Intelligence 📶  
-📱 +91-8003994518 〽️   
-📧 yadav.gauravsingh@gmail.com ™️
-""")
-
