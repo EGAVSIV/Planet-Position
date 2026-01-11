@@ -968,19 +968,20 @@ RASHI_NUM = {
     "धनु": 9, "मकर": 10, "कुंभ": 11, "मीन": 12
 }
 HOUSE_BOXES = {
-    1:(350,520),   # Bottom center
-    2:(470,460),
-    3:(580,350),
-    4:(470,240),
-    5:(350,120),   # Top center
-    6:(230,240),
-    7:(120,350),
-    8:(230,460),
-    9:(300,420),
-    10:(300,280),
-    11:(400,280),
-    12:(400,420)
+    1:(270,360),   # left upper diamond
+    2:(120,360),   # left middle
+    3:(180,460),   # left bottom
+    4:(270,500),   # bottom left diamond
+    5:(350,420),   # center bottom
+    6:(350,260),   # center top
+    7:(270,200),   # top left diamond
+    8:(180,240),   # left top
+    9:(430,500),   # bottom right
+    10:(580,360),  # right middle
+    11:(430,200),  # top right
+    12:(350,140),  # top center
 }
+
 def build_rashi_sequence(lagna_sign):
     start = SIGNS.index(lagna_sign)
     return {i+1: SIGNS[(start+i) % 12] for i in range(12)}
@@ -994,10 +995,23 @@ def planet_house(planet_deg, lagna_deg):
     return int(((planet_deg - lagna_deg) % 360) // 30) + 1
 
 
-def generate_north_indian_kundali(pos, lagna_deg, lagna_sign):
+def generate_north_indian_kundali_IMAGE1(pos, lagna_deg, lagna_sign):
     from collections import defaultdict
 
-    rashi_map = build_rashi_sequence(lagna_sign)
+    RASHI_NUM = {
+        "मेष":1,"वृषभ":2,"मिथुन":3,"कर्क":4,
+        "सिंह":5,"कन्या":6,"तुला":7,"वृश्चिक":8,
+        "धनु":9,"मकर":10,"कुंभ":11,"मीन":12
+    }
+
+    def planet_house(pdeg, ldeg):
+        return int(((pdeg - ldeg) % 360) // 30) + 1
+
+    def build_rashi_seq(lagna):
+        start = SIGNS.index(lagna)
+        return {i+1: SIGNS[(start+i) % 12] for i in range(12)}
+
+    house_rashi = build_rashi_seq(lagna_sign)
 
     house_planets = defaultdict(list)
     for p in pos:
@@ -1008,35 +1022,36 @@ def generate_north_indian_kundali(pos, lagna_deg, lagna_sign):
     <svg width="700" height="700" viewBox="0 0 700 700">
       <rect x="50" y="50" width="600" height="600"
             fill="white" stroke="black" stroke-width="2"/>
+
+      <!-- main cross -->
       <line x1="350" y1="50" x2="350" y2="650" stroke="black"/>
       <line x1="50" y1="350" x2="650" y2="350" stroke="black"/>
+
+      <!-- diagonals -->
       <line x1="50" y1="50" x2="650" y2="650" stroke="black"/>
       <line x1="650" y1="50" x2="50" y2="650" stroke="black"/>
     """
 
-    for house,(x,y) in HOUSE_BOXES.items():
-        rashi = rashi_map[house]
-        rashi_no = RASHI_NUM[rashi]
-        planets = ", ".join(house_planets.get(house, []))
+    for h,(x,y) in HOUSE_BOXES.items():
+        rashi = house_rashi[h]
+        rno = RASHI_NUM[rashi]
+        planets = ", ".join(house_planets.get(h, []))
 
         svg += f"""
-        <text x="{x-18}" y="{y-10}" font-size="14" font-weight="bold">
-            {rashi_no}
+        <text x="{x-18}" y="{y-8}" font-size="13" font-weight="bold">
+            {rno}
         </text>
-        <text x="{x}" y="{y+10}" font-size="13"
-              text-anchor="middle">
+        <text x="{x}" y="{y+12}" font-size="13" text-anchor="middle">
             {planets}
         </text>
         """
 
     svg += "</svg>"
     return svg
-
-
-st.subheader("🪐 जन्म कुंडली (North Indian Style)")
+st.subheader("🪐 जन्म कुंडली (North Indian – Classic)")
 
 st.components.v1.html(
-    generate_north_indian_kundali(pos, lagna_deg, lagna_sign),
+    generate_north_indian_kundali_IMAGE1(pos, lagna_deg, lagna_sign),
     height=720
 )
 
