@@ -994,7 +994,6 @@ def build_house_rashi_map(lagna_sign):
 def planet_house(planet_deg, lagna_deg):
     return int(((planet_deg - lagna_deg) % 360) // 30) + 1
 
-
 def draw_north_indian_kundali_FINAL():
     svg = """
     <svg width="700" height="700" viewBox="0 0 700 700">
@@ -1028,6 +1027,7 @@ def draw_north_indian_kundali_FINAL():
     </svg>
     """
     return svg
+
 
 
 
