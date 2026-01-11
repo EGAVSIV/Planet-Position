@@ -853,7 +853,8 @@ def nakshatra_name(deg):
 
 def upcoming_sign_nakshatra_changes(start_dt_utc, days=10, step_minutes=30):
     events = []
-    seen = set()
+
+    FAST_PLANETS = ["चन्द्र", "बुध", "शुक्र", "सूर्य"]
 
     total_steps = int((days * 24 * 60) / step_minutes)
     prev_pos = None
@@ -866,36 +867,30 @@ def upcoming_sign_nakshatra_changes(start_dt_utc, days=10, step_minutes=30):
             prev_pos = pos
             continue
 
-        for planet in pos.keys():
+        for planet in FAST_PLANETS:
             prev_sign = zodiac_name(prev_pos[planet])
             curr_sign = zodiac_name(pos[planet])
 
             if prev_sign != curr_sign:
-                key = (planet, "Zodiac", curr_sign)
-                if key not in seen:
-                    seen.add(key)
-                    events.append({
-                        "type": "Zodiac Change",
-                        "planet": planet,
-                        "from": prev_sign,
-                        "to": curr_sign,
-                        "time": dt
-                    })
+                events.append({
+                    "type": "Zodiac Change",
+                    "planet": planet,
+                    "from": prev_sign,
+                    "to": curr_sign,
+                    "time": dt
+                })
 
             prev_nak = nakshatra_name(prev_pos[planet])
             curr_nak = nakshatra_name(pos[planet])
 
             if prev_nak != curr_nak:
-                key = (planet, "Nakshatra", curr_nak)
-                if key not in seen:
-                    seen.add(key)
-                    events.append({
-                        "type": "Nakshatra Change",
-                        "planet": planet,
-                        "from": prev_nak,
-                        "to": curr_nak,
-                        "time": dt
-                    })
+                events.append({
+                    "type": "Nakshatra Change",
+                    "planet": planet,
+                    "from": prev_nak,
+                    "to": curr_nak,
+                    "time": dt
+                })
 
         prev_pos = pos
 
