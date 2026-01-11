@@ -1063,8 +1063,6 @@ st.components.v1.html(
     height=720
 )
 
-    
-)
 **Designed by:-  
 Gaurav Singh Yadav**   
 🩷💛🩵💙🩶💜🤍🤎💖  Built With Love 🫶  
