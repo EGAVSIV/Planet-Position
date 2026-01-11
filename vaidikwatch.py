@@ -1062,6 +1062,9 @@ st.components.v1.html(
     generate_north_indian_kundali(pos, lagna_deg, lagna_sign),
     height=720
 )
+
+    
+)
 **Designed by:-  
 Gaurav Singh Yadav**   
 🩷💛🩵💙🩶💜🤍🤎💖  Built With Love 🫶  
