@@ -995,11 +995,11 @@ def planet_house(planet_deg, lagna_deg):
     return int(((planet_deg - lagna_deg) % 360) // 30) + 1
 
 
-def draw_north_indian_kundali_exact():
+def draw_north_indian_kundali_CORRECT():
     svg = """
     <svg width="700" height="700" viewBox="0 0 700 700">
-    
-    <!-- Outer rectangle -->
+
+    <!-- Outer Rectangle -->
     <rect x="50" y="50" width="600" height="600"
           fill="white" stroke="#ff7a00" stroke-width="3"/>
 
@@ -1009,41 +1009,43 @@ def draw_north_indian_kundali_exact():
     <line x1="50" y1="350" x2="650" y2="350"
           stroke="#ff7a00" stroke-width="3"/>
 
-    <!-- Central diamond (RHOMBUS ONLY) -->
-    <line x1="350" y1="200" x2="500" y2="350"
+    <!-- Diagonals (corner → center ONLY) -->
+    <line x1="50"  y1="50"  x2="350" y2="350"
           stroke="#ff7a00" stroke-width="3"/>
-    <line x1="500" y1="350" x2="350" y2="500"
+    <line x1="650" y1="50"  x2="350" y2="350"
           stroke="#ff7a00" stroke-width="3"/>
-    <line x1="350" y1="500" x2="200" y2="350"
+    <line x1="50"  y1="650" x2="350" y2="350"
           stroke="#ff7a00" stroke-width="3"/>
-    <line x1="200" y1="350" x2="350" y2="200"
+    <line x1="650" y1="650" x2="350" y2="350"
           stroke="#ff7a00" stroke-width="3"/>
 
-    <!-- House labels (for verification) -->
-    <text x="350" y="315" font-size="18" text-anchor="middle" fill="#ff7a00">
+    <!-- House Labels (verification only) -->
+    <text x="350" y="315" font-size="18"
+          text-anchor="middle" fill="#ff7a00">
         Rising Sign / 1st House
     </text>
 
-    <text x="250" y="170" fill="#ff7a00">2nd House</text>
-    <text x="120" y="260" fill="#ff7a00">3rd House</text>
-    <text x="120" y="390" fill="#ff7a00">4th House</text>
-    <text x="250" y="560" fill="#ff7a00">5th House</text>
-    <text x="350" y="600" fill="#ff7a00" text-anchor="middle">6th House</text>
-    <text x="350" y="460" fill="#ff7a00" text-anchor="middle">7th House</text>
-    <text x="350" y="640" fill="#ff7a00" text-anchor="middle">8th House</text>
+    <text x="350" y="120" text-anchor="middle" fill="#ff7a00">12th House</text>
+    <text x="260" y="170" fill="#ff7a00">2nd House</text>
+    <text x="140" y="300" fill="#ff7a00">3rd House</text>
+    <text x="140" y="420" fill="#ff7a00">4th House</text>
+    <text x="260" y="560" fill="#ff7a00">5th House</text>
+    <text x="350" y="600" text-anchor="middle" fill="#ff7a00">6th House</text>
+    <text x="350" y="460" text-anchor="middle" fill="#ff7a00">7th House</text>
+    <text x="350" y="640" text-anchor="middle" fill="#ff7a00">8th House</text>
     <text x="520" y="560" fill="#ff7a00">9th House</text>
-    <text x="560" y="390" fill="#ff7a00">10th House</text>
-    <text x="560" y="260" fill="#ff7a00">11th House</text>
-    <text x="350" y="120" fill="#ff7a00" text-anchor="middle">12th House</text>
+    <text x="560" y="420" fill="#ff7a00">10th House</text>
+    <text x="560" y="300" fill="#ff7a00">11th House</text>
 
     </svg>
     """
     return svg
 
+
 st.subheader("🪐 जन्म कुंडली (North Indian – Classic)")
 
 st.components.v1.html(
-    draw_north_indian_kundali_exact(),
+    draw_north_indian_kundali_CORRECT(),
     height=720
 )
 
