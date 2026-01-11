@@ -853,18 +853,12 @@ def nakshatra_name(deg):
 def upcoming_sign_nakshatra_changes(start_dt_utc, days=10, step_minutes=30):
     events = []
     seen = set()
-    now_utc = datetime.datetime.now(pytz.utc)
 
     total_steps = int((days * 24 * 60) / step_minutes)
     prev_pos = None
 
     for step in range(total_steps):
         dt = start_dt_utc + datetime.timedelta(minutes=step * step_minutes)
-
-        # 🚫 BLOCK PAST EVENTS
-        if dt <= now_utc:
-            continue
-
         pos, _, _ = get_positions(dt)
 
         if prev_pos is None:
@@ -905,6 +899,7 @@ def upcoming_sign_nakshatra_changes(start_dt_utc, days=10, step_minutes=30):
         prev_pos = pos
 
     return events
+
 
 
 st.subheader("🪐 Planetary Transitions (Next 10 Days)")
