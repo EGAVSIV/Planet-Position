@@ -961,6 +961,68 @@ else:
                 </div>
             </div>
             """
+def build_house_rashi_map(lagna_sign):
+    start = SIGNS.index(lagna_sign)
+    return {house: SIGNS[(start + house - 1) % 12] for house in range(1, 13)}
+def planet_house(planet_deg, lagna_deg):
+    diff = (planet_deg - lagna_deg) % 360
+    return int(diff // 30) + 1
+
+def generate_north_indian_kundali(pos, lagna_deg, lagna_sign):
+    # House positions (x, y)
+    house_xy = {
+        1:(350,520), 2:(520,400), 3:(600,300), 4:(520,200),
+        5:(350,80),  6:(180,200), 7:(80,300),  8:(180,400),
+        9:(260,460), 10:(260,140), 11:(440,140), 12:(440,460)
+    }
+
+    house_rashi = build_house_rashi_map(lagna_sign)
+
+    # Planet placement
+    house_planets = defaultdict(list)
+    for p in pos:
+        h = planet_house(pos[p], lagna_deg)
+        house_planets[h].append(p)
+
+    svg = """
+    <svg width="700" height="700" viewBox="0 0 700 700">
+      <rect x="50" y="50" width="600" height="600"
+            fill="#050b18" stroke="#00e6ff" stroke-width="3"/>
+      <line x1="350" y1="50" x2="350" y2="650" stroke="#ffd700"/>
+      <line x1="50" y1="350" x2="650" y2="350" stroke="#ffd700"/>
+      <line x1="50" y1="50" x2="650" y2="650" stroke="#ffd700"/>
+      <line x1="650" y1="50" x2="50" y2="650" stroke="#ffd700"/>
+    """
+
+    for h,(x,y) in house_xy.items():
+        rashi = house_rashi[h]
+        planets = " ".join(house_planets.get(h, []))
+
+        svg += f"""
+        <text x="{x}" y="{y-14}" fill="#00e6ff"
+              font-size="14" text-anchor="middle">
+            {rashi}
+        </text>
+        <text x="{x}" y="{y+8}" fill="#ffffff"
+              font-size="13" text-anchor="middle">
+            {planets}
+        </text>
+        """
+
+    svg += "</svg>"
+    return svg
+
+st.subheader("🪐 जन्म कुंडली (North Indian)")
+
+st.components.v1.html(
+    generate_north_indian_kundali(
+        pos=pos,
+        lagna_deg=lagna_deg,
+        lagna_sign=lagna_sign
+    ),
+    height=720
+)
+
 
 
 st.markdown("""
