@@ -1053,9 +1053,13 @@ def draw_north_indian_kundali_CORRECT():
     """
     return svg
 
+st.components.v1.html(
+    draw_north_indian_kundali_CORRECT(),
+    height=720
+)
 
 
-
+st.subheader("🪐 जन्म कुंडली (North Indian Style)")
 st.markdown("""
 ---
 **Designed by:-  
