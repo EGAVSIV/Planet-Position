@@ -6,7 +6,6 @@ from collections import defaultdict
 import hashlib
 from streamlit_autorefresh import st_autorefresh
 
-
 # ================= LOGIN =================
 def hash_pwd(pwd):
     return hashlib.sha256(pwd.encode()).hexdigest()
@@ -34,7 +33,7 @@ st.set_page_config(
     page_title="🪐 वेदिक ग्रह घड़ी — द्रिक पंचांग",
     layout="wide",
     page_icon="🪐"
-)    
+)
 
 # ================= ROTATING QUOTES =================
 QUOTES = [
@@ -82,8 +81,6 @@ EN_QUOTES = [
     "Calm minds make powerful decisions."
 ]
 
-
-
 if "quote_index" not in st.session_state:
     st.session_state.quote_index = 0
 
@@ -112,7 +109,7 @@ NAME_STYLES = [
         "font": "'Segoe UI', sans-serif",
         "color": "#00e6ff",
         "weight": "400",
-        "text":"Gaurav Singh Yadav<br><span style='font-size:16px; opacity:0.85;'>गौरव सिंह यादव</span>"
+        "text": "Gaurav Singh Yadav<br><span style='font-size:16px; opacity:0.85;'>गौरव सिंह यादव</span>"
     },
     {
         "font": "'Georgia', serif",
@@ -124,7 +121,7 @@ NAME_STYLES = [
         "font": "'Courier New', monospace",
         "color": "#9bf6ff",
         "weight": "400",
-        "text":"Gaurav Singh Yadav<br><span style='font-size:16px; opacity:0.85;'>गौरव सिंह यादव</span>"
+        "text": "Gaurav Singh Yadav<br><span style='font-size:16px; opacity:0.85;'>गौरव सिंह यादव</span>"
     },
     {
         "font": "'Trebuchet MS', sans-serif",
@@ -134,16 +131,12 @@ NAME_STYLES = [
     }
 ]
 
-if "quote_index" not in st.session_state:
-    st.session_state.quote_index = 0
-
 if "quote_lang" not in st.session_state:
     st.session_state.quote_lang = "Hindi"
 
 # MUST EXIST BEFORE SIDEBAR
 if "name_style_idx" not in st.session_state:
     st.session_state.name_style_idx = 0
-
 
 with st.sidebar:
     # ================= LOCATION =================
@@ -167,13 +160,12 @@ with st.sidebar:
         ["हिंदी", "English"],
         horizontal=True
     )
-    st.session_state.quote_lang = quote_lang   # ✅ STORE IT
+    st.session_state.quote_lang = quote_lang
 
     # ================= NAME ROTATOR =================
     st.markdown("---")
 
     st_autorefresh(interval=5000, key="name_refresh")
-
 
     st.session_state.name_style_idx = (
         st.session_state.name_style_idx + 1
@@ -206,13 +198,10 @@ with st.sidebar:
         unsafe_allow_html=True
     )
 
-
     ACTIVE_QUOTES = QUOTES if quote_lang == "हिंदी" else EN_QUOTES
-
 
     # ================= QUOTE ROTATOR =================
     st_autorefresh(interval=5000, key="quote_refresh")
-
 
     st.session_state.quote_index = (
         st.session_state.quote_index + 1
@@ -238,9 +227,6 @@ with st.sidebar:
         unsafe_allow_html=True
     )
 
-
-
-#LAT, LON = 19.07598, 72.87766  # Mumbai
 FLAGS = swe.FLG_SWIEPH | swe.FLG_SIDEREAL
 swe.set_sid_mode(swe.SIDM_LAHIRI)
 
@@ -253,39 +239,30 @@ if "sel_time" not in st.session_state:
         pytz.timezone("Asia/Kolkata")
     ).time()
 
-# ================= ROTATING QUOTES =================
-
-
-if "quote_index" not in st.session_state:
-    st.session_state.quote_index = 0
-
-
-
-# ================= DATA =================
 SIGNS = ["मेष","वृषभ","मिथुन","कर्क","सिंह","कन्या",
          "तुला","वृश्चिक","धनु","मकर","कुंभ","मीन"]
 
 NAKSHATRAS = [
-("अश्विनी","केतु"),("भरणी","शुक्र"),("कृत्तिका","सूर्य"),
-("रोहिणी","चन्द्र"),("मृगशिरा","मंगल"),("आर्द्रा","राहु"),
-("पुनर्वसु","बृहस्पति"),("पुष्य","शनि"),("आश्लेषा","बुध"),
-("मघा","केतु"),("पूर्व फाल्गुनी","शुक्र"),("उत्तर फाल्गुनी","सूर्य"),
-("हस्त","चन्द्र"),("चित्रा","मंगल"),("स्वाति","राहु"),
-("विशाखा","बृहस्पति"),("अनुराधा","शनि"),("ज्येष्ठा","बुध"),
-("मूला","केतु"),("पूर्वाषाढा","शुक्र"),("उत्तराषाढा","सूर्य"),
-("श्रवण","चन्द्र"),("धनिष्ठा","मंगल"),("शतभिषा","राहु"),
-("पूर्वभाद्रपदा","बृहस्पति"),("उत्तरभाद्रपदा","शनि"),("रेवती","बुध")
+    ("अश्विनी","केतु"),("भरणी","शुक्र"),("कृत्तिका","सूर्य"),
+    ("रोहिणी","चन्द्र"),("मृगशिरा","मंगल"),("आर्द्रा","राहु"),
+    ("पुनर्वसु","बृहस्पति"),("पुष्य","शनि"),("आश्लेषा","बुध"),
+    ("मघा","केतु"),("पूर्व फाल्गुनी","शुक्र"),("उत्तर फाल्गुनी","सूर्य"),
+    ("हस्त","चन्द्र"),("चित्रा","मंगल"),("स्वाति","राहु"),
+    ("विशाखा","बृहस्पति"),("अनुराधा","शनि"),("ज्येष्ठा","बुध"),
+    ("मूला","केतु"),("पूर्वाषाढा","शुक्र"),("उत्तराषाढा","सूर्य"),
+    ("श्रवण","चन्द्र"),("धनिष्ठा","मंगल"),("शतभिषा","राहु"),
+    ("पूर्वभाद्रपदा","बृहस्पति"),("उत्तरभाद्रपदा","शनि"),("रेवती","बुध")
 ]
 
 PLANETS = [
-("सूर्य", swe.SUN, "सू."),
-("चन्द्र", swe.MOON,"च."),
-("मंगल", swe.MARS,"मं."),
-("बुध", swe.MERCURY,"बु."),
-("बृहस्पति", swe.JUPITER,"बृह"),
-("शुक्र", swe.VENUS,"शु"),
-("शनि", swe.SATURN,"शनि"),
-("राहु", swe.MEAN_NODE,"रा.")
+    ("सूर्य", swe.SUN, "सू."),
+    ("चन्द्र", swe.MOON,"च."),
+    ("मंगल", swe.MARS,"मं."),
+    ("बुध", swe.MERCURY,"बु."),
+    ("बृहस्पति", swe.JUPITER,"बृह"),
+    ("शुक्र", swe.VENUS,"शु"),
+    ("शनि", swe.SATURN,"शनि"),
+    ("राहु", swe.MEAN_NODE,"रा.")
 ]
 
 # ================= FUNCTIONS =================
@@ -319,7 +296,6 @@ def generate_svg(pos, retro):
 
     cx, cy = 350, 350
 
-    # Radii
     OUTER_R = 330
     INNER_R = 270
     LINE_R  = 260
@@ -345,9 +321,7 @@ def generate_svg(pos, retro):
             stroke-width="3"/>
     """
 
-    # =================================================
-    # 🔶 RASHI DIVIDER LINES
-    # =================================================
+    # राशियाँ
     for i in range(12):
         ang = math.radians(90 - i * 30)
         x = cx + LINE_R * math.cos(ang)
@@ -360,9 +334,6 @@ def generate_svg(pos, retro):
               stroke-width="2"/>
         """
 
-    # =================================================
-    # 🔷 RASHI NAMES (CENTERED)
-    # =================================================
     for i in range(12):
         ang = math.radians(90 - (i * 30 + 15))
         x = cx + TEXT_R * math.cos(ang)
@@ -379,23 +350,16 @@ def generate_svg(pos, retro):
         </text>
         """
 
-    # =================================================
-    # 🪐 PLANETS (INCLUDING KETU) — NO OVERLAP
-    # =================================================
-
+    # ग्रह stacking
     groups = defaultdict(list)
 
-    # --- Main planets ---
     for name, code, sym in PLANETS:
         rashi = int(pos[name] // 30)
         groups[rashi].append((name, sym))
 
-    # --- ADD KETU ---
     groups[int(pos["केतु"] // 30)].append(("केतु", "के."))
 
-    # --- Draw planets ---
     for rashi, plist in groups.items():
-
         ang = math.radians(90 - (rashi * 30 + 15))
 
         for i, (name, sym) in enumerate(plist):
@@ -404,7 +368,6 @@ def generate_svg(pos, retro):
             px = cx + r * math.cos(ang)
             py = cy - r * math.sin(ang)
 
-            # 🔴 Retrograde = Red | 🟢 Direct = Green
             color = "#ff4d4d" if retro.get(name, False) else "#79e887"
 
             svg += f"""
@@ -427,11 +390,6 @@ def generate_svg(pos, retro):
     svg += "</svg>"
     return svg
 
-
-
-
-
-
 # ================= UI =================
 st.title("🪐 वेदिक ग्रह घड़ी — द्रिक पंचांग ")
 
@@ -440,12 +398,12 @@ today = datetime.date.today()
 date = c1.date_input(
     "तारीख़",
     value=st.session_state.sel_date,
-    min_value=today - datetime.timedelta(days=365*500),     # ✅ NO PAST LIMIT
-    max_value=today + datetime.timedelta(days=365*500)     # ✅ NO FUTURE LIMIT
+    min_value=today - datetime.timedelta(days=365*500),
+    max_value=today + datetime.timedelta(days=365*500)
 )
 
-time = c2.time_input("समय",value=st.session_state.sel_time)
-# 🔥 THIS WAS MISSING
+time = c2.time_input("समय", value=st.session_state.sel_time)
+
 st.session_state.sel_date = date
 st.session_state.sel_time = time
 
@@ -457,24 +415,18 @@ if c3.button("अब"):
 
 ist = pytz.timezone("Asia/Kolkata")
 dt_ist = ist.localize(datetime.datetime.combine(date, time))
-dt_utc = dt_ist.astimezone(pytz.utc)   # ✅ REQUIRED
-
- 
-
+dt_utc = dt_ist.astimezone(pytz.utc)
 
 pos, retro, jd = get_positions(dt_utc)
 
-# ===== CORRECT DRIK PANCHANG LAGNA =====
 ascmc, _ = swe.houses_ex(jd, LAT, LON, b'P', FLAGS)
 lagna_deg = ascmc[0] % 360
 lagna_sign = SIGNS[int(lagna_deg // 30)]
 
-# ================= LAYOUT =================
 left, right = st.columns([2, 1])
 
 with left:
     st.components.v1.html(generate_svg(pos, retro), height=720)
-
 
 with right:
     st.subheader("🌙 ज्योतिष सार")
@@ -483,21 +435,18 @@ with right:
 
     summary = [
         ["चन्द्र नक्षत्र", str(moon_nak)],
-        ["नक्षत्र पद", str(moon_pada)],          # ✅ cast to string
+        ["नक्षत्र पद", str(moon_pada)],
         ["नक्षत्र स्वामी", str(moon_lord)],
         ["लग्न", str(lagna_sign)],
         ["लग्न अंश", f"{lagna_deg:.2f}°"],
         ["समय (IST)", dt_ist.strftime("%d-%b-%Y %H:%M")]
     ]
 
-#st.table(pd.DataFrame(summary, columns=["तत्व", "मान"]))
-
     st.table(pd.DataFrame(summary, columns=["तत्व", "मान"]))
 
     st.subheader("🪐 ग्रह स्थिति")
     rows = []
 
-# --- Main planets ---
     for p, code, sym in PLANETS:
         nak, lord, pada = nakshatra_pada(pos[p])
         rows.append([
@@ -508,16 +457,14 @@ with right:
             "🔁 वक्री" if retro[p] else "➡️ मार्गी"
         ])
 
-    # --- ADD KETU (Shadow Planet) ---
     nak, lord, pada = nakshatra_pada(pos["केतु"])
     rows.append([
-            "केतु",
+        "केतु",
         f"{pos['केतु']:.2f}°",
         SIGNS[int(pos["केतु"]//30)],
         f"{nak} (पद {pada})",
         "🔁 वक्री" if retro["केतु"] else "➡️ मार्गी"
-        ])
-
+    ])
 
     st.table(pd.DataFrame(
         rows,
@@ -535,7 +482,6 @@ def angular_diff(a, b):
 
 ASPECTS = {
     "Conjunction": {z: z for z in ZODIACS},
-
     "Opposition": {
         "Aries": "Libra",
         "Taurus": "Scorpio",
@@ -576,7 +522,6 @@ def upcoming_aspects(start_dt_utc, days=5, step_minutes=30):
                 prev_diff = angular_diff(prev_pos[p1], prev_pos[p2])
                 curr_diff = angular_diff(pos[p1], pos[p2])
 
-                # -------- CONJUNCTION START --------
                 if prev_diff > 1 and curr_diff <= 1:
                     key = (p1, p2, "Conjunction")
                     if key not in seen:
@@ -587,7 +532,6 @@ def upcoming_aspects(start_dt_utc, days=5, step_minutes=30):
                             "time": dt
                         })
 
-                # -------- OPPOSITION START --------
                 if prev_diff < 179 and curr_diff >= 179:
                     key = (p1, p2, "Opposition")
                     if key not in seen:
@@ -616,6 +560,7 @@ def unique_events(events):
 
 def zodiac_sign(deg):
     return ZODIACS[int(deg // 30)]
+
 def detect_aspects(pos):
     events = []
 
@@ -627,11 +572,8 @@ def detect_aspects(pos):
             s1 = zodiac_sign(pos[p1])
             s2 = zodiac_sign(pos[p2])
 
-            # Conjunction
             if s1 == s2:
                 events.append(f"{p1} ☌ {p2} (Conjunction in {s1})")
-
-            # Opposition
             elif ASPECTS["Opposition"].get(s1) == s2:
                 events.append(f"{p1} ☍ {p2} (Opposition {s1}–{s2})")
 
@@ -640,7 +582,6 @@ def detect_aspects(pos):
 def moon_sun_diff(moon_deg, sun_deg):
     diff = (moon_deg - sun_deg) % 360
     return min(diff, 360 - diff)
-
 
 def detect_amavasya_purnima(start_dt_utc, days=30, step_minutes=15):
     events = {
@@ -660,8 +601,6 @@ def detect_amavasya_purnima(start_dt_utc, days=30, step_minutes=15):
         sun = pos["सूर्य"]
         diff = moon_sun_diff(moon, sun)
 
-        # ---------- AMAVASYA ----------
-        # Start when diff crosses BELOW 12°
         if (
             prev_diff is not None
             and prev_diff > 12
@@ -670,7 +609,6 @@ def detect_amavasya_purnima(start_dt_utc, days=30, step_minutes=15):
         ):
             events["Amavasya"]["start"] = dt
 
-        # End when diff crosses BELOW 0.5°
         if (
             events["Amavasya"]["start"]
             and prev_diff is not None
@@ -680,8 +618,6 @@ def detect_amavasya_purnima(start_dt_utc, days=30, step_minutes=15):
         ):
             events["Amavasya"]["end"] = dt
 
-        # ---------- PURNIMA ----------
-        # Start when diff crosses ABOVE 168°
         if (
             prev_diff is not None
             and prev_diff < 168
@@ -690,7 +626,6 @@ def detect_amavasya_purnima(start_dt_utc, days=30, step_minutes=15):
         ):
             events["Purnima"]["start"] = dt
 
-        # End when diff crosses ABOVE 179.5°
         if (
             events["Purnima"]["start"]
             and prev_diff is not None
@@ -710,16 +645,13 @@ def detect_amavasya_purnima(start_dt_utc, days=30, step_minutes=15):
 ASPECT_STYLE = {
     "Conjunction": {
         "icon": "🟢",
-        "color": "#2ecc71"   # green
+        "color": "#2ecc71"
     },
     "Opposition": {
         "icon": "🔴",
-        "color": "#e74c3c"   # red
+        "color": "#e74c3c"
     }
 }
-
-
-
 
 st.subheader("🌙 Amavasya & Purnima (Upcoming)")
 
@@ -742,7 +674,6 @@ for name, data in events.items():
     else:
         st.caption(f"{name} not found in the next 30 days.")
 
-
 st.subheader("🔭 Upcoming Conjunctions & Oppositions (Next 10 Days)")
 
 events = upcoming_aspects(
@@ -762,7 +693,6 @@ ASPECT_STYLE = {
 if not events:
     st.caption("No major conjunctions or oppositions in the next 10 days.")
 else:
-    # -------- GROUP EVENTS BY DATE --------
     grouped = defaultdict(list)
     for e in events:
         t_ist = e["time"].astimezone(ist)
@@ -790,7 +720,6 @@ else:
             delta = t - now_ist
             hours_left = delta.total_seconds() / 3600
 
-            # -------- COUNTDOWN --------
             if delta.total_seconds() > 0:
                 days = delta.days
                 hrs, rem = divmod(delta.seconds, 3600)
@@ -799,7 +728,6 @@ else:
             else:
                 countdown = "Started"
 
-            # -------- BLINK IF < 24 HRS --------
             blink = "animation: blink 1.2s infinite;" if 0 < hours_left <= 24 else ""
 
             html += f"""
@@ -835,7 +763,6 @@ else:
 
     st.components.v1.html(html, height=520, scrolling=True)
 
-
 NAK_SIZE = 13 + 1/3
 
 def zodiac_index(deg):
@@ -849,7 +776,6 @@ def zodiac_name(deg):
 
 def nakshatra_name(deg):
     return NAKSHATRAS[nakshatra_index(deg)][0]
-
 
 def upcoming_sign_nakshatra_changes(start_dt_utc, days=10, step_minutes=30):
     events = []
@@ -896,19 +822,13 @@ def upcoming_sign_nakshatra_changes(start_dt_utc, days=10, step_minutes=30):
 
     return events
 
-
-
 st.subheader("🪐 Planetary Transitions (Next 10 Days)")
 
-now_utc = datetime.datetime.now(pytz.utc)
-
 events = upcoming_sign_nakshatra_changes(
-    start_dt_utc=dt_utc,   # ✅ use chart time, not now
+    start_dt_utc=dt_utc,
     days=10,
     step_minutes=30
 )
-
-
 
 ist = pytz.timezone("Asia/Kolkata")
 now_ist = datetime.datetime.now(ist)
@@ -962,35 +882,37 @@ else:
             </div>
             """
 
+    st.components.v1.html(html, height=520, scrolling=True)
+
 RASHI_NUM = {
     "मेष": 1, "वृषभ": 2, "मिथुन": 3, "कर्क": 4,
     "सिंह": 5, "कन्या": 6, "तुला": 7, "वृश्चिक": 8,
     "धनु": 9, "मकर": 10, "कुंभ": 11, "मीन": 12
 }
+
 HOUSE_BOXES = {
-    1:(270,360),   # left upper diamond
-    2:(120,360),   # left middle
-    3:(180,460),   # left bottom
-    4:(270,500),   # bottom left diamond
-    5:(350,420),   # center bottom
-    6:(350,260),   # center top
-    7:(270,200),   # top left diamond
-    8:(180,240),   # left top
-    9:(430,500),   # bottom right
-    10:(580,360),  # right middle
-    11:(430,200),  # top right
-    12:(350,140),  # top center
+    1:(270,360),
+    2:(120,360),
+    3:(180,460),
+    4:(270,500),
+    5:(350,420),
+    6:(350,260),
+    7:(270,200),
+    8:(180,240),
+    9:(430,500),
+    10:(580,360),
+    11:(430,200),
+    12:(350,140),
 }
 
 def build_rashi_sequence(lagna_sign):
     start = SIGNS.index(lagna_sign)
     return {i+1: SIGNS[(start+i) % 12] for i in range(12)}
 
-
 def build_house_rashi_map(lagna_sign):
     start = SIGNS.index(lagna_sign)
     return {house: SIGNS[(start + house - 1) % 12] for house in range(1, 13)}
-    
+
 def planet_house(planet_deg, lagna_deg):
     return int(((planet_deg - lagna_deg) % 360) // 30) + 1
 
@@ -998,11 +920,9 @@ def draw_north_indian_kundali_CORRECT():
     svg = """
     <svg width="700" height="700" viewBox="0 0 700 700">
 
-      <!-- Outer Rectangle -->
       <rect x="50" y="50" width="600" height="600"
             fill="white" stroke="#ff7a00" stroke-width="3"/>
 
-      <!-- Big diamond (corner to corner) -->
       <line x1="350" y1="50"  x2="650" y2="350"
             stroke="#ff7a00" stroke-width="3"/>
       <line x1="650" y1="350" x2="350" y2="650"
@@ -1012,7 +932,6 @@ def draw_north_indian_kundali_CORRECT():
       <line x1="50"  y1="350" x2="350" y2="50"
             stroke="#ff7a00" stroke-width="3"/>
 
-      <!-- Inner diamond (touching mid‑points of big diamond) -->
       <line x1="200" y1="200" x2="500" y2="200"
             stroke="#ff7a00" stroke-width="3"/>
       <line x1="500" y1="200" x2="500" y2="500"
@@ -1022,32 +941,22 @@ def draw_north_indian_kundali_CORRECT():
       <line x1="200" y1="500" x2="200" y2="200"
             stroke="#ff7a00" stroke-width="3"/>
 
-      <!-- Center cross (1st house diagonals) -->
       <line x1="200" y1="200" x2="500" y2="500"
             stroke="#ff7a00" stroke-width="3"/>
       <line x1="500" y1="200" x2="200" y2="500"
             stroke="#ff7a00" stroke-width="3"/>
 
-      <!-- Labels (same as you already have, adjust x/y if needed) -->
-      <!-- 12th -->
       <text x="350" y="150" text-anchor="middle" fill="#ff7a00">12th</text>
-      <!-- 2nd -->
       <text x="260" y="210" fill="#ff7a00">2nd</text>
-      <!-- 3rd -->
       <text x="160" y="320" fill="#ff7a00">3rd</text>
-      <!-- 4th -->
       <text x="160" y="430" fill="#ff7a00">4th</text>
-      <!-- 5th -->
       <text x="260" y="540" fill="#ff7a00">5th</text>
-      <!-- 6th / 7th / 8th -->
       <text x="320" y="620" text-anchor="middle" fill="#ff7a00">6th</text>
       <text x="380" y="620" text-anchor="middle" fill="#ff7a00">7th</text>
       <text x="470" y="540" fill="#ff7a00">8th</text>
-      <!-- 9th / 10th / 11th -->
       <text x="560" y="430" fill="#ff7a00">9th</text>
       <text x="560" y="320" fill="#ff7a00">10th</text>
       <text x="470" y="210" fill="#ff7a00">11th</text>
-      <!-- Rising / 1st -->
       <text x="350" y="360" text-anchor="middle" fill="#ff7a00">
         Rising / 1st
       </text>
@@ -1056,10 +965,17 @@ def draw_north_indian_kundali_CORRECT():
     """
     return svg
 
+# ========= NEW: simple wrapper used in UI =========
+def generate_north_indian_kundali(pos, lagna_deg, lagna_sign):
+    """
+    अभी placeholder: सिर्फ़ basic North-Indian chart layout दिखाता है.
+    आप चाहें तो बाद में pos/lagna का उपयोग करके ग्रह/राशि भी plot कर सकते हैं।
+    """
+    return draw_north_indian_kundali_CORRECT()
+
 st.subheader("🪐 जन्म कुंडली (North Indian Style)")
 
 st.components.v1.html(
     generate_north_indian_kundali(pos, lagna_deg, lagna_sign),
     height=720
 )
-
