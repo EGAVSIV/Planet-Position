@@ -907,7 +907,7 @@ st.subheader("🪐 Planetary Transitions (Next 10 Days)")
 now_utc = datetime.datetime.now(pytz.utc)
 
 events = upcoming_sign_nakshatra_changes(
-    start_dt_utc=now_utc,
+    start_dt_utc=dt_utc,
     days=10,
     step_minutes=30
 )
