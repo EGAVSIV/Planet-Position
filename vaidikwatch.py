@@ -1056,10 +1056,12 @@ def draw_north_indian_kundali_CORRECT():
     """
     return svg
 
-
 st.subheader("🪐 जन्म कुंडली (North Indian Style)")
-st.markdown("""
----
+
+st.components.v1.html(
+    generate_north_indian_kundali(pos, lagna_deg, lagna_sign),
+    height=720
+)
 **Designed by:-  
 Gaurav Singh Yadav**   
 🩷💛🩵💙🩶💜🤍🤎💖  Built With Love 🫶  
