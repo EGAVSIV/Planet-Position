@@ -206,7 +206,8 @@ with st.sidebar:
     )
 
 
-    ACTIVE_QUOTES = QUOTES if quote_lang == "Hindi" else EN_QUOTES
+    ACTIVE_QUOTES = QUOTES if quote_lang == "हिंदी" else EN_QUOTES
+
 
     # ================= QUOTE ROTATOR =================
     st_autorefresh(interval=5000, key="quote_refresh")
