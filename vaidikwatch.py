@@ -163,7 +163,7 @@ with st.sidebar:
 
     default_index = 0
     for i, name in enumerate(location_keys):
-        if "Mumbai" in name and "Maharashtra" in name:
+        if "Mumbai" in name and "MAHARASHTRA" in name:
             default_index = i
             break
 
