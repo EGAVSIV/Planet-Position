@@ -102,6 +102,7 @@ LOCATIONS = {
     "Hyderabad – Telangana": (17.3850, 78.4867),
     "Lucknow – Uttar Pradesh": (26.8467, 80.9462),
     "Kolkata – West Bengal": (22.5726, 88.3639),
+    "Alwar – Rajasthan": (27.55619, 76.61238),
 }
 
 
