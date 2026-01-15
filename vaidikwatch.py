@@ -5,6 +5,7 @@ import pandas as pd
 from collections import defaultdict
 import hashlib
 from streamlit_autorefresh import st_autorefresh
+import os
 
 # ================= LOGIN =================
 def hash_pwd(pwd):
@@ -84,26 +85,24 @@ EN_QUOTES = [
 if "quote_index" not in st.session_state:
     st.session_state.quote_index = 0
 
-# ================= LOCATION DATA =================
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+CSV_PATH = os.path.join(BASE_DIR, "INDIALL.csv")
+
+df_locations = pd.read_csv(CSV_PATH)
+
+# Clean column names (important for Streamlit cloud)
+df_locations.columns = df_locations.columns.str.strip()
+
+df_locations["display_name"] = (
+    df_locations["District"].str.strip()
+    + " – "
+    + df_locations["State"].str.title()
+)
 LOCATIONS = {
-    "Amaravati – Andhra Pradesh": (16.5412, 80.5154),
-    "Dispur – Assam": (26.1445, 91.7362),
-    "Patna – Bihar": (25.5941, 85.1376),
-    "Gandhinagar – Gujarat": (23.2156, 72.6369),
-    "Chandigarh – Haryana": (30.7333, 76.7794),
-    "Bengaluru – Karnataka": (12.9716, 77.5946),
-    "Thiruvananthapuram – Kerala": (8.5241, 76.9366),
-    "Bhopal – Madhya Pradesh": (23.2599, 77.4126),
-    "Mumbai – Maharashtra": (19.0760, 72.8777),
-    "Bhubaneswar – Odisha": (20.2961, 85.8245),
-    "Chandigarh – Punjab": (30.7333, 76.7794),
-    "Jaipur – Rajasthan": (26.9124, 75.7873),
-    "Chennai – Tamil Nadu": (13.0827, 80.2707),
-    "Hyderabad – Telangana": (17.3850, 78.4867),
-    "Lucknow – Uttar Pradesh": (26.8467, 80.9462),
-    "Kolkata – West Bengal": (22.5726, 88.3639),
-    "Alwar – Rajasthan": (27.55619, 76.61238),
+    row["display_name"]: (row["Latitude"], row["Longitude"])
+    for _, row in df_locations.iterrows()
 }
+
 
 
 NAME_STYLES = [
@@ -147,7 +146,11 @@ with st.sidebar:
     selected_location = st.selectbox(
         "राज्य / राजधानी चुनें",
         list(LOCATIONS.keys()),
-        index = list(LOCATIONS.keys()).index("Mumbai – Maharashtra")
+        selected_location = "Maharashtra – Mumbai"   # example
+
+        index = list(LOCATIONS.keys()).index(selected_location)
+        lat, lon = LOCATIONS[selected_location]
+
 
     )
 
@@ -229,6 +232,26 @@ with st.sidebar:
         """,
         unsafe_allow_html=True
     )
+
+selected_location = st.selectbox(
+    "Select Location",
+    list(LOCATIONS.keys())
+)
+
+lat, lon = LOCATIONS[selected_location]
+
+search = st.text_input("Search District / State")
+
+filtered = [
+    k for k in LOCATIONS.keys()
+    if search.lower() in k.lower()
+]
+
+selected_location = st.selectbox(
+    "Select Location",
+    filtered if filtered else LOCATIONS.keys()
+)
+
 
 FLAGS = swe.FLG_SWIEPH | swe.FLG_SIDEREAL
 swe.set_sid_mode(swe.SIDM_LAHIRI)
