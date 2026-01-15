@@ -84,26 +84,39 @@ EN_QUOTES = [
 if "quote_index" not in st.session_state:
     st.session_state.quote_index = 0
 
+
+@st.cache_data(show_spinner=False)
+def load_india_locations():
+    """
+    Load latitude / longitude from INDIALL.json or INDIALL.parquet
+    Columns required:
+    District | State | Latitude | Longitude
+    """
+    if os.path.exists("INDIALL.parquet"):
+        df = pd.read_parquet("INDIALL.parquet")
+    elif os.path.exists("INDIALL.json"):
+        df = pd.read_json("INDIALL.json")
+    else:
+        st.error("❌ INDIALL.json or INDIALL.parquet not found")
+        st.stop()
+
+    # Safety: normalize column names
+    df.columns = df.columns.str.strip()
+
+    # Create label for dropdown
+    df["label"] = df["District"] + " – " + df["State"]
+
+    return df
+
+
 # ================= LOCATION DATA =================
+india_df = load_india_locations()
+
 LOCATIONS = {
-    "Amaravati – Andhra Pradesh": (16.5412, 80.5154),
-    "Dispur – Assam": (26.1445, 91.7362),
-    "Patna – Bihar": (25.5941, 85.1376),
-    "Gandhinagar – Gujarat": (23.2156, 72.6369),
-    "Chandigarh – Haryana": (30.7333, 76.7794),
-    "Bengaluru – Karnataka": (12.9716, 77.5946),
-    "Thiruvananthapuram – Kerala": (8.5241, 76.9366),
-    "Bhopal – Madhya Pradesh": (23.2599, 77.4126),
-    "Mumbai – Maharashtra": (19.0760, 72.8777),
-    "Bhubaneswar – Odisha": (20.2961, 85.8245),
-    "Chandigarh – Punjab": (30.7333, 76.7794),
-    "Jaipur – Rajasthan": (26.9124, 75.7873),
-    "Chennai – Tamil Nadu": (13.0827, 80.2707),
-    "Hyderabad – Telangana": (17.3850, 78.4867),
-    "Lucknow – Uttar Pradesh": (26.8467, 80.9462),
-    "Kolkata – West Bengal": (22.5726, 88.3639),
-    "Alwar – Rajasthan": (27.55619, 76.61238),
+    row["label"]: (row["Latitude"], row["Longitude"])
+    for _, row in india_df.iterrows()
 }
+
 
 
 NAME_STYLES = [
