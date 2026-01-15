@@ -88,7 +88,12 @@ if "quote_index" not in st.session_state:
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 CSV_PATH = os.path.join(BASE_DIR, "INDIALL.csv")
 
-df_locations = pd.read_csv(CSV_PATH)
+df_locations = pd.read_csv(
+    CSV_PATH,
+    encoding="utf-8-sig",
+    engine="python"
+)
+
 
 # Clean column names (important for Streamlit cloud)
 df_locations.columns = df_locations.columns.str.strip()
@@ -152,17 +157,6 @@ with st.sidebar:
         "स्थान चुनें",
         options
     )
-
-    LAT, LON = LOCATIONS[selected_location]
-
-    st.caption(f"Latitude: {LAT:.4f}°")
-    st.caption(f"Longitude: {LON:.4f}°")
-
-
-    LAT, LON = LOCATIONS[selected_location]
-
-    st.caption(f"Latitude: {LAT:.4f}°")
-    st.caption(f"Longitude: {LON:.4f}°")
 
 
     LAT, LON = LOCATIONS[selected_location]
