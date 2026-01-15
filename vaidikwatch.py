@@ -138,21 +138,32 @@ if "quote_lang" not in st.session_state:
 # MUST EXIST BEFORE SIDEBAR
 if "name_style_idx" not in st.session_state:
     st.session_state.name_style_idx = 0
-
 with st.sidebar:
-    # ================= LOCATION =================
     st.markdown("### 📍 स्थान चयन (Location)")
 
+    search = st.text_input("🔍 ज़िला / राज्य खोजें")
+
+    options = [
+        k for k in LOCATIONS.keys()
+        if search.lower() in k.lower()
+    ] if search else list(LOCATIONS.keys())
+
     selected_location = st.selectbox(
-        "राज्य / राजधानी चुनें",
-        list(LOCATIONS.keys()),
-        selected_location = "Maharashtra – Mumbai"   # example
-
-        index = list(LOCATIONS.keys()).index(selected_location)
-        lat, lon = LOCATIONS[selected_location]
-
-
+        "स्थान चुनें",
+        options
     )
+
+    LAT, LON = LOCATIONS[selected_location]
+
+    st.caption(f"Latitude: {LAT:.4f}°")
+    st.caption(f"Longitude: {LON:.4f}°")
+
+
+    LAT, LON = LOCATIONS[selected_location]
+
+    st.caption(f"Latitude: {LAT:.4f}°")
+    st.caption(f"Longitude: {LON:.4f}°")
+
 
     LAT, LON = LOCATIONS[selected_location]
 
