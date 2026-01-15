@@ -159,10 +159,18 @@ with st.sidebar:
     # ================= LOCATION =================
     st.markdown("### 📍 स्थान चयन (Location)")
 
+    location_keys = list(LOCATIONS.keys())
+
+    default_index = 0
+    for i, name in enumerate(location_keys):
+        if "Mumbai" in name and "Maharashtra" in name:
+            default_index = i
+            break
+
     selected_location = st.selectbox(
         "राज्य / राजधानी चुनें",
         list(LOCATIONS.keys()),
-        index = list(LOCATIONS.keys()).index("Mumbai – Maharashtra")
+        index=default_index
 
     )
 
