@@ -146,7 +146,8 @@ with st.sidebar:
     selected_location = st.selectbox(
         "राज्य / राजधानी चुनें",
         list(LOCATIONS.keys()),
-        index=list(LOCATIONS.keys()).index("Maharashtra – Mumbai")
+        index = list(LOCATIONS.keys()).index("Mumbai – Maharashtra")
+
     )
 
     LAT, LON = LOCATIONS[selected_location]
