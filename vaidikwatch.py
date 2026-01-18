@@ -36,6 +36,10 @@ st.set_page_config(
     layout="wide",
     page_icon="🪐"
 )
+col_logo, col_ticker = st.columns([0.22, 0.78])
+
+with col_logo:
+    st.image("Assets/sgy1.png", width=220)
 
 # ================= ROTATING QUOTES =================
 QUOTES = [
