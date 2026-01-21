@@ -484,7 +484,7 @@ with right:
             f"{pos[p]:.2f}°",
             SIGNS[int(pos[p]//30)],
             f"{nak} (पद {pada})",
-            "↺🔴 वक्री" if retro[p] else 🟢"
+            "↺🔴 वक्री" if retro[p] else ➡️"
         ])
 
     nak, lord, pada = nakshatra_pada(pos["केतु"])
@@ -493,7 +493,7 @@ with right:
         f"{pos['केतु']:.2f}°",
         SIGNS[int(pos["केतु"]//30)],
         f"{nak} (पद {pada})",
-        "↺🔴 वक्री" if retro["केतु"] else 🟢"
+        "↺🔴 वक्री" if retro["केतु"] else ➡️"
     ])
 
     st.table(pd.DataFrame(
