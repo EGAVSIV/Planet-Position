@@ -18,6 +18,8 @@ streamlit
 pytz
 pyswisseph
 reportlab
+altair==4.2.2
+
 
 
 
