@@ -3,7 +3,8 @@ DateTime
 requests
 pandas
 matplotlib
-streamlit
+#streamlit
+streamlit==1.31.1
 pillow
 swisseph
 pytz
@@ -19,6 +20,7 @@ pytz
 pyswisseph
 reportlab
 altair==4.2.2
+
 
 
 
