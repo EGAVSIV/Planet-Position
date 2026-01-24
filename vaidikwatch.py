@@ -1,5 +1,17 @@
 
 import os
+# ==================================================
+# Python 3.13 compatibility patch for Streamlit
+# imghdr was removed in Python 3.13
+# ==================================================
+import sys
+if sys.version_info >= (3, 13):
+    import types
+    imghdr = types.ModuleType("imghdr")
+    imghdr.what = lambda *args, **kwargs: None
+    sys.modules["imghdr"] = imghdr
+# ==================================================
+
 import streamlit as st
 import swisseph as swe
 import datetime, pytz, math
