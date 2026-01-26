@@ -964,7 +964,7 @@ def draw_north_indian_kundali_CORRECT():
              fill="none" stroke="black" stroke-width="3"/>
 
     <!-- INNER CROSS -->
-    <line x1="460" y1="660" x2="360" y2="460"
+    <line x1="0" y1="660" x2="360" y2="460"
           stroke="black" stroke-width="3"/>
 
     <line x1="60" y1="260" x2="660" y2="260"
