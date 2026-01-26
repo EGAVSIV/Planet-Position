@@ -1008,6 +1008,13 @@ def draw_north_indian_kundali_CORRECT():
     """
     return svg
 
+def rashi_number_from_deg(deg):
+    return int(deg // 30) + 1
+
+def planet_house_from_rashi(planet_rashi, lagna_rashi):
+    return ((planet_rashi - lagna_rashi) % 12) + 1
+
+
 # ========= NEW: simple wrapper used in UI =========
 def generate_north_indian_kundali(pos, lagna_deg):
     lagna_rashi = rashi_number_from_deg(lagna_deg)
@@ -1042,12 +1049,6 @@ st.components.v1.html(
     generate_north_indian_kundali(pos, lagna_deg, lagna_sign),
     height=720
 )
-def rashi_number_from_deg(deg):
-    return int(deg // 30) + 1  # 1–12
-
-
-def planet_house_from_rashi(planet_rashi, lagna_rashi):
-    return ((planet_rashi - lagna_rashi) % 12) + 1
 
 
 def generate_lagna_number(lagna_deg):
@@ -1086,7 +1087,7 @@ def generate_d9_kundali(pos, lagna_deg):
 
 st.subheader("🪐 D9 — नवांश कुंडली")
 st.components.v1.html(
-    generate_d9_kundali(pos, lagna_deg),
+    generate_d9_kundali(pos, lagna_deg,lagna_sign),
     height=720
 )
 
@@ -1106,7 +1107,7 @@ def generate_d10_kundali(pos, lagna_deg):
 
 st.subheader("🪐 D10 — दशांश कुंडली (Career)")
 st.components.v1.html(
-    generate_d10_kundali(pos, lagna_deg),
+    generate_d10_kundali(pos, lagna_deg,lagna_sign),
     height=720
 )
 
