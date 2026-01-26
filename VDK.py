@@ -926,6 +926,8 @@ else:
 
     st.components.v1.html(html, height=520, scrolling=True)
 
+# ================= NORTH INDIAN KUNDALI (FINAL FIXED) =================
+
 RASHI_NUM = {
     "मेष": 1, "वृषभ": 2, "मिथुन": 3, "कर्क": 4,
     "सिंह": 5, "कन्या": 6, "तुला": 7, "वृश्चिक": 8,
@@ -947,49 +949,32 @@ HOUSE_BOXES = {
     12:(350,150),
 }
 
+def rashi_number_from_deg(deg):
+    return int(deg // 30) + 1
 
-def build_rashi_sequence(lagna_sign):
-    start = SIGNS.index(lagna_sign)
-    return {i+1: SIGNS[(start+i) % 12] for i in range(12)}
-
-def build_house_rashi_map(lagna_sign):
-    start = SIGNS.index(lagna_sign)
-    return {house: SIGNS[(start + house - 1) % 12] for house in range(1, 13)}
-
-def planet_house(planet_deg, lagna_deg):
-    return int(((planet_deg - lagna_deg) % 360) // 30) + 1
+def planet_house_from_rashi(planet_rashi, lagna_rashi):
+    return ((planet_rashi - lagna_rashi) % 12) + 1
 
 def draw_north_indian_kundali_CORRECT():
-    svg = """
+    return """
     <svg width="700" height="700" viewBox="0 0 700 700">
-
       <rect x="50" y="50" width="600" height="600"
             fill="white" stroke="#ff7a00" stroke-width="3"/>
 
-      <line x1="350" y1="50"  x2="650" y2="350"
-            stroke="#ff7a00" stroke-width="3"/>
-      <line x1="650" y1="350" x2="350" y2="650"
-            stroke="#ff7a00" stroke-width="3"/>
-      <line x1="350" y1="650" x2="50"  y2="350"
-            stroke="#ff7a00" stroke-width="3"/>
-      <line x1="50"  y1="350" x2="350" y2="50"
-            stroke="#ff7a00" stroke-width="3"/>
+      <line x1="350" y1="50" x2="650" y2="350" stroke="#ff7a00" stroke-width="3"/>
+      <line x1="650" y1="350" x2="350" y2="650" stroke="#ff7a00" stroke-width="3"/>
+      <line x1="350" y1="650" x2="50" y2="350" stroke="#ff7a00" stroke-width="3"/>
+      <line x1="50" y1="350" x2="350" y2="50" stroke="#ff7a00" stroke-width="3"/>
 
-      <line x1="200" y1="200" x2="500" y2="200"
-            stroke="#ff7a00" stroke-width="3"/>
-      <line x1="500" y1="200" x2="500" y2="500"
-            stroke="#ff7a00" stroke-width="3"/>
-      <line x1="500" y1="500" x2="200" y2="500"
-            stroke="#ff7a00" stroke-width="3"/>
-      <line x1="200" y1="500" x2="200" y2="200"
-            stroke="#ff7a00" stroke-width="3"/>
+      <line x1="200" y1="200" x2="500" y2="200" stroke="#ff7a00" stroke-width="3"/>
+      <line x1="500" y1="200" x2="500" y2="500" stroke="#ff7a00" stroke-width="3"/>
+      <line x1="500" y1="500" x2="200" y2="500" stroke="#ff7a00" stroke-width="3"/>
+      <line x1="200" y1="500" x2="200" y2="200" stroke="#ff7a00" stroke-width="3"/>
 
-      <line x1="200" y1="200" x2="500" y2="500"
-            stroke="#ff7a00" stroke-width="3"/>
-      <line x1="500" y1="200" x2="200" y2="500"
-            stroke="#ff7a00" stroke-width="3"/>
+      <line x1="200" y1="200" x2="500" y2="500" stroke="#ff7a00" stroke-width="3"/>
+      <line x1="500" y1="200" x2="200" y2="500" stroke="#ff7a00" stroke-width="3"/>
 
-      <text x="350" y="150" text-anchor="middle" fill="#ff7a00">12th</text>
+      <text x="350" y="360" text-anchor="middle" fill="#ff7a00">1st</text>
       <text x="260" y="210" fill="#ff7a00">2nd</text>
       <text x="160" y="320" fill="#ff7a00">3rd</text>
       <text x="160" y="430" fill="#ff7a00">4th</text>
@@ -1000,60 +985,15 @@ def draw_north_indian_kundali_CORRECT():
       <text x="560" y="430" fill="#ff7a00">9th</text>
       <text x="560" y="320" fill="#ff7a00">10th</text>
       <text x="470" y="210" fill="#ff7a00">11th</text>
-      <text x="350" y="360" text-anchor="middle" fill="#ff7a00">
-        Rising / 1st
-      </text>
-
+      <text x="350" y="150" text-anchor="middle" fill="#ff7a00">12th</text>
     </svg>
     """
-    return svg
-
-def rashi_number_from_deg(deg):
-    return int(deg // 30) + 1
-
-def planet_house_from_rashi(planet_rashi, lagna_rashi):
-    return ((planet_rashi - lagna_rashi) % 12) + 1
-
-
-# ========= NEW: simple wrapper used in UI =========
-def generate_north_indian_kundali(pos, lagna_deg):
-    lagna_rashi = rashi_number_from_deg(lagna_deg)
-
-    svg = draw_north_indian_kundali_CORRECT()
-
-    planet_text = ""
-
-    for planet, lon in pos.items():
-        planet_rashi = rashi_number_from_deg(lon)
-        house = planet_house_from_rashi(planet_rashi, lagna_rashi)
-
-        x, y = HOUSE_BOXES[house]
-
-        planet_text += f"""
-        <text x="{x}" y="{y}"
-              font-size="14"
-              fill="black"
-              text-anchor="middle"
-              dominant-baseline="middle">
-            {planet}
-        </text>
-        """
-
-    svg = svg.replace("</svg>", planet_text + "</svg>")
-    return svg
-
-
-st.subheader("🪐 जन्म कुंडली (North Indian Style)")
-
-#st.components.v1.html(
-
-
 
 def generate_lagna_number(lagna_deg):
     lagna_rashi = rashi_number_from_deg(lagna_deg)
     x, y = HOUSE_BOXES[1]
     return f"""
-    <text x="{x}" y="{y-20}"
+    <text x="{x}" y="{y-18}"
           font-size="16"
           fill="red"
           font-weight="bold"
@@ -1062,7 +1002,41 @@ def generate_lagna_number(lagna_deg):
     </text>
     """
 
+def generate_north_indian_kundali(pos, lagna_deg):
+    lagna_rashi = rashi_number_from_deg(lagna_deg)
+    svg = draw_north_indian_kundali_CORRECT()
 
+    house_map = defaultdict(list)
+
+    for planet, lon in pos.items():
+        planet_rashi = rashi_number_from_deg(lon)
+        house = planet_house_from_rashi(planet_rashi, lagna_rashi)
+        house_map[house].append(planet)
+
+    planet_text = ""
+    for house, planets in house_map.items():
+        x, y = HOUSE_BOXES[house]
+        for i, planet in enumerate(planets):
+            planet_text += f"""
+            <text x="{x}" y="{y + i*14}"
+                  font-size="14"
+                  fill="black"
+                  text-anchor="middle">
+                {planet}
+            </text>
+            """
+
+    svg = svg.replace("</svg>", generate_lagna_number(lagna_deg) + planet_text + "</svg>")
+    return svg
+
+# ================= MAIN KUNDALI =================
+st.subheader("🪐 जन्म कुंडली (North Indian Style)")
+st.components.v1.html(
+    generate_north_indian_kundali(pos, lagna_deg),
+    height=720
+)
+
+# ================= D9 (NAVAMSHA) =================
 def get_divisional_sign(lon, division):
     part = 30 / division
     part_index = int((lon % 30) // part)
@@ -1070,44 +1044,34 @@ def get_divisional_sign(lon, division):
     return (base_sign * division + part_index) % 12
 
 def get_d9_positions(pos):
-    d9 = {}
-    for p, lon in pos.items():
-        d9[p] = get_divisional_sign(lon, 9)
-    return d9
-
+    return {p: get_divisional_sign(lon, 9) * 30 for p, lon in pos.items()}
 
 def generate_d9_kundali(pos, lagna_deg):
     d9_pos = get_d9_positions(pos)
-    d9_lagna = get_divisional_sign(lagna_deg, 9)
-    d9_lagna_sign = SIGNS[d9_lagna]
-    return generate_north_indian_kundali(d9_pos, lagna_deg, d9_lagna_sign)
-
+    d9_lagna_deg = get_divisional_sign(lagna_deg, 9) * 30
+    return generate_north_indian_kundali(d9_pos, d9_lagna_deg)
 
 st.subheader("🪐 D9 — नवांश कुंडली")
 st.components.v1.html(
-    generate_d9_kundali(pos, lagna_deg,lagna_sign),
+    generate_d9_kundali(pos, lagna_deg),
     height=720
 )
 
+# ================= D10 (DASHAMSHA) =================
 def get_d10_positions(pos):
-    d10 = {}
-    for p, lon in pos.items():
-        d10[p] = get_divisional_sign(lon, 10)
-    return d10
-
+    return {p: get_divisional_sign(lon, 10) * 30 for p, lon in pos.items()}
 
 def generate_d10_kundali(pos, lagna_deg):
     d10_pos = get_d10_positions(pos)
-    d10_lagna = get_divisional_sign(lagna_deg, 10)
-    d10_lagna_sign = SIGNS[d10_lagna]
-    return generate_north_indian_kundali(d10_pos, lagna_deg, d10_lagna_sign)
-
+    d10_lagna_deg = get_divisional_sign(lagna_deg, 10) * 30
+    return generate_north_indian_kundali(d10_pos, d10_lagna_deg)
 
 st.subheader("🪐 D10 — दशांश कुंडली (Career)")
 st.components.v1.html(
-    generate_d10_kundali(pos, lagna_deg,lagna_sign),
+    generate_d10_kundali(pos, lagna_deg),
     height=720
 )
+
 
 
 DASHA_SEQ = [
