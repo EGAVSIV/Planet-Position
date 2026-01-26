@@ -1085,14 +1085,9 @@ st.components.v1.html(
     height=720
 )
 
-# ================= D10 (DASHAMSHA) =================
-def get_d10_positions(pos):
-    return {p: get_divisional_sign(lon, 10) * 30 for p, lon in pos.items()}
 
-def generate_d10_kundali(pos, lagna_deg):
-    d10_pos = get_d10_positions(pos)
-    d10_lagna_deg = get_divisional_sign(lagna_deg, 10) * 30
-    return generate_north_indian_kundali(d10_pos, d10_lagna_deg)
+
+
 
 st.subheader("🪐 D10 — दशांश कुंडली (Career)")
 st.components.v1.html(
