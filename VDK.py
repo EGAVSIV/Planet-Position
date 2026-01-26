@@ -1005,7 +1005,11 @@ def generate_rashi_numbers(lagna_deg):
     svg_txt = ""
 
     for house, (x, y) in HOUSE_BOXES.items():
-        # rāśi number for this house
+
+        # 🔥 SKIP Lagna house (House 1)
+        if house == 1:
+            continue
+
         rashi_num = ((lagna_rashi + house - 2) % 12) + 1
 
         svg_txt += f"""
@@ -1019,6 +1023,7 @@ def generate_rashi_numbers(lagna_deg):
         """
 
     return svg_txt
+
 
 
 def generate_north_indian_kundali(pos, lagna_deg):
