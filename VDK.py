@@ -1335,7 +1335,7 @@ def calculate_sarvashtakavarga(pos, lagna_deg):
     return sav
 
 
-st.subheader("📊 Sarvashtakavarga")
+st.subheader("📊 सर्वाष्टकवर्ग")
 
 sav = calculate_sarvashtakavarga(pos, lagna_deg)
 
