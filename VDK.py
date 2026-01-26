@@ -933,19 +933,20 @@ RASHI_NUM = {
 }
 
 HOUSE_BOXES = {
-    1:(270,360),
-    2:(120,360),
-    3:(180,460),
-    4:(270,500),
-    5:(350,420),
-    6:(350,260),
-    7:(270,200),
-    8:(180,240),
-    9:(430,500),
-    10:(580,360),
-    11:(430,200),
-    12:(350,140),
+    1:(350,360),
+    2:(260,210),
+    3:(160,320),
+    4:(160,430),
+    5:(260,540),
+    6:(320,620),
+    7:(380,620),
+    8:(470,540),
+    9:(560,430),
+    10:(560,320),
+    11:(470,210),
+    12:(350,150),
 }
+
 
 def build_rashi_sequence(lagna_sign):
     start = SIGNS.index(lagna_sign)
@@ -1008,12 +1009,32 @@ def draw_north_indian_kundali_CORRECT():
     return svg
 
 # ========= NEW: simple wrapper used in UI =========
-def generate_north_indian_kundali(pos, lagna_deg, lagna_sign):
-    """
-    अभी placeholder: सिर्फ़ basic North-Indian chart layout दिखाता है.
-    आप चाहें तो बाद में pos/lagna का उपयोग करके ग्रह/राशि भी plot कर सकते हैं।
-    """
-    return draw_north_indian_kundali_CORRECT()
+def generate_north_indian_kundali(pos, lagna_deg):
+    lagna_rashi = rashi_number_from_deg(lagna_deg)
+
+    svg = draw_north_indian_kundali_CORRECT()
+
+    planet_text = ""
+
+    for planet, lon in pos.items():
+        planet_rashi = rashi_number_from_deg(lon)
+        house = planet_house_from_rashi(planet_rashi, lagna_rashi)
+
+        x, y = HOUSE_BOXES[house]
+
+        planet_text += f"""
+        <text x="{x}" y="{y}"
+              font-size="14"
+              fill="black"
+              text-anchor="middle"
+              dominant-baseline="middle">
+            {planet}
+        </text>
+        """
+
+    svg = svg.replace("</svg>", planet_text + "</svg>")
+    return svg
+
 
 st.subheader("🪐 जन्म कुंडली (North Indian Style)")
 
@@ -1021,6 +1042,27 @@ st.components.v1.html(
     generate_north_indian_kundali(pos, lagna_deg, lagna_sign),
     height=720
 )
+def rashi_number_from_deg(deg):
+    return int(deg // 30) + 1  # 1–12
+
+
+def planet_house_from_rashi(planet_rashi, lagna_rashi):
+    return ((planet_rashi - lagna_rashi) % 12) + 1
+
+
+def generate_lagna_number(lagna_deg):
+    lagna_rashi = rashi_number_from_deg(lagna_deg)
+    x, y = HOUSE_BOXES[1]
+    return f"""
+    <text x="{x}" y="{y-20}"
+          font-size="16"
+          fill="red"
+          font-weight="bold"
+          text-anchor="middle">
+        {lagna_rashi}
+    </text>
+    """
+
 
 def get_divisional_sign(lon, division):
     part = 30 / division
