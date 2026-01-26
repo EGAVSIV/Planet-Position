@@ -1243,7 +1243,7 @@ def compute_sub_dasha(start_jd, main_lord, main_years, level=1, max_level=5):
 
 
 
-st.subheader("⏳ Vimshottari Mahadasha")
+st.subheader("⏳ विंशोत्तरी महादशा")
 
 dashas = vimshottari_dasha(jd, pos["चन्द्र"])
 rows = []
