@@ -953,46 +953,37 @@ def planet_house_from_rashi(planet_rashi, lagna_rashi):
 
 def draw_north_indian_kundali_CORRECT():
     return """
-    <svg width="700" height="700" viewBox="0 0 700 700">
+    <svg width="720" height="720" viewBox="0 0 720 720">
 
     <!-- Outer diamond -->
-    <polygon points="350,40 660,350 350,660 40,350"
+    <polygon points="360,40 680,360 360,680 40,360"
              fill="white" stroke="black" stroke-width="3"/>
 
-    <!-- Inner diamond -->
-    <polygon points="350,140 560,350 350,560 140,350"
+    <!-- Inner diamond (houses 1-4-7-10) -->
+    <polygon points="360,160 560,360 360,560 160,360"
              fill="none" stroke="black" stroke-width="3"/>
 
-    <!-- Cross lines -->
-    <line x1="140" y1="350" x2="560" y2="350" stroke="black" stroke-width="3"/>
-    <line x1="350" y1="140" x2="350" y2="560" stroke="black" stroke-width="3"/>
+    <!-- Vertical line (12-1-6) -->
+    <line x1="360" y1="160" x2="360" y2="560"
+          stroke="black" stroke-width="3"/>
 
-    <!-- Diagonals -->
-    <line x1="350" y1="40" x2="560" y2="350" stroke="black" stroke-width="3"/>
-    <line x1="560" y1="350" x2="350" y2="660" stroke="black" stroke-width="3"/>
-    <line x1="350" y1="660" x2="140" y2="350" stroke="black" stroke-width="3"/>
-    <line x1="140" y1="350" x2="350" y2="40" stroke="black" stroke-width="3"/>
+    <!-- Horizontal line (3-1-9) -->
+    <line x1="160" y1="360" x2="560" y2="360"
+          stroke="black" stroke-width="3"/>
 
-    <!-- House labels (DEBUG – optional) -->
-    <text x="350" y="330" text-anchor="middle">1st House</text>
-
-    <text x="250" y="180">2nd House</text>
-    <text x="110" y="310">3rd House</text>
-    <text x="200" y="430">4th House</text>
-    <text x="250" y="540">5th House</text>
-
-    <text x="350" y="610" text-anchor="middle">6th House</text>
-    <text x="350" y="470" text-anchor="middle">7th House</text>
-
-    <text x="470" y="540">8th House</text>
-    <text x="560" y="430">9th House</text>
-    <text x="500" y="310">10th House</text>
-    <text x="470" y="180">11th House</text>
-
-    <text x="350" y="110" text-anchor="middle">12th House</text>
+    <!-- Side diagonals -->
+    <line x1="160" y1="360" x2="360" y2="160"
+          stroke="black" stroke-width="3"/>
+    <line x1="360" y1="160" x2="560" y2="360"
+          stroke="black" stroke-width="3"/>
+    <line x1="560" y1="360" x2="360" y2="560"
+          stroke="black" stroke-width="3"/>
+    <line x1="360" y1="560" x2="160" y2="360"
+          stroke="black" stroke-width="3"/>
 
     </svg>
     """
+
 
 
 def generate_lagna_number(lagna_deg):
