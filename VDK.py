@@ -1037,19 +1037,47 @@ st.components.v1.html(
 )
 
 # ================= D9 (NAVAMSHA) =================
-def get_divisional_sign(lon, division):
-    part = 30 / division
-    part_index = int((lon % 30) // part)
-    base_sign = int(lon // 30)
-    return (base_sign * division + part_index) % 12
+MOVABLE = [0,3,6,9]
+FIXED   = [1,4,7,10]
+DUAL    = [2,5,8,11]
+
+def get_d9_sign(lon):
+    rashi = int(lon // 30)
+    part  = int((lon % 30) // (30/9))
+
+    if rashi in MOVABLE:
+        return (rashi + part) % 12
+    elif rashi in FIXED:
+        return (rashi + 8 + part) % 12
+    else:  # dual
+        return (rashi + 4 + part) % 12
+
+def get_d10_sign(lon):
+    rashi = int(lon // 30)
+    part  = int((lon % 30) // 3)
+
+    if rashi % 2 == 0:  # odd signs (Aries=0)
+        return (rashi + part) % 12
+    else:
+        return (rashi + 9 - part) % 12
+
 
 def get_d9_positions(pos):
-    return {p: get_divisional_sign(lon, 9) * 30 for p, lon in pos.items()}
+    return {p: get_d9_sign(lon) * 30 for p, lon in pos.items()}
 
 def generate_d9_kundali(pos, lagna_deg):
     d9_pos = get_d9_positions(pos)
-    d9_lagna_deg = get_divisional_sign(lagna_deg, 9) * 30
+    d9_lagna_deg = get_d9_sign(lagna_deg) * 30
     return generate_north_indian_kundali(d9_pos, d9_lagna_deg)
+
+def get_d10_positions(pos):
+    return {p: get_d10_sign(lon) * 30 for p, lon in pos.items()}
+
+def generate_d10_kundali(pos, lagna_deg):
+    d10_pos = get_d10_positions(pos)
+    d10_lagna_deg = get_d10_sign(lagna_deg) * 30
+    return generate_north_indian_kundali(d10_pos, d10_lagna_deg)
+
 
 st.subheader("🪐 D9 — नवांश कुंडली")
 st.components.v1.html(
@@ -1085,20 +1113,23 @@ def vimshottari_dasha(jd, moon_lon):
     nak = int(moon_lon // NAK_SIZE)
     lord = NAKSHATRAS[nak][1]
 
-    seq = [d for d in DASHA_SEQ if d[0] == lord]
-    start_idx = DASHA_SEQ.index(seq[0])
+    frac = (moon_lon % NAK_SIZE) / NAK_SIZE
+    total_years = dict(DASHA_SEQ)[lord]
+    balance_years = total_years * (1 - frac)
+
+    start_idx = [p for p,_ in DASHA_SEQ].index(lord)
 
     dashas = []
-    start_date = jd
+    start = jd - balance_years * 365.25
 
     for i in range(9):
-        planet, years = DASHA_SEQ[(start_idx + i) % 9]
-        days = years * 365.25
-        end_date = start_date + days
-        dashas.append((planet, start_date, end_date))
-        start_date = end_date
+        p, yrs = DASHA_SEQ[(start_idx + i) % 9]
+        end = start + yrs * 365.25
+        dashas.append((p, start, end))
+        start = end
 
     return dashas
+
 
 
 st.subheader("⏳ Vimshottari Mahadasha")
@@ -1130,7 +1161,9 @@ def calculate_sarvashtakavarga(pos, lagna_deg):
     sav = [0]*12
 
     for planet, houses in ASHTAKA_RULES.items():
-        base_house = planet_house(pos[planet], lagna_deg)
+        planet_rashi = rashi_number_from_deg(pos[planet])
+        lagna_rashi = rashi_number_from_deg(lagna_deg)
+        base_house = planet_house_from_rashi(planet_rashi, lagna_rashi)
         for h in houses:
             sav[(base_house + h - 2) % 12] += 1
 
