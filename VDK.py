@@ -1021,3 +1021,126 @@ st.components.v1.html(
     generate_north_indian_kundali(pos, lagna_deg, lagna_sign),
     height=720
 )
+
+def get_divisional_sign(lon, division):
+    part = 30 / division
+    part_index = int((lon % 30) // part)
+    base_sign = int(lon // 30)
+    return (base_sign * division + part_index) % 12
+
+def get_d9_positions(pos):
+    d9 = {}
+    for p, lon in pos.items():
+        d9[p] = get_divisional_sign(lon, 9)
+    return d9
+
+
+def generate_d9_kundali(pos, lagna_deg):
+    d9_pos = get_d9_positions(pos)
+    d9_lagna = get_divisional_sign(lagna_deg, 9)
+    d9_lagna_sign = SIGNS[d9_lagna]
+    return generate_north_indian_kundali(d9_pos, lagna_deg, d9_lagna_sign)
+
+
+st.subheader("🪐 D9 — नवांश कुंडली")
+st.components.v1.html(
+    generate_d9_kundali(pos, lagna_deg),
+    height=720
+)
+
+def get_d10_positions(pos):
+    d10 = {}
+    for p, lon in pos.items():
+        d10[p] = get_divisional_sign(lon, 10)
+    return d10
+
+
+def generate_d10_kundali(pos, lagna_deg):
+    d10_pos = get_d10_positions(pos)
+    d10_lagna = get_divisional_sign(lagna_deg, 10)
+    d10_lagna_sign = SIGNS[d10_lagna]
+    return generate_north_indian_kundali(d10_pos, lagna_deg, d10_lagna_sign)
+
+
+st.subheader("🪐 D10 — दशांश कुंडली (Career)")
+st.components.v1.html(
+    generate_d10_kundali(pos, lagna_deg),
+    height=720
+)
+
+
+DASHA_SEQ = [
+    ("केतु",7), ("शुक्र",20), ("सूर्य",6), ("चन्द्र",10),
+    ("मंगल",7), ("राहु",18), ("बृहस्पति",16),
+    ("शनि",19), ("बुध",17)
+]
+
+
+def vimshottari_dasha(jd, moon_lon):
+    nak = int(moon_lon // NAK_SIZE)
+    lord = NAKSHATRAS[nak][1]
+
+    seq = [d for d in DASHA_SEQ if d[0] == lord]
+    start_idx = DASHA_SEQ.index(seq[0])
+
+    dashas = []
+    start_date = jd
+
+    for i in range(9):
+        planet, years = DASHA_SEQ[(start_idx + i) % 9]
+        days = years * 365.25
+        end_date = start_date + days
+        dashas.append((planet, start_date, end_date))
+        start_date = end_date
+
+    return dashas
+
+
+st.subheader("⏳ Vimshottari Mahadasha")
+
+dashas = vimshottari_dasha(jd, pos["चन्द्र"])
+rows = []
+for p, s, e in dashas:
+    rows.append([
+        p,
+        swe.revjul(s)[0:3],
+        swe.revjul(e)[0:3]
+    ])
+
+st.table(pd.DataFrame(rows, columns=["दशा", "आरंभ", "समाप्ति"]))
+
+
+ASHTAKA_RULES = {
+    "सूर्य": [1,2,4,7,8,9,10,11],
+    "चन्द्र": [2,3,5,6,9,10,11],
+    "मंगल": [1,2,4,7,8,9,10,11],
+    "बुध": [1,3,5,6,9,10,11],
+    "बृहस्पति": [2,5,7,9,10,11],
+    "शुक्र": [1,2,3,4,5,8,9,11,12],
+    "शनि": [3,5,6,10,11]
+}
+
+
+def calculate_sarvashtakavarga(pos, lagna_deg):
+    sav = [0]*12
+
+    for planet, houses in ASHTAKA_RULES.items():
+        base_house = planet_house(pos[planet], lagna_deg)
+        for h in houses:
+            sav[(base_house + h - 2) % 12] += 1
+
+    return sav
+
+
+st.subheader("📊 Sarvashtakavarga")
+
+sav = calculate_sarvashtakavarga(pos, lagna_deg)
+
+df = pd.DataFrame({
+    "राशि": SIGNS,
+    "अंक": sav
+})
+
+st.bar_chart(df.set_index("राशि"))
+
+
