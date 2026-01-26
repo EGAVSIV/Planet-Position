@@ -937,13 +937,13 @@ HOUSE_BOXES = {
     12: (500, 120),   # Top-right
 
     3:  (140, 260),   # Middle-left
-    11: (580, 320),   # Middle-right
+    11: (580, 520),   # Middle-right
 
     4:  (220, 320),   # Inner-left
-    7:  (360, 270),   # Center-bottom (inside diamond)
+    7:  (360, 200),   # Center-bottom (inside diamond)
     10: (510, 300),   # Inner-right
 
-    5:  (100, 420),   # Bottom-left
+    5:  (100, 470),   # Bottom-left
     6:  (240, 420),   # Bottom-center-left
     9:  (560, 380),   # Bottom-right
 
