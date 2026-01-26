@@ -955,6 +955,7 @@ def rashi_number_from_deg(deg):
 def planet_house_from_rashi(planet_rashi, lagna_rashi):
     return ((planet_rashi - lagna_rashi) % 12) + 1
 
+
 def draw_north_indian_kundali_CORRECT():
     return """
     <svg width="720" height="520" viewBox="0 0 720 520">
@@ -1005,20 +1006,23 @@ def generate_north_indian_kundali(pos, lagna_deg):
         house_map[house].append(planet)
 
     planet_text = ""
+
     for house, planets in house_map.items():
         x, y = HOUSE_BOXES[house]
         for i, planet in enumerate(planets):
             planet_text += f"""
-            <text x="{x}" y="{y + i*14}"
+            <text x="{x}" y="{y + i*16}"
                   font-size="14"
-                  fill="black"
-                  text-anchor="middle">
+                  font-weight="500"
+                  text-anchor="middle"
+                  fill="black">
                 {planet}
             </text>
             """
 
-    svg = svg.replace("</svg>", generate_lagna_number(lagna_deg) + planet_text + "</svg>")
+    svg = svg.replace("</svg>", planet_text + "</svg>")
     return svg
+
 
 # ================= MAIN KUNDALI =================
 st.subheader("🪐 जन्म कुंडली (North Indian Style)")
