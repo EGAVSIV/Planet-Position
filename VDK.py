@@ -1046,9 +1046,7 @@ def generate_north_indian_kundali(pos, lagna_deg):
 st.subheader("🪐 जन्म कुंडली (North Indian Style)")
 
 st.components.v1.html(
-generate_north_indian_kundali(pos, lagna_deg, lagna_sign),
-height=720
-)
+
 
 
 def generate_lagna_number(lagna_deg):
