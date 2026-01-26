@@ -928,11 +928,7 @@ else:
 
 # ================= NORTH INDIAN KUNDALI (FINAL FIXED) =================
 
-RASHI_NUM = {
-    "मेष": 1, "वृषभ": 2, "मिथुन": 3, "कर्क": 4,
-    "सिंह": 5, "कन्या": 6, "तुला": 7, "वृश्चिक": 8,
-    "धनु": 9, "मकर": 10, "कुंभ": 11, "मीन": 12
-}
+
 
 HOUSE_BOXES = {
     1:(350,360),
@@ -1056,10 +1052,11 @@ def get_d10_sign(lon):
     rashi = int(lon // 30)
     part  = int((lon % 30) // 3)
 
-    if rashi % 2 == 0:  # odd signs (Aries=0)
+    if rashi % 2 == 0:
         return (rashi + part) % 12
     else:
         return (rashi + 9 - part) % 12
+
 
 
 def get_d9_positions(pos):
@@ -1073,10 +1070,12 @@ def generate_d9_kundali(pos, lagna_deg):
 def get_d10_positions(pos):
     return {p: get_d10_sign(lon) * 30 for p, lon in pos.items()}
 
+
 def generate_d10_kundali(pos, lagna_deg):
     d10_pos = get_d10_positions(pos)
     d10_lagna_deg = get_d10_sign(lagna_deg) * 30
     return generate_north_indian_kundali(d10_pos, d10_lagna_deg)
+
 
 
 st.subheader("🪐 D9 — नवांश कुंडली")
