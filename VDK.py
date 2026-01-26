@@ -952,7 +952,7 @@ HOUSE_BOXES = {
     2:  (210, 120),   # Top-left
     12: (500, 120),   # Top-right
 
-    3:  (140, 160),   # Middle-left
+    3:  (120, 180),   # Middle-left
     11: (600, 160),   # Middle-right
 
     4:  (220, 270),   # Inner-left
