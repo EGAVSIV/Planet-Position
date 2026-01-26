@@ -956,6 +956,10 @@ def rashi_number_from_deg(deg):
 
 def planet_house_from_rashi(planet_rashi, lagna_rashi):
     return ((planet_rashi - lagna_rashi) % 12) + 1
+def deg_in_rashi(lon):
+    return lon % 30
+
+
 
 
 def draw_north_indian_kundali_CORRECT():
@@ -996,6 +1000,27 @@ def generate_lagna_number(lagna_deg):
     </text>
     """
 
+def generate_rashi_numbers(lagna_deg):
+    lagna_rashi = rashi_number_from_deg(lagna_deg)
+    svg_txt = ""
+
+    for house, (x, y) in HOUSE_BOXES.items():
+        # rāśi number for this house
+        rashi_num = ((lagna_rashi + house - 2) % 12) + 1
+
+        svg_txt += f"""
+        <text x="{x}" y="{y-22}"
+              font-size="13"
+              fill="#666"
+              font-weight="bold"
+              text-anchor="middle">
+            {rashi_num}
+        </text>
+        """
+
+    return svg_txt
+
+
 def generate_north_indian_kundali(pos, lagna_deg):
     lagna_rashi = rashi_number_from_deg(lagna_deg)
     svg = draw_north_indian_kundali_CORRECT()
@@ -1005,24 +1030,38 @@ def generate_north_indian_kundali(pos, lagna_deg):
     for planet, lon in pos.items():
         planet_rashi = rashi_number_from_deg(lon)
         house = planet_house_from_rashi(planet_rashi, lagna_rashi)
-        house_map[house].append(planet)
+
+        house_map[house].append({
+            "name": planet,
+            "deg": deg_in_rashi(lon),
+            "retro": retro.get(planet, False)
+        })
 
     planet_text = ""
 
     for house, planets in house_map.items():
         x, y = HOUSE_BOXES[house]
-        for i, planet in enumerate(planets):
+
+        for i, p in enumerate(planets):
+            retro_mark = " ℞" if p["retro"] else ""
             planet_text += f"""
             <text x="{x}" y="{y + i*16}"
-                  font-size="14"
+                  font-size="13"
                   font-weight="500"
                   text-anchor="middle"
                   fill="black">
-                {planet}
+                {p["name"]} {p["deg"]:.1f}°{retro_mark}
             </text>
             """
 
-    svg = svg.replace("</svg>", planet_text + "</svg>")
+
+    svg = svg.replace(
+        "</svg>",
+        generate_lagna_number(lagna_deg)
+        + generate_rashi_numbers(lagna_deg)
+        + planet_text
+        + "</svg>"
+    )
     return svg
 
 
