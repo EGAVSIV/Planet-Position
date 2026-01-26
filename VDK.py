@@ -960,7 +960,7 @@ HOUSE_BOXES = {
     10: (510, 270),   # Inner-right
 
     5:  (100, 370),   # Bottom-left
-    6:  (240, 420),   # Bottom-center-left
+    6:  (210, 420),   # Bottom-center-left
     9:  (560, 380),   # Bottom-right
 
     8:  (520, 450),   # Bottom tip
