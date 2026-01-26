@@ -333,6 +333,22 @@ def get_positions(dt_utc):
 
     return pos, retro, jd
 
+
+def get_true_moon_lon_and_speed(jd):
+    ay = swe.get_ayanamsa_ut(jd)
+
+    r, _ = swe.calc_ut(
+        jd,
+        swe.MOON,
+        swe.FLG_SWIEPH | swe.FLG_TRUEPOS | swe.FLG_SPEED
+    )
+
+    moon_lon = (r[0] - ay) % 360
+    moon_speed = abs(r[3])  # deg/day
+
+    return moon_lon, moon_speed
+
+
 def generate_svg(pos, retro):
     from collections import defaultdict
 
@@ -1149,25 +1165,33 @@ DASHA_SEQ = [
 
 
 def vimshottari_dasha(jd, moon_lon):
-    nak = int(moon_lon // NAK_SIZE)
-    lord = NAKSHATRAS[nak][1]
+    # Nakshatra calculation
+    nak_index = int(moon_lon // NAK_SIZE)
+    lord = NAKSHATRAS[nak_index][1]
 
-    frac = (moon_lon % NAK_SIZE) / NAK_SIZE
-    total_years = dict(DASHA_SEQ)[lord]
-    balance_years = total_years * (1 - frac)
+    # True Moon longitude + speed
+    moon_lon_true, moon_speed = get_true_moon_lon_and_speed(jd)
 
-    start_idx = [p for p,_ in DASHA_SEQ].index(lord)
+    # Exact Nakshatra start longitude
+    nak_start_lon = nak_index * NAK_SIZE
+    delta_deg = (moon_lon_true - nak_start_lon) % NAK_SIZE
+
+    # Nakshatra start JD (Drik method)
+    nak_start_jd = jd - (delta_deg / moon_speed)
+
+    start_idx = [p for p, _ in DASHA_SEQ].index(lord)
 
     dashas = []
-    start = jd - balance_years * 365.25
+    start = nak_start_jd
 
     for i in range(9):
-        p, yrs = DASHA_SEQ[(start_idx + i) % 9]
-        end = start + yrs * 365.25
-        dashas.append((p, start, end))
+        planet, years = DASHA_SEQ[(start_idx + i) % 9]
+        end = start + years * 365.25636  # sidereal year
+        dashas.append((planet, start, end))
         start = end
 
     return dashas
+
 
 
 
