@@ -953,36 +953,26 @@ def planet_house_from_rashi(planet_rashi, lagna_rashi):
 
 def draw_north_indian_kundali_CORRECT():
     return """
-    <svg width="720" height="720" viewBox="0 0 720 720">
+    <svg width="720" height="520" viewBox="0 0 720 520">
 
-    <!-- Outer diamond -->
-    <polygon points="360,40 680,360 360,680 40,360"
-             fill="white" stroke="black" stroke-width="3"/>
+    <!-- OUTER RECTANGLE -->
+    <rect x="60" y="60" width="600" height="400"
+          fill="white" stroke="black" stroke-width="3"/>
 
-    <!-- Inner diamond (houses 1-4-7-10) -->
-    <polygon points="360,160 560,360 360,560 160,360"
+    <!-- MAIN DIAMOND -->
+    <polygon points="360,60 660,260 360,460 60,260"
              fill="none" stroke="black" stroke-width="3"/>
 
-    <!-- Vertical line (12-1-6) -->
-    <line x1="360" y1="160" x2="360" y2="560"
+    <!-- INNER CROSS -->
+    <line x1="360" y1="60" x2="360" y2="460"
           stroke="black" stroke-width="3"/>
 
-    <!-- Horizontal line (3-1-9) -->
-    <line x1="160" y1="360" x2="560" y2="360"
-          stroke="black" stroke-width="3"/>
-
-    <!-- Side diagonals -->
-    <line x1="160" y1="360" x2="360" y2="160"
-          stroke="black" stroke-width="3"/>
-    <line x1="360" y1="160" x2="560" y2="360"
-          stroke="black" stroke-width="3"/>
-    <line x1="560" y1="360" x2="360" y2="560"
-          stroke="black" stroke-width="3"/>
-    <line x1="360" y1="560" x2="160" y2="360"
+    <line x1="60" y1="260" x2="660" y2="260"
           stroke="black" stroke-width="3"/>
 
     </svg>
     """
+
 
 
 
