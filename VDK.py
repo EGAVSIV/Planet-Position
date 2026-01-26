@@ -1256,7 +1256,7 @@ for p, s, e in dashas:
 
 st.table(pd.DataFrame(rows, columns=["दशा", "आरंभ", "समाप्ति"]))
 
-st.subheader("🔹 Antardasha (Current Mahadasha)")
+st.subheader("🔹 अंतरदशा (Current Mahadasha)")
 
 today_jd = jd
 
