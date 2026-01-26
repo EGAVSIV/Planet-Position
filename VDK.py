@@ -933,18 +933,18 @@ else:
 HOUSE_BOXES = {
     1:  (360, 200),   # Top-center (Lagna)
 
-    2:  (260, 120),   # Top-left
-    12: (460, 120),   # Top-right
+    2:  (180, 120),   # Top-left
+    12: (500, 120),   # Top-right
 
     3:  (140, 260),   # Middle-left
-    11: (580, 260),   # Middle-right
+    11: (580, 320),   # Middle-right
 
-    4:  (260, 300),   # Inner-left
-    7:  (360, 320),   # Center-bottom (inside diamond)
-    10: (460, 300),   # Inner-right
+    4:  (220, 320),   # Inner-left
+    7:  (360, 270),   # Center-bottom (inside diamond)
+    10: (510, 300),   # Inner-right
 
-    5:  (100, 390),   # Bottom-left
-    6:  (300, 420),   # Bottom-center-left
+    5:  (100, 420),   # Bottom-left
+    6:  (240, 420),   # Bottom-center-left
     9:  (560, 380),   # Bottom-right
 
     8:  (360, 450),   # Bottom tip
