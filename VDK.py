@@ -1287,7 +1287,7 @@ st.table(pd.DataFrame(
 ))
 
 
-st.subheader("🔸 Pratyantar Dasha")
+st.subheader("🔸  प्रत्यंतर दशा")
 
 running_antar = None
 for a in antar_tree:
