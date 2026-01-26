@@ -1163,6 +1163,11 @@ DASHA_SEQ = [
     ("शनि",19), ("बुध",17)
 ]
 
+DASHA_YEARS = dict(DASHA_SEQ)
+TOTAL_VIMSHOTTARI = 120.0
+SIDEREAL_YEAR = 365.25636
+
+
 
 def vimshottari_dasha(jd, moon_lon):
     # Nakshatra calculation
@@ -1192,6 +1197,49 @@ def vimshottari_dasha(jd, moon_lon):
 
     return dashas
 
+def compute_sub_dasha(start_jd, main_lord, main_years, level=1, max_level=5):
+    """
+    level:
+    1 = Mahadasha
+    2 = Antardasha
+    3 = Pratyantar
+    4 = Sukshma
+    5 = Prana
+    """
+
+    seq = [p for p, _ in DASHA_SEQ]
+    start_idx = seq.index(main_lord)
+
+    results = []
+    curr_start = start_jd
+
+    for i in range(9):
+        lord = seq[(start_idx + i) % 9]
+        sub_years = (main_years * DASHA_YEARS[lord]) / TOTAL_VIMSHOTTARI
+        curr_end = curr_start + sub_years * SIDEREAL_YEAR
+
+        node = {
+            "level": level,
+            "lord": lord,
+            "start": curr_start,
+            "end": curr_end
+        }
+
+        if level < max_level:
+            node["children"] = compute_sub_dasha(
+                curr_start,
+                lord,
+                sub_years,
+                level + 1,
+                max_level
+            )
+
+        results.append(node)
+        curr_start = curr_end
+
+    return results
+
+
 
 
 
@@ -1207,6 +1255,60 @@ for p, s, e in dashas:
     ])
 
 st.table(pd.DataFrame(rows, columns=["दशा", "आरंभ", "समाप्ति"]))
+
+st.subheader("🔹 Antardasha (Current Mahadasha)")
+
+today_jd = jd
+
+# find running Mahadasha
+for md_lord, md_start, md_end in dashas:
+    if md_start <= today_jd < md_end:
+        current_md = (md_lord, md_start, md_end)
+        break
+
+antar_tree = compute_sub_dasha(
+    start_jd=current_md[1],
+    main_lord=current_md[0],
+    main_years=DASHA_YEARS[current_md[0]],
+    max_level=2
+)
+
+antar_rows = []
+for a in antar_tree:
+    antar_rows.append([
+        a["lord"],
+        swe.revjul(a["start"])[0:3],
+        swe.revjul(a["end"])[0:3]
+    ])
+
+st.table(pd.DataFrame(
+    antar_rows,
+    columns=["अंतर दशा", "आरंभ", "समाप्ति"]
+))
+
+
+st.subheader("🔸 Pratyantar Dasha")
+
+running_antar = None
+for a in antar_tree:
+    if a["start"] <= today_jd < a["end"]:
+        running_antar = a
+        break
+
+if running_antar:
+    praty_rows = []
+    for p in running_antar["children"]:
+        praty_rows.append([
+            p["lord"],
+            swe.revjul(p["start"])[0:3],
+            swe.revjul(p["end"])[0:3]
+        ])
+
+    st.table(pd.DataFrame(
+        praty_rows,
+        columns=["प्रत्यंतर", "आरंभ", "समाप्ति"]
+    ))
+
 
 
 ASHTAKA_RULES = {
