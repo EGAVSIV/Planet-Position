@@ -931,23 +931,25 @@ else:
 
 
 HOUSE_BOXES = {
-    1:  (360, 260),   # Center (Lagna)
+    1:  (360, 200),   # Top-center (Lagna)
 
-    2:  (260, 140),   # Top-left inside diamond
-    3:  (140, 260),   # Left middle
-    4:  (260, 380),   # Bottom-left inside diamond
+    2:  (260, 120),   # Top-left
+    12: (460, 120),   # Top-right
 
-    5:  (360, 440),   # Bottom triangle
-    6:  (460, 380),   # Bottom-right inside diamond
+    3:  (140, 260),   # Middle-left
+    11: (580, 260),   # Middle-right
 
-    7:  (460, 260),   # Right middle
-    8:  (460, 140),   # Top-right inside diamond
+    4:  (260, 300),   # Inner-left
+    7:  (360, 320),   # Center-bottom (inside diamond)
+    10: (460, 300),   # Inner-right
 
-    9:  (360, 80),    # Top triangle
-    10: (460, 200),   # Right-upper triangle
-    11: (260, 200),   # Left-upper triangle
-    12: (360, 140),   # Upper inner
+    5:  (160, 380),   # Bottom-left
+    6:  (300, 420),   # Bottom-center-left
+    9:  (560, 380),   # Bottom-right
+
+    8:  (360, 450),   # Bottom tip
 }
+
 
 def rashi_number_from_deg(deg):
     return int(deg // 30) + 1
