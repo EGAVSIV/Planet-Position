@@ -308,45 +308,62 @@ PLANETS = [
 ]
 
 def jd_to_ist_datetime(jd):
-    y, m, d, h, mi, s = swe.revjul(jd)
-    dt_utc = datetime.datetime(y, m, d, h, mi, int(s), tzinfo=pytz.utc)
+    rev = swe.revjul(jd)
+
+    # Swiss Ephemeris may return 6 or 7 values
+    y, m, d, h, mi, s = rev[:6]
+
+    dt_utc = datetime.datetime(
+        int(y), int(m), int(d),
+        int(h), int(mi), int(s),
+        tzinfo=pytz.utc
+    )
+
     return dt_utc.astimezone(pytz.timezone("Asia/Kolkata"))
+
 
 
 def get_solar_eclipses(center_jd, count=10):
     past, future = [], []
 
+    # ---- Past ----
     jd = center_jd
     while len(past) < count:
         ret = swe.sol_eclipse_when_glob(jd, swe.FLG_SWIEPH, False)
-        jd = ret[1][0] - 1
-        past.append(jd_to_ist_datetime(ret[1][0]))
+        eclipse_jd = ret[1][0]
+        past.append(jd_to_ist_datetime(eclipse_jd))
+        jd = eclipse_jd - 30   # ⬅ jump back safely
 
+    # ---- Future ----
     jd = center_jd
     while len(future) < count:
         ret = swe.sol_eclipse_when_glob(jd, swe.FLG_SWIEPH, True)
-        jd = ret[1][0] + 1
-        future.append(jd_to_ist_datetime(ret[1][0]))
+        eclipse_jd = ret[1][0]
+        future.append(jd_to_ist_datetime(eclipse_jd))
+        jd = eclipse_jd + 30   # ⬅ jump forward safely
 
     return past[::-1], future
-
-
 def get_lunar_eclipses(center_jd, count=10):
     past, future = [], []
 
+    # ---- Past ----
     jd = center_jd
     while len(past) < count:
         ret = swe.lun_eclipse_when(jd, swe.FLG_SWIEPH, False)
-        jd = ret[1][0] - 1
-        past.append(jd_to_ist_datetime(ret[1][0]))
+        eclipse_jd = ret[1][0]
+        past.append(jd_to_ist_datetime(eclipse_jd))
+        jd = eclipse_jd - 30
 
+    # ---- Future ----
     jd = center_jd
     while len(future) < count:
         ret = swe.lun_eclipse_when(jd, swe.FLG_SWIEPH, True)
-        jd = ret[1][0] + 1
-        future.append(jd_to_ist_datetime(ret[1][0]))
+        eclipse_jd = ret[1][0]
+        future.append(jd_to_ist_datetime(eclipse_jd))
+        jd = eclipse_jd + 30
 
     return past[::-1], future
+
 
 
 # ================= FUNCTIONS =================
