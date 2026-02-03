@@ -310,27 +310,7 @@ PLANETS = [
     ("राहु", swe.MEAN_NODE,"रा.")
 ]
 
-def jd_to_ist_datetime(jd):
-    rev = swe.revjul(jd)
 
-    # Case 1: (y, m, d, hour_float)
-    if len(rev) == 4:
-        y, m, d, hour = rev
-        h = int(hour)
-        mi = int((hour - h) * 60)
-        s = int((((hour - h) * 60) - mi) * 60)
-
-    # Case 2 / 3: (y, m, d, h, mi, s [,flag])
-    else:
-        y, m, d, h, mi, s = rev[:6]
-
-    dt_utc = datetime.datetime(
-        int(y), int(m), int(d),
-        int(h), int(mi), int(s),
-        tzinfo=pytz.utc
-    )
-
-    return dt_utc.astimezone(pytz.timezone("Asia/Kolkata"))
 
 
 
