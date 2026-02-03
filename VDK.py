@@ -752,85 +752,31 @@ events = upcoming_aspects(
 )
 
 ist = pytz.timezone("Asia/Kolkata")
-now_ist = datetime.datetime.now(ist)
-
-ASPECT_STYLE = {
-    "Conjunction": {"icon": "🟢", "color": "#2ecc71"},
-    "Opposition": {"icon": "🔴", "color": "#e74c3c"}
-}
 
 if not events:
     st.caption("No major conjunctions or oppositions in the next 10 days.")
 else:
-    grouped = defaultdict(list)
+    rows = []
+
     for e in events:
         t_ist = e["time"].astimezone(ist)
-        grouped[t_ist.date()].append((e, t_ist))
+        rows.append([
+            t_ist.strftime("%d-%b-%Y"),
+            t_ist.strftime("%H:%M"),
+            e["aspect"],
+            e["planets"]
+        ])
 
-    html = """
-    <style>
-    @keyframes blink {
-        0% { box-shadow: 0 0 6px red; }
-        50% { box-shadow: 0 0 18px red; }
-        100% { box-shadow: 0 0 6px red; }
-    }
-    </style>
-    """
+    df_aspects = pd.DataFrame(
+        rows,
+        columns=["Date", "Time (IST)", "Aspect", "Planets"]
+    )
 
-    for event_date in sorted(grouped.keys()):
-        html += f"""
-        <h4 style="color:#00e6ff; margin:12px 0 6px 0;">
-            📅 {event_date.strftime('%d %b %Y')}
-        </h4>
-        """
-
-        for e, t in grouped[event_date]:
-            style = ASPECT_STYLE[e["aspect"]]
-            delta = t - now_ist
-            hours_left = delta.total_seconds() / 3600
-
-            if delta.total_seconds() > 0:
-                days = delta.days
-                hrs, rem = divmod(delta.seconds, 3600)
-                mins = rem // 60
-                countdown = f"{days}d {hrs}h {mins}m"
-            else:
-                countdown = "Started"
-
-            blink = "animation: blink 1.2s infinite;" if 0 < hours_left <= 24 else ""
-
-            html += f"""
-            <div style="
-                margin-bottom: 14px;
-                padding: 12px 14px;
-                border-radius: 10px;
-                background: #0b132b;
-                border-left: 6px solid {style['color']};
-                {blink}
-            ">
-                <div style="
-                    font-size: 16px;
-                    font-weight: 600;
-                    color: {style['color']};
-                ">
-                    {style['icon']} {e['planets']} — {e['aspect']}
-                </div>
-
-                <div style="margin-top:4px; font-size:14px; color:#dddddd;">
-                    🕒 {t.strftime('%H:%M IST')}
-                </div>
-
-                <div style="
-                    margin-top:4px;
-                    font-size:13px;
-                    color:#ffcc00;
-                ">
-                    ⏳ {countdown}
-                </div>
-            </div>
-            """
-
-    st.components.v1.html(html, height=520, scrolling=True)
+    st.dataframe(
+        df_aspects,
+        use_container_width=True,
+        hide_index=True
+    )
 
 NAK_SIZE = 13 + 1/3
 
@@ -900,58 +846,40 @@ events = upcoming_sign_nakshatra_changes(
 )
 
 ist = pytz.timezone("Asia/Kolkata")
-now_ist = datetime.datetime.now(ist)
 
 if not events:
     st.caption("No planetary sign or nakshatra changes in the next 10 days.")
 else:
-    grouped = defaultdict(list)
+    rows = []
+
     for e in events:
-        t = e["time"].astimezone(ist)
-        grouped[t.date()].append((e, t))
+        t_ist = e["time"].astimezone(ist)
+        rows.append([
+            t_ist.strftime("%d-%b-%Y"),
+            t_ist.strftime("%H:%M"),
+            e["planet"],
+            e["type"],
+            e["from"],
+            e["to"]
+        ])
 
-    html = ""
+    df_transitions = pd.DataFrame(
+        rows,
+        columns=[
+            "Date",
+            "Time (IST)",
+            "Planet",
+            "Change Type",
+            "From",
+            "To"
+        ]
+    )
 
-    for d in sorted(grouped.keys()):
-        html += f"""
-        <h4 style="color:#00e6ff; margin:12px 0 6px 0;">
-            📅 {d.strftime('%d %b %Y')}
-        </h4>
-        """
-
-        for e, t in grouped[d]:
-            delta = t - now_ist
-            hrs_left = delta.total_seconds() / 3600
-
-            blink = "animation: blink 1.2s infinite;" if 0 < hrs_left <= 24 else ""
-
-            badge_color = "#3498db" if e["type"] == "Zodiac Change" else "#9b59b6"
-            icon = "♈" if e["type"] == "Zodiac Change" else "🌟"
-
-            html += f"""
-            <div style="
-                margin-bottom: 12px;
-                padding: 12px 14px;
-                border-radius: 10px;
-                background: #0b132b;
-                border-left: 6px solid {badge_color};
-                {blink}
-            ">
-                <div style="font-size:16px; font-weight:600; color:{badge_color};">
-                    {icon} {e['planet']} — {e['type']}
-                </div>
-
-                <div style="font-size:14px; color:#dddddd; margin-top:4px;">
-                    {e['from']} → <b>{e['to']}</b>
-                </div>
-
-                <div style="font-size:13px; color:#ffcc00; margin-top:4px;">
-                    🕒 {t.strftime('%H:%M IST')}
-                </div>
-            </div>
-            """
-
-    st.components.v1.html(html, height=520, scrolling=True)
+    st.dataframe(
+        df_transitions,
+        use_container_width=True,
+        hide_index=True
+    )
 
 # ================= NORTH INDIAN KUNDALI (FINAL FIXED) =================
 
