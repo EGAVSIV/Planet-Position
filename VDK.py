@@ -338,7 +338,7 @@ def jd_to_ist_datetime(jd):
 def get_solar_eclipses(center_jd, count=10):
     past, future = [], []
 
-    FLAGS = swe.FLG_SWIEPH | swe.FLG_ECL_ALL
+    FLAGS = swe.FLG_SWIEPH   # ✅ ONLY valid flag
 
     # ---------- PAST ----------
     jd = center_jd
@@ -380,11 +380,10 @@ def get_solar_eclipses(center_jd, count=10):
 
     return past[::-1], future
 
-
 def get_lunar_eclipses(center_jd, count=10):
     past, future = [], []
 
-    FLAGS = swe.FLG_SWIEPH | swe.FLG_ECL_ALL
+    FLAGS = swe.FLG_SWIEPH   # ✅ ONLY valid flag
 
     # ---------- PAST ----------
     jd = center_jd
