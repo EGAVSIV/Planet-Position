@@ -307,6 +307,48 @@ PLANETS = [
     ("राहु", swe.MEAN_NODE,"रा.")
 ]
 
+def jd_to_ist_datetime(jd):
+    y, m, d, h, mi, s = swe.revjul(jd)
+    dt_utc = datetime.datetime(y, m, d, h, mi, int(s), tzinfo=pytz.utc)
+    return dt_utc.astimezone(pytz.timezone("Asia/Kolkata"))
+
+
+def get_solar_eclipses(center_jd, count=10):
+    past, future = [], []
+
+    jd = center_jd
+    while len(past) < count:
+        ret = swe.sol_eclipse_when_glob(jd, swe.FLG_SWIEPH, False)
+        jd = ret[1][0] - 1
+        past.append(jd_to_ist_datetime(ret[1][0]))
+
+    jd = center_jd
+    while len(future) < count:
+        ret = swe.sol_eclipse_when_glob(jd, swe.FLG_SWIEPH, True)
+        jd = ret[1][0] + 1
+        future.append(jd_to_ist_datetime(ret[1][0]))
+
+    return past[::-1], future
+
+
+def get_lunar_eclipses(center_jd, count=10):
+    past, future = [], []
+
+    jd = center_jd
+    while len(past) < count:
+        ret = swe.lun_eclipse_when(jd, swe.FLG_SWIEPH, False)
+        jd = ret[1][0] - 1
+        past.append(jd_to_ist_datetime(ret[1][0]))
+
+    jd = center_jd
+    while len(future) < count:
+        ret = swe.lun_eclipse_when(jd, swe.FLG_SWIEPH, True)
+        jd = ret[1][0] + 1
+        future.append(jd_to_ist_datetime(ret[1][0]))
+
+    return past[::-1], future
+
+
 # ================= FUNCTIONS =================
 def nakshatra_pada(lon):
     nak_size = 13 + 1/3
@@ -965,6 +1007,40 @@ HOUSE_BOXES = {
 
     8:  (520, 450),   # Bottom tip
 }
+
+st.subheader("🌑🌕 Eclipse Calendar (Drik)")
+
+solar_past, solar_future = get_solar_eclipses(jd, 10)
+lunar_past, lunar_future = get_lunar_eclipses(jd, 10)
+
+col1, col2 = st.columns(2)
+
+with col1:
+    st.markdown("### 🌑 Solar Eclipse — Past 10")
+    st.table(pd.DataFrame(
+        [[i+1, d.strftime("%d-%b-%Y %H:%M IST")] for i, d in enumerate(solar_past)],
+        columns=["#", "Date & Time"]
+    ))
+
+    st.markdown("### 🌑 Solar Eclipse — Upcoming 10")
+    st.table(pd.DataFrame(
+        [[i+1, d.strftime("%d-%b-%Y %H:%M IST")] for i, d in enumerate(solar_future)],
+        columns=["#", "Date & Time"]
+    ))
+
+with col2:
+    st.markdown("### 🌕 Lunar Eclipse — Past 10")
+    st.table(pd.DataFrame(
+        [[i+1, d.strftime("%d-%b-%Y %H:%M IST")] for i, d in enumerate(lunar_past)],
+        columns=["#", "Date & Time"]
+    ))
+
+    st.markdown("### 🌕 Lunar Eclipse — Upcoming 10")
+    st.table(pd.DataFrame(
+        [[i+1, d.strftime("%d-%b-%Y %H:%M IST")] for i, d in enumerate(lunar_future)],
+        columns=["#", "Date & Time"]
+    ))
+
 
 
 def rashi_number_from_deg(deg):
