@@ -271,6 +271,9 @@ with st.sidebar:
 
 FLAGS = swe.FLG_SWIEPH | swe.FLG_SIDEREAL
 swe.set_sid_mode(swe.SIDM_LAHIRI)
+# Required for eclipse calculations
+swe.set_ephe_path(".")
+
 
 # ================= SESSION DEFAULTS =================
 if "sel_date" not in st.session_state:
@@ -335,79 +338,90 @@ def jd_to_ist_datetime(jd):
 def get_solar_eclipses(center_jd, count=10):
     past, future = [], []
 
-    # ---------- PAST SOLAR ECLIPSES ----------
+    FLAGS = swe.FLG_SWIEPH | swe.FLG_ECL_ALL
+
+    # ---------- PAST ----------
     jd = center_jd
     last_jd = None
 
     while len(past) < count:
-        ret = swe.sol_eclipse_when_glob(jd, swe.FLG_SWIEPH, False)
-        eclipse_jd = ret[1][0]
+        try:
+            ret = swe.sol_eclipse_when_glob(jd, FLAGS, False)
+            eclipse_jd = ret[1][0]
+        except swe.Error:
+            jd -= 30
+            continue
 
-        # safety checks
         if eclipse_jd <= 0 or eclipse_jd == last_jd:
             break
 
         past.append(jd_to_ist_datetime(eclipse_jd))
         last_jd = eclipse_jd
-
-        # jump backward safely (≈ 1 synodic month)
         jd = eclipse_jd - 30
 
-    # ---------- FUTURE SOLAR ECLIPSES ----------
+    # ---------- FUTURE ----------
     jd = center_jd
     last_jd = None
 
     while len(future) < count:
-        ret = swe.sol_eclipse_when_glob(jd, swe.FLG_SWIEPH, True)
-        eclipse_jd = ret[1][0]
+        try:
+            ret = swe.sol_eclipse_when_glob(jd, FLAGS, True)
+            eclipse_jd = ret[1][0]
+        except swe.Error:
+            jd += 30
+            continue
 
-        # safety checks
         if eclipse_jd <= 0 or eclipse_jd == last_jd:
             break
 
         future.append(jd_to_ist_datetime(eclipse_jd))
         last_jd = eclipse_jd
-
-        # jump forward safely
         jd = eclipse_jd + 30
 
     return past[::-1], future
 
+
 def get_lunar_eclipses(center_jd, count=10):
     past, future = [], []
 
-    # ---------- PAST LUNAR ECLIPSES ----------
+    FLAGS = swe.FLG_SWIEPH | swe.FLG_ECL_ALL
+
+    # ---------- PAST ----------
     jd = center_jd
     last_jd = None
 
     while len(past) < count:
-        ret = swe.lun_eclipse_when(jd, swe.FLG_SWIEPH, False)
-        eclipse_jd = ret[1][0]
+        try:
+            ret = swe.lun_eclipse_when(jd, FLAGS, False)
+            eclipse_jd = ret[1][0]
+        except swe.Error:
+            jd -= 30
+            continue
 
-        # safety checks
         if eclipse_jd <= 0 or eclipse_jd == last_jd:
             break
 
         past.append(jd_to_ist_datetime(eclipse_jd))
         last_jd = eclipse_jd
-
         jd = eclipse_jd - 30
 
-    # ---------- FUTURE LUNAR ECLIPSES ----------
+    # ---------- FUTURE ----------
     jd = center_jd
     last_jd = None
 
     while len(future) < count:
-        ret = swe.lun_eclipse_when(jd, swe.FLG_SWIEPH, True)
-        eclipse_jd = ret[1][0]
+        try:
+            ret = swe.lun_eclipse_when(jd, FLAGS, True)
+            eclipse_jd = ret[1][0]
+        except swe.Error:
+            jd += 30
+            continue
 
-        # safety checks
         if eclipse_jd <= 0 or eclipse_jd == last_jd:
             break
 
         future.append(jd_to_ist_datetime(eclipse_jd))
         last_jd = eclipse_jd
-
         jd = eclipse_jd + 30
 
     return past[::-1], future
