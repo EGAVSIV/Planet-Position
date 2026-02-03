@@ -997,40 +997,6 @@ HOUSE_BOXES = {
     8:  (520, 450),   # Bottom tip
 }
 
-st.subheader("🌑🌕 Eclipse Calendar (Drik)")
-
-solar_past, solar_future = get_solar_eclipses(jd, 10)
-lunar_past, lunar_future = get_lunar_eclipses(jd, 10)
-
-col1, col2 = st.columns(2)
-
-with col1:
-    st.markdown("### 🌑 Solar Eclipse — Past 10")
-    st.table(pd.DataFrame(
-        [[i+1, d.strftime("%d-%b-%Y %H:%M IST")] for i, d in enumerate(solar_past)],
-        columns=["#", "Date & Time"]
-    ))
-
-    st.markdown("### 🌑 Solar Eclipse — Upcoming 10")
-    st.table(pd.DataFrame(
-        [[i+1, d.strftime("%d-%b-%Y %H:%M IST")] for i, d in enumerate(solar_future)],
-        columns=["#", "Date & Time"]
-    ))
-
-with col2:
-    st.markdown("### 🌕 Lunar Eclipse — Past 10")
-    st.table(pd.DataFrame(
-        [[i+1, d.strftime("%d-%b-%Y %H:%M IST")] for i, d in enumerate(lunar_past)],
-        columns=["#", "Date & Time"]
-    ))
-
-    st.markdown("### 🌕 Lunar Eclipse — Upcoming 10")
-    st.table(pd.DataFrame(
-        [[i+1, d.strftime("%d-%b-%Y %H:%M IST")] for i, d in enumerate(lunar_future)],
-        columns=["#", "Date & Time"]
-    ))
-
-
 
 def rashi_number_from_deg(deg):
     return int(deg // 30) + 1
