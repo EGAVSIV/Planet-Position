@@ -310,8 +310,16 @@ PLANETS = [
 def jd_to_ist_datetime(jd):
     rev = swe.revjul(jd)
 
-    # Swiss Ephemeris may return 6 or 7 values
-    y, m, d, h, mi, s = rev[:6]
+    # Case 1: (y, m, d, hour_float)
+    if len(rev) == 4:
+        y, m, d, hour = rev
+        h = int(hour)
+        mi = int((hour - h) * 60)
+        s = int((((hour - h) * 60) - mi) * 60)
+
+    # Case 2 / 3: (y, m, d, h, mi, s [,flag])
+    else:
+        y, m, d, h, mi, s = rev[:6]
 
     dt_utc = datetime.datetime(
         int(y), int(m), int(d),
@@ -323,43 +331,83 @@ def jd_to_ist_datetime(jd):
 
 
 
+
 def get_solar_eclipses(center_jd, count=10):
     past, future = [], []
 
-    # ---- Past ----
+    # ---------- PAST SOLAR ECLIPSES ----------
     jd = center_jd
+    last_jd = None
+
     while len(past) < count:
         ret = swe.sol_eclipse_when_glob(jd, swe.FLG_SWIEPH, False)
         eclipse_jd = ret[1][0]
-        past.append(jd_to_ist_datetime(eclipse_jd))
-        jd = eclipse_jd - 30   # ⬅ jump back safely
 
-    # ---- Future ----
+        # safety checks
+        if eclipse_jd <= 0 or eclipse_jd == last_jd:
+            break
+
+        past.append(jd_to_ist_datetime(eclipse_jd))
+        last_jd = eclipse_jd
+
+        # jump backward safely (≈ 1 synodic month)
+        jd = eclipse_jd - 30
+
+    # ---------- FUTURE SOLAR ECLIPSES ----------
     jd = center_jd
+    last_jd = None
+
     while len(future) < count:
         ret = swe.sol_eclipse_when_glob(jd, swe.FLG_SWIEPH, True)
         eclipse_jd = ret[1][0]
+
+        # safety checks
+        if eclipse_jd <= 0 or eclipse_jd == last_jd:
+            break
+
         future.append(jd_to_ist_datetime(eclipse_jd))
-        jd = eclipse_jd + 30   # ⬅ jump forward safely
+        last_jd = eclipse_jd
+
+        # jump forward safely
+        jd = eclipse_jd + 30
 
     return past[::-1], future
+
 def get_lunar_eclipses(center_jd, count=10):
     past, future = [], []
 
-    # ---- Past ----
+    # ---------- PAST LUNAR ECLIPSES ----------
     jd = center_jd
+    last_jd = None
+
     while len(past) < count:
         ret = swe.lun_eclipse_when(jd, swe.FLG_SWIEPH, False)
         eclipse_jd = ret[1][0]
+
+        # safety checks
+        if eclipse_jd <= 0 or eclipse_jd == last_jd:
+            break
+
         past.append(jd_to_ist_datetime(eclipse_jd))
+        last_jd = eclipse_jd
+
         jd = eclipse_jd - 30
 
-    # ---- Future ----
+    # ---------- FUTURE LUNAR ECLIPSES ----------
     jd = center_jd
+    last_jd = None
+
     while len(future) < count:
         ret = swe.lun_eclipse_when(jd, swe.FLG_SWIEPH, True)
         eclipse_jd = ret[1][0]
+
+        # safety checks
+        if eclipse_jd <= 0 or eclipse_jd == last_jd:
+            break
+
         future.append(jd_to_ist_datetime(eclipse_jd))
+        last_jd = eclipse_jd
+
         jd = eclipse_jd + 30
 
     return past[::-1], future
