@@ -19,6 +19,8 @@ import pandas as pd
 from collections import defaultdict
 import hashlib
 from streamlit_autorefresh import st_autorefresh
+import base64
+
 
 
 def set_bg_image(image_path: str):
