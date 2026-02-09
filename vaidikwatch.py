@@ -20,6 +20,26 @@ from collections import defaultdict
 import hashlib
 from streamlit_autorefresh import st_autorefresh
 
+
+def set_bg_image(image_path: str):
+    with open(image_path, "rb") as f:
+        encoded = base64.b64encode(f.read()).decode()
+
+    st.markdown(
+        f"""
+        <style>
+        .stApp {{
+            background-image: url("data:image/png;base64,{encoded}");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }}
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
 # ================= LOGIN =================
 def hash_pwd(pwd):
     return hashlib.sha256(pwd.encode()).hexdigest()
@@ -42,6 +62,8 @@ if not st.session_state.authenticated:
             st.error("Invalid credentials")
     st.stop()
 
+
+
 # ================= CONFIG =================
 st.set_page_config(
     page_title="🪐 वेदिक ग्रह घड़ी — द्रिक पंचांग",
@@ -52,6 +74,8 @@ col_logo, col_ticker = st.columns([0.22, 0.78])
 
 with col_logo:
     st.image("Assets/sgy1.png", width=220)
+
+set_bg_image("Assets/BG11.png")
 
 # ================= ROTATING QUOTES =================
 QUOTES = [
