@@ -75,6 +75,52 @@ with col_logo:
 
 set_bg_image("Assets/BG11.png")
 
+# ================= SOLID CARD STYLING =================
+st.markdown("""
+<style>
+
+/* Solid Card Container */
+.solid-card {
+    background-color: #0f172a;  /* solid dark navy */
+    border: 2px solid #00e6ff;
+    border-radius: 14px;
+    padding: 18px;
+    box-shadow: 0 0 18px rgba(0,230,255,0.35);
+    margin-bottom: 15px;
+}
+
+/* Card Title */
+.solid-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #00e6ff;
+    margin-bottom: 10px;
+}
+
+/* Table Styling */
+.solid-card table {
+    color: white;
+}
+
+.solid-card thead tr th {
+    background-color: #1e293b !important;
+    color: #00e6ff !important;
+}
+
+.solid-card tbody tr td {
+    background-color: #111827 !important;
+    color: #f1f5f9 !important;
+}
+
+/* Dataframe fix */
+div[data-testid="stDataFrame"] {
+    background-color: #0f172a !important;
+    border-radius: 10px;
+}
+
+</style>
+""", unsafe_allow_html=True)
+
 # ================= ROTATING QUOTES =================
 QUOTES = [
     "भीड़ में सब लोग अच्छे नहीं होते और अच्छे लोगों की कभी भीड़ नहीं होती",
@@ -520,7 +566,27 @@ with left:
     st.components.v1.html(generate_svg(pos, retro), height=720)
 
 with right:
-    st.subheader("🌙 ज्योतिष सार")
+    st.markdown('<div class="solid-card">', unsafe_allow_html=True)
+    st.markdown('<div class="solid-title">🌙 ज्योतिष सार</div>', unsafe_allow_html=True)
+
+    moon_nak, moon_lord, moon_pada = nakshatra_pada(pos["चन्द्र"])
+
+    summary = [
+        ["चन्द्र नक्षत्र", str(moon_nak)],
+        ["नक्षत्र पद", str(moon_pada)],
+        ["नक्षत्र स्वामी", str(moon_lord)],
+        ["लग्न", str(lagna_sign)],
+        ["लग्न अंश", f"{lagna_deg:.2f}°"],
+        ["समय (IST)", dt_ist.strftime("%d-%b-%Y %H:%M")]
+    ]
+
+st.table(pd.DataFrame(summary, columns=["तत्व", "मान"]))
+
+st.markdown('</div>', unsafe_allow_html=True)
+
+st.table(pd.DataFrame(summary, columns=["तत्व", "मान"]))
+
+st.markdown('</div>', unsafe_allow_html=True)
 
     moon_nak, moon_lord, moon_pada = nakshatra_pada(pos["चन्द्र"])
 
@@ -535,7 +601,8 @@ with right:
 
     st.table(pd.DataFrame(summary, columns=["तत्व", "मान"]))
 
-    st.subheader("🪐 ग्रह स्थिति")
+    st.markdown('<div class="solid-card">', unsafe_allow_html=True)
+    st.markdown('<div class="solid-title">🪐 ग्रह स्थिति</div>', unsafe_allow_html=True)
     rows = []
 
     for p, code, sym in PLANETS:
@@ -561,6 +628,7 @@ with right:
         rows,
         columns=["ग्रह","डिग्री","राशि","नक्षत्र","स्थिति"]
     ))
+    st.markdown('</div>', unsafe_allow_html=True)
 
 ZODIACS = [
     "Aries","Taurus","Gemini","Cancer","Leo","Virgo",
@@ -765,7 +833,8 @@ for name, data in events.items():
     else:
         st.caption(f"{name} not found in the next 30 days.")
 
-st.subheader("🔭 Upcoming Conjunctions & Oppositions (Next 10 Days)")
+st.markdown('<div class="solid-card">', unsafe_allow_html=True)
+st.markdown('<div class="solid-title">🔭 Upcoming Conjunctions & Oppositions (Next 10 Days)</div>', unsafe_allow_html=True)
 
 events = upcoming_aspects(
     start_dt_utc=dt_utc,
@@ -799,6 +868,7 @@ else:
         use_container_width=True,
         hide_index=True
     )
+    st.markdown('</div>', unsafe_allow_html=True)
 
 NAK_SIZE = 13 + 1/3
 
