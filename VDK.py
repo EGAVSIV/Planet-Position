@@ -590,14 +590,14 @@ st.markdown('</div>', unsafe_allow_html=True)
 
 moon_nak, moon_lord, moon_pada = nakshatra_pada(pos["चन्द्र"])
 
-    summary = [
-        ["चन्द्र नक्षत्र", str(moon_nak)],
-        ["नक्षत्र पद", str(moon_pada)],
-        ["नक्षत्र स्वामी", str(moon_lord)],
-        ["लग्न", str(lagna_sign)],
-        ["लग्न अंश", f"{lagna_deg:.2f}°"],
-        ["समय (IST)", dt_ist.strftime("%d-%b-%Y %H:%M")]
-    ]
+summary = [
+    ["चन्द्र नक्षत्र", str(moon_nak)],
+    ["नक्षत्र पद", str(moon_pada)],
+    ["नक्षत्र स्वामी", str(moon_lord)],
+    ["लग्न", str(lagna_sign)],
+    ["लग्न अंश", f"{lagna_deg:.2f}°"],
+    ["समय (IST)", dt_ist.strftime("%d-%b-%Y %H:%M")]
+]
 
     st.table(pd.DataFrame(summary, columns=["तत्व", "मान"]))
 
