@@ -584,7 +584,7 @@ st.table(pd.DataFrame(summary, columns=["तत्व", "मान"]))
 
 st.markdown('</div>', unsafe_allow_html=True)
 
-st.table(pd.DataFrame(summary, columns=["तत्व", "मान"]))
+#st.table(pd.DataFrame(summary, columns=["तत्व", "मान"]))
 
 st.markdown('</div>', unsafe_allow_html=True)
 
@@ -599,7 +599,7 @@ summary = [
     ["समय (IST)", dt_ist.strftime("%d-%b-%Y %H:%M")]
 ]
 
-st.table(pd.DataFrame(summary, columns=["तत्व", "मान"]))
+#st.table(pd.DataFrame(summary, columns=["तत्व", "मान"]))
 
 st.markdown('<div class="solid-card">', unsafe_allow_html=True)
 st.markdown('<div class="solid-title">🪐 ग्रह स्थिति</div>', unsafe_allow_html=True)
