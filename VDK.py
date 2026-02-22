@@ -588,7 +588,7 @@ st.table(pd.DataFrame(summary, columns=["तत्व", "मान"]))
 
 st.markdown('</div>', unsafe_allow_html=True)
 
-    moon_nak, moon_lord, moon_pada = nakshatra_pada(pos["चन्द्र"])
+moon_nak, moon_lord, moon_pada = nakshatra_pada(pos["चन्द्र"])
 
     summary = [
         ["चन्द्र नक्षत्र", str(moon_nak)],
