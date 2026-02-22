@@ -628,7 +628,7 @@ st.table(pd.DataFrame(
     rows,
     columns=["ग्रह","डिग्री","राशि","नक्षत्र","स्थिति"]
 ))
-    st.markdown('</div>', unsafe_allow_html=True)
+st.markdown('</div>', unsafe_allow_html=True)
 
 ZODIACS = [
     "Aries","Taurus","Gemini","Cancer","Leo","Virgo",
