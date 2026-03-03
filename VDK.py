@@ -71,7 +71,7 @@ st.set_page_config(
 col_logo, col_ticker = st.columns([0.22, 0.78])
 
 with col_logo:
-    st.image("Assets/sgy1.png", width=220)
+    st.image("Assets/Raosaab.png", width=220)
 
 set_bg_image("Assets/BG11.png")
 
