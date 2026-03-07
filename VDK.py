@@ -451,10 +451,10 @@ def get_sun_moon_times(date, lat, lon):
     moonrise = swe.revjul(mr[1])
     moonset = swe.revjul(ms[1])
 
-    def fmt(x):
-        return f"{int(x[3]):02d}:{int(x[4]):02d}"
+def fmt(x):
+    return f"{int(x[3]):02d}:{int(x[4]):02d}"
 
-    return fmt(sunrise), fmt(sunset), fmt(moonrise), fmt(moonset)
+return fmt(sunrise), fmt(sunset), fmt(moonrise), fmt(moonset)
 
 
 TITHI_NAMES = [
