@@ -432,21 +432,28 @@ def get_sun_moon_times(date, lat, lon):
 
     jd = swe.julday(date.year, date.month, date.day, 0)
 
+    geopos = (lon, lat, 0)
+
     # Sunrise
-    rs = swe.rise_trans(jd, swe.SUN, lon, lat, rsmi=swe.CALC_RISE)
+    rs = swe.rise_trans(jd, swe.SUN, geopos, swe.CALC_RISE)
     sunrise = swe.revjul(rs[1])
 
     # Sunset
-    ss = swe.rise_trans(jd, swe.SUN, lon, lat, rsmi=swe.CALC_SET)
+    ss = swe.rise_trans(jd, swe.SUN, geopos, swe.CALC_SET)
     sunset = swe.revjul(ss[1])
 
     # Moonrise
-    mr = swe.rise_trans(jd, swe.MOON, lon, lat, rsmi=swe.CALC_RISE)
+    mr = swe.rise_trans(jd, swe.MOON, geopos, swe.CALC_RISE)
     moonrise = swe.revjul(mr[1])
 
     # Moonset
-    ms = swe.rise_trans(jd, swe.MOON, lon, lat, rsmi=swe.CALC_SET)
+    ms = swe.rise_trans(jd, swe.MOON, geopos, swe.CALC_SET)
     moonset = swe.revjul(ms[1])
+
+    def fmt(x):
+        return f"{int(x[3]):02d}:{int(x[4]):02d}"
+
+    return fmt(sunrise), fmt(sunset), fmt(moonrise), fmt(moonset)
 
     def to_time(x):
         return f"{int(x[3]):02d}:{int(x[4]):02d}"
