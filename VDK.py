@@ -434,11 +434,21 @@ def get_sun_moon_times(date, lat, lon):
 
     geopos = (lon, lat, 0)
 
-    rs = swe.rise_trans(jd, swe.SUN, geopos, swe.CALC_RISE | swe.BIT_DISC_CENTER)
-    ss = swe.rise_trans(jd, swe.SUN, geopos, swe.CALC_SET | swe.BIT_DISC_CENTER)
+    rs = swe.rise_trans(jd, swe.SUN,
+                        swe.CALC_RISE | swe.BIT_DISC_CENTER,
+                        geopos)
 
-    mr = swe.rise_trans(jd, swe.MOON, geopos, swe.CALC_RISE)
-    ms = swe.rise_trans(jd, swe.MOON, geopos, swe.CALC_SET)
+    ss = swe.rise_trans(jd, swe.SUN,
+                        swe.CALC_SET | swe.BIT_DISC_CENTER,
+                        geopos)
+
+    mr = swe.rise_trans(jd, swe.MOON,
+                        swe.CALC_RISE,
+                        geopos)
+
+    ms = swe.rise_trans(jd, swe.MOON,
+                        swe.CALC_SET,
+                        geopos)
 
     sunrise = swe.revjul(rs[1])
     sunset = swe.revjul(ss[1])
@@ -450,15 +460,6 @@ def get_sun_moon_times(date, lat, lon):
 
     return fmt(sunrise), fmt(sunset), fmt(moonrise), fmt(moonset)
 
-    def to_time(x):
-        return f"{int(x[3]):02d}:{int(x[4]):02d}"
-
-    return (
-        to_time(sunrise),
-        to_time(sunset),
-        to_time(moonrise),
-        to_time(moonset)
-    )
 
 TITHI_NAMES = [
 "प्रतिपदा","द्वितीया","तृतीया","चतुर्थी","पंचमी",
