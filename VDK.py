@@ -434,34 +434,29 @@ def get_sun_moon_times(date, lat, lon):
 
     geopos = (lon, lat, 0)
 
-    rs = swe.rise_trans(jd, swe.SUN,
-                        swe.CALC_RISE | swe.BIT_DISC_CENTER,
-                        geopos)
+    rs = swe.rise_trans(jd, swe.SUN, swe.CALC_RISE | swe.BIT_DISC_CENTER, geopos)
+    ss = swe.rise_trans(jd, swe.SUN, swe.CALC_SET  | swe.BIT_DISC_CENTER, geopos)
 
-    ss = swe.rise_trans(jd, swe.SUN,
-                        swe.CALC_SET | swe.BIT_DISC_CENTER,
-                        geopos)
+    mr = swe.rise_trans(jd, swe.MOON, swe.CALC_RISE, geopos)
+    ms = swe.rise_trans(jd, swe.MOON, swe.CALC_SET,  geopos)
 
-    mr = swe.rise_trans(jd, swe.MOON,
-                        swe.CALC_RISE,
-                        geopos)
+    def jd_to_time(res):
+        try:
+            if res[0] != 0:
+                return "—"
+            x = swe.revjul(res[1][0])
+            hour = int(x[3])
+            minute = int((x[3] - hour) * 60)
+            return f"{hour:02d}:{minute:02d}"
+        except:
+            return "—"
 
-    ms = swe.rise_trans(jd, swe.MOON,
-                        swe.CALC_SET,
-                        geopos)
+    sunrise  = jd_to_time(rs)
+    sunset   = jd_to_time(ss)
+    moonrise = jd_to_time(mr)
+    moonset  = jd_to_time(ms)
 
-    sunrise = swe.revjul(rs[1][0])
-    sunset  = swe.revjul(ss[1][0])
-    moonrise = swe.revjul(mr[1][0])
-    moonset  = swe.revjul(ms[1][0])
-
-    def fmt(x):
-        hour = int(x[3])
-        minute = int((x[3] - hour) * 60)
-        return f"{hour:02d}:{minute:02d}"
-
-    return fmt(sunrise), fmt(sunset), fmt(moonrise), fmt(moonset)
-
+    return sunrise, sunset, moonrise, moonset
 TITHI_NAMES = ["प्रतिपदा","द्वितीया","तृतीया","चतुर्थी","पंचमी","षष्ठी","सप्तमी","अष्टमी","नवमी","दशमी","एकादशी","द्वादशी","त्रयोदशी","चतुर्दशी","पूर्णिमा","प्रतिपदा","द्वितीया","तृतीया","चतुर्थी","पंचमी","षष्ठी","सप्तमी","अष्टमी","नवमी","दशमी","एकादशी","द्वादशी","त्रयोदशी","चतुर्दशी","अमावस्या"]
 
 def get_tithi(moon_lon, sun_lon):
