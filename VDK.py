@@ -441,10 +441,10 @@ def get_sun_moon_times(date, lat, lon):
     mr = swe.rise_trans(jd, swe.MOON, lon, lat, swe.CALC_RISE)
     ms = swe.rise_trans(jd, swe.MOON, lon, lat, swe.CALC_SET)
 
-    sunrise = swe.revjul(rs[1])
-    sunset = swe.revjul(ss[1])
-    moonrise = swe.revjul(mr[1])
-    moonset = swe.revjul(ms[1])
+    sunrise = swe.revjul(rs[1][0])
+    sunset  = swe.revjul(ss[1][0])
+    moonrise = swe.revjul(mr[1][0])
+    moonset  = swe.revjul(ms[1][0])
 
     def fmt(x):
         return f"{int(x[3]):02d}:{int(x[4]):02d}"
