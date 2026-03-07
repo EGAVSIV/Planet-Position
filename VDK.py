@@ -428,6 +428,78 @@ def get_true_moon_lon_and_speed(jd):
     return moon_lon, moon_speed
 
 
+def get_sun_moon_times(date, lat, lon):
+
+    jd = swe.julday(date.year, date.month, date.day, 0)
+
+    # Sunrise
+    rs = swe.rise_trans(jd, swe.SUN, lon, lat, rsmi=swe.CALC_RISE)
+    sunrise = swe.revjul(rs[1])
+
+    # Sunset
+    ss = swe.rise_trans(jd, swe.SUN, lon, lat, rsmi=swe.CALC_SET)
+    sunset = swe.revjul(ss[1])
+
+    # Moonrise
+    mr = swe.rise_trans(jd, swe.MOON, lon, lat, rsmi=swe.CALC_RISE)
+    moonrise = swe.revjul(mr[1])
+
+    # Moonset
+    ms = swe.rise_trans(jd, swe.MOON, lon, lat, rsmi=swe.CALC_SET)
+    moonset = swe.revjul(ms[1])
+
+    def to_time(x):
+        return f"{int(x[3]):02d}:{int(x[4]):02d}"
+
+    return (
+        to_time(sunrise),
+        to_time(sunset),
+        to_time(moonrise),
+        to_time(moonset)
+    )
+
+TITHI_NAMES = [
+"प्रतिपदा","द्वितीया","तृतीया","चतुर्थी","पंचमी",
+"षष्ठी","सप्तमी","अष्टमी","नवमी","दशमी",
+"एकादशी","द्वादशी","त्रयोदशी","चतुर्दशी","पूर्णिमा",
+"प्रतिपदा","द्वितीया","तृतीया","चतुर्थी","पंचमी",
+"षष्ठी","सप्तमी","अष्टमी","नवमी","दशमी",
+"एकादशी","द्वादशी","त्रयोदशी","चतुर्दशी","अमावस्या"
+]
+
+def get_tithi(moon_lon, sun_lon):
+
+    diff = (moon_lon - sun_lon) % 360
+    tithi_index = int(diff / 12)
+
+    return TITHI_NAMES[tithi_index]
+
+
+CHOGHADIYA_DAY = [
+"उद्वेग","चर","लाभ","अमृत",
+"काल","शुभ","रोग","उद्वेग"
+]
+
+def get_running_choghadiya(current_time, sunrise, sunset):
+
+    sr = datetime.datetime.strptime(sunrise,"%H:%M")
+    ss = datetime.datetime.strptime(sunset,"%H:%M")
+    now = datetime.datetime.strptime(current_time,"%H:%M")
+
+    day_duration = (ss - sr).seconds / 8
+
+    for i in range(8):
+        start = sr + datetime.timedelta(seconds=i*day_duration)
+        end = start + datetime.timedelta(seconds=day_duration)
+
+        if start <= now <= end:
+            return CHOGHADIYA_DAY[i]
+
+    return "रात्रि चोघड़िया"
+
+
+
+
 def generate_svg(pos, retro):
     from collections import defaultdict
 
@@ -571,12 +643,28 @@ with right:
 
     moon_nak, moon_lord, moon_pada = nakshatra_pada(pos["चन्द्र"])
 
+
+sunrise, sunset, moonrise, moonset = get_sun_moon_times(date, LAT, LON)
+
+tithi = get_tithi(pos["चन्द्र"], pos["सूर्य"])
+
+current_time_str = dt_ist.strftime("%H:%M")
+
+choghadiya = get_running_choghadiya(current_time_str, sunrise, sunset)
+
     summary = [
         ["चन्द्र नक्षत्र", str(moon_nak)],
         ["नक्षत्र पद", str(moon_pada)],
         ["नक्षत्र स्वामी", str(moon_lord)],
         ["लग्न", str(lagna_sign)],
         ["लग्न अंश", f"{lagna_deg:.2f}°"],
+        ["समय (IST)", dt_ist.strftime("%d-%b-%Y %H:%M")],
+        ["तिथि", tithi],
+        ["चोघड़िया (चल रहा)", choghadiya],
+        ["सूर्योदय", sunrise],
+        ["सूर्यास्त", sunset],
+        ["चंद्र उदय", moonrise],
+        ["चंद्र अस्त", moonset],
         ["समय (IST)", dt_ist.strftime("%d-%b-%Y %H:%M")]
     ]
 
