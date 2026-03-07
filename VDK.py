@@ -275,7 +275,7 @@ with st.sidebar:
     # ================= NAME ROTATOR =================
     st.markdown("---")
 
-    //st_autorefresh(interval=10000000, key="name_refresh")
+    #st_autorefresh(interval=10000000, key="name_refresh")
 
     st.session_state.name_style_idx = (
         st.session_state.name_style_idx + 1
