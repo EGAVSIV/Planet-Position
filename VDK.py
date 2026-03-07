@@ -643,14 +643,13 @@ with right:
 
     moon_nak, moon_lord, moon_pada = nakshatra_pada(pos["चन्द्र"])
 
+    sunrise, sunset, moonrise, moonset = get_sun_moon_times(date, LAT, LON)
 
-sunrise, sunset, moonrise, moonset = get_sun_moon_times(date, LAT, LON)
+    tithi = get_tithi(pos["चन्द्र"], pos["सूर्य"])
 
-tithi = get_tithi(pos["चन्द्र"], pos["सूर्य"])
+    current_time_str = dt_ist.strftime("%H:%M")
 
-current_time_str = dt_ist.strftime("%H:%M")
-
-choghadiya = get_running_choghadiya(current_time_str, sunrise, sunset)
+    choghadiya = get_running_choghadiya(current_time_str, sunrise, sunset)
 
     summary = [
         ["चन्द्र नक्षत्र", str(moon_nak)],
@@ -658,7 +657,6 @@ choghadiya = get_running_choghadiya(current_time_str, sunrise, sunset)
         ["नक्षत्र स्वामी", str(moon_lord)],
         ["लग्न", str(lagna_sign)],
         ["लग्न अंश", f"{lagna_deg:.2f}°"],
-        ["समय (IST)", dt_ist.strftime("%d-%b-%Y %H:%M")],
         ["तिथि", tithi],
         ["चोघड़िया (चल रहा)", choghadiya],
         ["सूर्योदय", sunrise],
@@ -668,26 +666,9 @@ choghadiya = get_running_choghadiya(current_time_str, sunrise, sunset)
         ["समय (IST)", dt_ist.strftime("%d-%b-%Y %H:%M")]
     ]
 
-st.table(pd.DataFrame(summary, columns=["तत्व", "मान"]))
+    st.table(pd.DataFrame(summary, columns=["तत्व", "मान"]))
 
-st.markdown('</div>', unsafe_allow_html=True)
-
-#st.table(pd.DataFrame(summary, columns=["तत्व", "मान"]))
-
-st.markdown('</div>', unsafe_allow_html=True)
-
-moon_nak, moon_lord, moon_pada = nakshatra_pada(pos["चन्द्र"])
-
-summary = [
-    ["चन्द्र नक्षत्र", str(moon_nak)],
-    ["नक्षत्र पद", str(moon_pada)],
-    ["नक्षत्र स्वामी", str(moon_lord)],
-    ["लग्न", str(lagna_sign)],
-    ["लग्न अंश", f"{lagna_deg:.2f}°"],
-    ["समय (IST)", dt_ist.strftime("%d-%b-%Y %H:%M")]
-]
-
-#st.table(pd.DataFrame(summary, columns=["तत्व", "मान"]))
+    st.markdown('</div>', unsafe_allow_html=True)
 
 st.markdown('<div class="solid-card">', unsafe_allow_html=True)
 st.markdown('<div class="solid-title">🪐 ग्रह स्थिति</div>', unsafe_allow_html=True)
