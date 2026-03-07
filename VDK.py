@@ -275,7 +275,7 @@ with st.sidebar:
     # ================= NAME ROTATOR =================
     st.markdown("---")
 
-    st_autorefresh(interval=500000, key="name_refresh")
+    st_autorefresh(interval=100000, key="name_refresh")
 
     st.session_state.name_style_idx = (
         st.session_state.name_style_idx + 1
@@ -311,7 +311,7 @@ with st.sidebar:
     ACTIVE_QUOTES = QUOTES if quote_lang == "हिंदी" else EN_QUOTES
 
     # ================= QUOTE ROTATOR =================
-    st_autorefresh(interval=500000, key="quote_refresh")
+    st_autorefresh(interval=1000, key="quote_refresh")
 
     st.session_state.quote_index = (
         st.session_state.quote_index + 1
