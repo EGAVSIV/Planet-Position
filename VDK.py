@@ -18,7 +18,7 @@ import datetime, pytz, math
 import pandas as pd
 from collections import defaultdict
 import hashlib
-from streamlit_autorefresh import st_autorefresh
+#from streamlit_autorefresh import st_autorefresh
 import base64
 
 def set_bg_image(image_path: str):
@@ -311,7 +311,7 @@ with st.sidebar:
     ACTIVE_QUOTES = QUOTES if quote_lang == "हिंदी" else EN_QUOTES
 
     # ================= QUOTE ROTATOR =================
-    st_autorefresh(interval=1000, key="quote_refresh")
+    #st_autorefresh(interval=1000, key="quote_refresh")
 
     st.session_state.quote_index = (
         st.session_state.quote_index + 1
