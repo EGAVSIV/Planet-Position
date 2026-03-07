@@ -434,20 +434,15 @@ def get_sun_moon_times(date, lat, lon):
 
     geopos = (lon, lat, 0)
 
-    # Sunrise
-    rs = swe.rise_trans(jd, swe.SUN, geopos, swe.CALC_RISE)
-    sunrise = swe.revjul(rs[1])
+    rs = swe.rise_trans(jd, swe.SUN, geopos, swe.CALC_RISE | swe.BIT_DISC_CENTER)
+    ss = swe.rise_trans(jd, swe.SUN, geopos, swe.CALC_SET | swe.BIT_DISC_CENTER)
 
-    # Sunset
-    ss = swe.rise_trans(jd, swe.SUN, geopos, swe.CALC_SET)
-    sunset = swe.revjul(ss[1])
-
-    # Moonrise
     mr = swe.rise_trans(jd, swe.MOON, geopos, swe.CALC_RISE)
-    moonrise = swe.revjul(mr[1])
-
-    # Moonset
     ms = swe.rise_trans(jd, swe.MOON, geopos, swe.CALC_SET)
+
+    sunrise = swe.revjul(rs[1])
+    sunset = swe.revjul(ss[1])
+    moonrise = swe.revjul(mr[1])
     moonset = swe.revjul(ms[1])
 
     def fmt(x):
