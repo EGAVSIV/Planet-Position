@@ -432,18 +432,13 @@ def get_sun_moon_times(date, lat, lon):
 
     jd = swe.julday(date.year, date.month, date.day, 0)
 
-    # Sunrise
     rs = swe.rise_trans(jd, swe.SUN, lon, lat,
                         swe.CALC_RISE | swe.BIT_DISC_CENTER)
 
-    # Sunset
     ss = swe.rise_trans(jd, swe.SUN, lon, lat,
                         swe.CALC_SET | swe.BIT_DISC_CENTER)
 
-    # Moonrise
     mr = swe.rise_trans(jd, swe.MOON, lon, lat, swe.CALC_RISE)
-
-    # Moonset
     ms = swe.rise_trans(jd, swe.MOON, lon, lat, swe.CALC_SET)
 
     sunrise = swe.revjul(rs[1])
@@ -451,10 +446,10 @@ def get_sun_moon_times(date, lat, lon):
     moonrise = swe.revjul(mr[1])
     moonset = swe.revjul(ms[1])
 
-def fmt(x):
-    return f"{int(x[3]):02d}:{int(x[4]):02d}"
+    def fmt(x):
+        return f"{int(x[3]):02d}:{int(x[4]):02d}"
 
-return fmt(sunrise), fmt(sunset), fmt(moonrise), fmt(moonset)
+    return fmt(sunrise), fmt(sunset), fmt(moonrise), fmt(moonset)
 
 
 TITHI_NAMES = [
