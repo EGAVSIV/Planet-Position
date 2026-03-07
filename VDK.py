@@ -441,13 +441,29 @@ def get_sun_moon_times(date, lat, lon):
     ms = swe.rise_trans(jd, swe.MOON, swe.CALC_SET,  geopos)
 
     def jd_to_time(res):
+
         try:
+
             if res[0] != 0:
                 return "—"
-            x = swe.revjul(res[1][0])
-            hour = int(x[3])
-            minute = int((x[3] - hour) * 60)
-            return f"{hour:02d}:{minute:02d}"
+
+        # Julian → calendar
+            y, m, d, h = swe.revjul(res[1][0])
+
+            hour = int(h)
+            minute = int((h - hour) * 60)
+
+        # UTC datetime
+            dt_utc = datetime.datetime(
+                y, m, d, hour, minute,
+                tzinfo=pytz.utc
+            )
+
+        # Convert to IST
+            dt_ist = dt_utc.astimezone(pytz.timezone("Asia/Kolkata"))
+
+            return dt_ist.strftime("%H:%M")
+
         except:
             return "—"
 
