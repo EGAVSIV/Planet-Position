@@ -64,7 +64,7 @@ if not st.session_state.authenticated:
 
 # ================= CONFIG =================
 st.set_page_config(
-    page_title="🪐 वेदिक ग्रह घड़ी — द्रिक पंचांग",
+    page_title="🪐 जन्म कुंडली और गृह स्थिति व द्रिक पंचांग",
     layout="wide",
     page_icon="🪐"
 )
