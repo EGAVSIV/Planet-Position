@@ -321,9 +321,17 @@ with st.sidebar:
     # ================= QUOTE ROTATOR =================
     #st_autorefresh(interval=1000, key="quote_refresh")
 
-    st.session_state.quote_index = (
-        st.session_state.quote_index + 1
-    ) % len(ACTIVE_QUOTES)
+    if "quote_time" not in st.session_state:
+        st.session_state.quote_time = datetime.datetime.now()
+
+    now = datetime.datetime.now()
+
+    if (now - st.session_state.quote_time).seconds > 5:
+        st.session_state.quote_index = (
+            st.session_state.quote_index + 1
+        ) % len(ACTIVE_QUOTES)
+
+        st.session_state.quote_time = now
 
     st.markdown(
         f"""
