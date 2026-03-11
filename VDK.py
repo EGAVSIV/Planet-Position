@@ -277,9 +277,17 @@ with st.sidebar:
 
     #st_autorefresh(interval=10000000, key="name_refresh")
 
-    st.session_state.name_style_idx = (
-        st.session_state.name_style_idx + 1
-    ) % len(NAME_STYLES)
+    if "name_style_time" not in st.session_state:
+        st.session_state.name_style_time = datetime.datetime.now()
+
+    now = datetime.datetime.now()
+
+    if (now - st.session_state.name_style_time).seconds > 10:
+        st.session_state.name_style_idx = (
+            st.session_state.name_style_idx + 1
+        ) % len(NAME_STYLES)
+
+        st.session_state.name_style_time = now
 
     style = NAME_STYLES[st.session_state.name_style_idx]
 
