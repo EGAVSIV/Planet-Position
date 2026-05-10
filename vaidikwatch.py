@@ -43,6 +43,7 @@ def set_bg_image(image_path: str):
     )
 
 # ================= LOGIN =================
+# ================= LOGIN =================
 def hash_pwd(pwd):
     return hashlib.sha256(pwd.encode()).hexdigest()
 
@@ -51,18 +52,32 @@ USERS = st.secrets["users"]
 if "authenticated" not in st.session_state:
     st.session_state.authenticated = False
 
+if "username" not in st.session_state:
+    st.session_state.username = ""
+
 if not st.session_state.authenticated:
+
     st.title("🔐 Login Required")
+
     u = st.text_input("Username")
     p = st.text_input("Password", type="password")
 
     if st.button("Login"):
+
         if u in USERS and hash_pwd(p) == USERS[u]:
+
             st.session_state.authenticated = True
+            st.session_state.username = u   # ✅ STORE USERNAME
+
             st.rerun()
+
         else:
             st.error("Invalid credentials")
+
     st.stop()
+
+
+st.success(f"🙏 Welcome, {st.session_state.username}")
 
 
 
