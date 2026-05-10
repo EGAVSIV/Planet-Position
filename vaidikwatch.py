@@ -77,7 +77,24 @@ if not st.session_state.authenticated:
     st.stop()
 
 
-st.success(f"🙏 Welcome, {st.session_state.username}")
+st.markdown(
+    f"""
+    <div style="
+        padding:12px;
+        border-radius:12px;
+        background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+        color:white;
+        font-size:22px;
+        font-weight:bold;
+        text-align:center;
+        box-shadow:0 0 15px rgba(0,255,255,0.4);
+        margin-bottom:15px;
+    ">
+        🙏 Welcome, {st.session_state.username}
+    </div>
+    """,
+    unsafe_allow_html=True
+)
 
 
 
