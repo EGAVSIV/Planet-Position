@@ -20,6 +20,8 @@ pytz
 pyswisseph
 reportlab
 altair==4.2.2
+pyswisseph
+pyswisseph
 
 
 
