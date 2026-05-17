@@ -1,28 +1,48 @@
-pyswisseph
-DateTime
-requests
-pandas
-matplotlib
-#streamlit
+# ================================
+# Core Web & App Framework
+# ================================
 streamlit==1.31.1
-pillow
-swisseph
-pytz
-streamlit
-pygame
-pillow
-pytz
-swisseph
-numpy
 streamlit-autorefresh
-streamlit
-pytz
-pyswisseph
-reportlab
 altair==4.2.2
-pyswisseph
+
+# ================================
+# Data Processing & Analysis
+# ================================
+pandas
+numpy
+
+# ================================
+# Networking & API
+# ================================
+requests
+
+# ================================
+# Date & Time Utilities
+# ================================
+DateTime
+pytz
+
+# ================================
+# Visualization
+# ================================
+matplotlib
+
+# ================================
+# Image / Media Processing
+# ================================
+pillow
+pygame
+
+# ================================
+# Astrology / Astronomy
+# ================================
+swisseph
 pyswisseph
 
+# ================================
+# PDF / Reporting
+# ================================
+reportlab
 
 
 
