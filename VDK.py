@@ -73,7 +73,7 @@ col_logo, col_ticker = st.columns([0.22, 0.78])
 with col_logo:
     st.image("Assets/Raosaab.png", width=220)
 
-set_bg_image("Assets/BG11.png")
+set_bg_image("Assets/BG01.png")
 
 # ================= SOLID CARD STYLING =================
 st.markdown("""
