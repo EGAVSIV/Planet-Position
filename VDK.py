@@ -1,4 +1,3 @@
-
 import os
 # ==================================================
 # Python 3.13 compatibility patch for Streamlit
@@ -533,8 +532,11 @@ def generate_svg(pos, retro):
     INNER_R = 270
     LINE_R  = 260
     TEXT_R  = 210
-    BASE_PLANET_R = 200
-    STACK_GAP = 18
+    BASE_PLANET_R = 195
+    STACK_GAP = 26
+
+    # Calculate Moon Nakshatra for center display
+    moon_nak, _, moon_pada = nakshatra_pada(pos["चन्द्र"])
 
     svg = f"""
     <svg width="700" height="700" viewBox="0 0 700 700"
@@ -552,6 +554,22 @@ def generate_svg(pos, retro):
             fill="#050b18"
             stroke="#88c9ff"
             stroke-width="3"/>
+
+    <!-- Display Current Nakshatra in Clock Center -->
+    <text x="{cx}" y="{cy - 10}"
+          fill="#ffd700"
+          font-size="16"
+          font-weight="bold"
+          text-anchor="middle">
+        नक्षत्र: {moon_nak}
+    </text>
+    <text x="{cx}" y="{cy + 15}"
+          fill="#00e6ff"
+          font-size="14"
+          font-weight="bold"
+          text-anchor="middle">
+        (पद {moon_pada})
+    </text>
     """
 
     # राशियाँ
@@ -588,24 +606,26 @@ def generate_svg(pos, retro):
 
     for name, code, sym in PLANETS:
         rashi = int(pos[name] // 30)
-        groups[rashi].append((name, sym))
+        groups[rashi].append((name, sym, pos[name]))
 
-    groups[int(pos["केतु"] // 30)].append(("केतु", "के."))
+    ketu_deg = pos["केतु"]
+    groups[int(ketu_deg // 30)].append(("केतु", "के.", ketu_deg))
 
     for rashi, plist in groups.items():
         ang = math.radians(90 - (rashi * 30 + 15))
 
-        for i, (name, sym) in enumerate(plist):
+        for i, (name, sym, lon) in enumerate(plist):
             r = BASE_PLANET_R - i * STACK_GAP
 
             px = cx + r * math.cos(ang)
             py = cy - r * math.sin(ang)
 
+            deg_in_sign = lon % 30
             color = "#ff4d4d" if retro.get(name, False) else "#79e887"
 
             svg += f"""
             <circle cx="{px}" cy="{py}"
-                    r="11"
+                    r="12"
                     fill="{color}"
                     stroke="#0b3d1f"
                     stroke-width="1"/>
@@ -617,6 +637,15 @@ def generate_svg(pos, retro):
                   text-anchor="middle"
                   dominant-baseline="middle">
                 {sym}
+            </text>
+
+            <!-- Planet Degree Text -->
+            <text x="{px}" y="{py + 18}"
+                  font-size="10"
+                  font-weight="bold"
+                  fill="#ffd700"
+                  text-anchor="middle">
+                {deg_in_sign:.1f}°
             </text>
             """
 
@@ -1175,299 +1204,6 @@ def generate_north_indian_kundali(pos, lagna_deg):
     for planet, lon in pos.items():
         planet_rashi = rashi_number_from_deg(lon)
         house = planet_house_from_rashi(planet_rashi, lagna_rashi)
+        house_map[house].append((planet, deg_in_rashi(lon)))
 
-        house_map[house].append({
-            "name": planet,
-            "deg": deg_in_rashi(lon),
-            "retro": retro.get(planet, False)
-        })
-
-    planet_text = ""
-
-    for house, planets in house_map.items():
-        x, y = HOUSE_BOXES[house]
-
-        for i, p in enumerate(planets):
-            retro_mark = " ℞" if p["retro"] else ""
-            planet_text += f"""
-            <text x="{x}" y="{y + i*16}"
-                  font-size="13"
-                  font-weight="500"
-                  text-anchor="middle"
-                  fill="black">
-                {p["name"]} {p["deg"]:.1f}°{retro_mark}
-            </text>
-            """
-
-
-    svg = svg.replace(
-        "</svg>",
-        generate_lagna_number(lagna_deg)
-        + generate_rashi_numbers(lagna_deg)
-        + planet_text
-        + "</svg>"
-    )
     return svg
-
-
-# ================= MAIN KUNDALI =================
-st.subheader("🪐 जन्म कुंडली (North Indian Style)")
-st.components.v1.html(
-    generate_north_indian_kundali(pos, lagna_deg),
-    height=720
-)
-
-# ================= D9 (NAVAMSHA) =================
-MOVABLE = [0,3,6,9]
-FIXED   = [1,4,7,10]
-DUAL    = [2,5,8,11]
-
-def get_d9_sign(lon):
-    rashi = int(lon // 30)
-    part  = int((lon % 30) // (30/9))
-
-    if rashi in MOVABLE:
-        return (rashi + part) % 12
-    elif rashi in FIXED:
-        return (rashi + 8 + part) % 12
-    else:  # dual
-        return (rashi + 4 + part) % 12
-
-def get_d10_sign(lon):
-    rashi = int(lon // 30)
-    part  = int((lon % 30) // 3)
-
-    if rashi % 2 == 0:
-        return (rashi + part) % 12
-    else:
-        return (rashi + 9 - part) % 12
-
-
-
-def get_d9_positions(pos):
-    return {p: get_d9_sign(lon) * 30 for p, lon in pos.items()}
-
-def generate_d9_kundali(pos, lagna_deg):
-    d9_pos = get_d9_positions(pos)
-    d9_lagna_deg = get_d9_sign(lagna_deg) * 30
-    return generate_north_indian_kundali(d9_pos, d9_lagna_deg)
-
-def get_d10_positions(pos):
-    return {p: get_d10_sign(lon) * 30 for p, lon in pos.items()}
-
-
-def generate_d10_kundali(pos, lagna_deg):
-    d10_pos = get_d10_positions(pos)
-    d10_lagna_deg = get_d10_sign(lagna_deg) * 30
-    return generate_north_indian_kundali(d10_pos, d10_lagna_deg)
-
-
-
-st.subheader("🪐 D9 — नवांश कुंडली")
-st.components.v1.html(
-    generate_d9_kundali(pos, lagna_deg),
-    height=720
-)
-
-
-
-
-
-st.subheader("🪐 D10 — दशांश कुंडली (Career)")
-st.components.v1.html(
-    generate_d10_kundali(pos, lagna_deg),
-    height=720
-)
-
-
-
-DASHA_SEQ = [
-    ("केतु",7), ("शुक्र",20), ("सूर्य",6), ("चन्द्र",10),
-    ("मंगल",7), ("राहु",18), ("बृहस्पति",16),
-    ("शनि",19), ("बुध",17)
-]
-
-DASHA_YEARS = dict(DASHA_SEQ)
-TOTAL_VIMSHOTTARI = 120.0
-SIDEREAL_YEAR = 365.25636
-
-
-
-def vimshottari_dasha(jd, moon_lon):
-    # Nakshatra calculation
-    nak_index = int(moon_lon // NAK_SIZE)
-    lord = NAKSHATRAS[nak_index][1]
-
-    # True Moon longitude + speed
-    moon_lon_true, moon_speed = get_true_moon_lon_and_speed(jd)
-
-    # Exact Nakshatra start longitude
-    nak_start_lon = nak_index * NAK_SIZE
-    delta_deg = (moon_lon_true - nak_start_lon) % NAK_SIZE
-
-    # Nakshatra start JD (Drik method)
-    nak_start_jd = jd - (delta_deg / moon_speed)
-
-    start_idx = [p for p, _ in DASHA_SEQ].index(lord)
-
-    dashas = []
-    start = nak_start_jd
-
-    for i in range(9):
-        planet, years = DASHA_SEQ[(start_idx + i) % 9]
-        end = start + years * 365.25636  # sidereal year
-        dashas.append((planet, start, end))
-        start = end
-
-    return dashas
-
-def compute_sub_dasha(start_jd, main_lord, main_years, level=1, max_level=5):
-    """
-    level:
-    1 = Mahadasha
-    2 = Antardasha
-    3 = Pratyantar
-    4 = Sukshma
-    5 = Prana
-    """
-
-    seq = [p for p, _ in DASHA_SEQ]
-    start_idx = seq.index(main_lord)
-
-    results = []
-    curr_start = start_jd
-
-    for i in range(9):
-        lord = seq[(start_idx + i) % 9]
-        sub_years = (main_years * DASHA_YEARS[lord]) / TOTAL_VIMSHOTTARI
-        curr_end = curr_start + sub_years * SIDEREAL_YEAR
-
-        node = {
-            "level": level,
-            "lord": lord,
-            "start": curr_start,
-            "end": curr_end
-        }
-
-        if level < max_level:
-            node["children"] = compute_sub_dasha(
-                curr_start,
-                lord,
-                sub_years,
-                level + 1,
-                max_level
-            )
-
-        results.append(node)
-        curr_start = curr_end
-
-    return results
-
-
-
-
-
-st.subheader("⏳ विंशोत्तरी महादशा")
-
-dashas = vimshottari_dasha(jd, pos["चन्द्र"])
-rows = []
-for p, s, e in dashas:
-    rows.append([
-        p,
-        swe.revjul(s)[0:3],
-        swe.revjul(e)[0:3]
-    ])
-
-st.table(pd.DataFrame(rows, columns=["दशा", "आरंभ", "समाप्ति"]))
-
-st.subheader("🔹 अंतरदशा (Current Mahadasha)")
-
-today_jd = jd
-
-# find running Mahadasha
-for md_lord, md_start, md_end in dashas:
-    if md_start <= today_jd < md_end:
-        current_md = (md_lord, md_start, md_end)
-        break
-
-antar_tree = compute_sub_dasha(
-    start_jd=current_md[1],
-    main_lord=current_md[0],
-    main_years=DASHA_YEARS[current_md[0]],
-    max_level=2
-)
-
-antar_rows = []
-for a in antar_tree:
-    antar_rows.append([
-        a["lord"],
-        swe.revjul(a["start"])[0:3],
-        swe.revjul(a["end"])[0:3]
-    ])
-
-st.table(pd.DataFrame(
-    antar_rows,
-    columns=["अंतर दशा", "आरंभ", "समाप्ति"]
-))
-
-
-st.subheader("🔸  प्रत्यंतर दशा")
-
-running_antar = None
-for a in antar_tree:
-    if a["start"] <= today_jd < a["end"]:
-        running_antar = a
-        break
-
-if running_antar:
-    praty_rows = []
-    for p in running_antar["children"]:
-        praty_rows.append([
-            p["lord"],
-            swe.revjul(p["start"])[0:3],
-            swe.revjul(p["end"])[0:3]
-        ])
-
-    st.table(pd.DataFrame(
-        praty_rows,
-        columns=["प्रत्यंतर", "आरंभ", "समाप्ति"]
-    ))
-
-
-
-ASHTAKA_RULES = {
-    "सूर्य": [1,2,4,7,8,9,10,11],
-    "चन्द्र": [2,3,5,6,9,10,11],
-    "मंगल": [1,2,4,7,8,9,10,11],
-    "बुध": [1,3,5,6,9,10,11],
-    "बृहस्पति": [2,5,7,9,10,11],
-    "शुक्र": [1,2,3,4,5,8,9,11,12],
-    "शनि": [3,5,6,10,11]
-}
-
-
-def calculate_sarvashtakavarga(pos, lagna_deg):
-    sav = [0]*12
-
-    for planet, houses in ASHTAKA_RULES.items():
-        planet_rashi = rashi_number_from_deg(pos[planet])
-        lagna_rashi = rashi_number_from_deg(lagna_deg)
-        base_house = planet_house_from_rashi(planet_rashi, lagna_rashi)
-        for h in houses:
-            sav[(base_house + h - 2) % 12] += 1
-
-    return sav
-
-
-st.subheader("📊 सर्वाष्टकवर्ग")
-
-sav = calculate_sarvashtakavarga(pos, lagna_deg)
-
-df = pd.DataFrame({
-    "राशि": SIGNS,
-    "अंक": sav
-})
-
-st.bar_chart(df.set_index("राशि"))
-
-
