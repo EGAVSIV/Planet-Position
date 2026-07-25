@@ -17,7 +17,6 @@ import datetime, pytz, math
 import pandas as pd
 from collections import defaultdict
 import hashlib
-#from streamlit_autorefresh import st_autorefresh
 import base64
 
 def set_bg_image(image_path: str):
@@ -38,28 +37,6 @@ def set_bg_image(image_path: str):
         """,
         unsafe_allow_html=True,
     )
-
-# ================= LOGIN =================
-#def hash_pwd(pwd):
-    #return hashlib.sha256(pwd.encode()).hexdigest()
-
-#USERS = st.secrets["users"]
-
-#if "authenticated" not in st.session_state:
-    #st.session_state.authenticated = False
-
-#if not st.session_state.authenticated:
-    #st.title("🔐 Login Required")
-    #u = st.text_input("Username")
-    #p = st.text_input("Password", type="password")
-
-    #if st.button("Login"):
-        #if u in USERS and hash_pwd(p) == USERS[u]:
-            #st.session_state.authenticated = True
-            #st.rerun()
-        #else:
-            #st.error("Invalid credentials")
-    #st.stop()
 
 # ================= CONFIG =================
 st.set_page_config(
@@ -172,11 +149,6 @@ if "quote_index" not in st.session_state:
 
 @st.cache_data(show_spinner=False)
 def load_india_locations():
-    """
-    Load latitude / longitude from INDIALL.json or INDIALL.parquet
-    Columns required:
-    District | State | Latitude | Longitude
-    """
     if os.path.exists("INDIALL.parquet"):
         df = pd.read_parquet("INDIALL.parquet")
     elif os.path.exists("INDIALL.json"):
@@ -185,14 +157,9 @@ def load_india_locations():
         st.error("❌ INDIALL.json or INDIALL.parquet not found")
         st.stop()
 
-    # Safety: normalize column names
     df.columns = df.columns.str.strip()
-
-    # Create label for dropdown
     df["label"] = df["District"] + " – " + df["State"]
-
     return df
-
 
 # ================= LOCATION DATA =================
 india_df = load_india_locations()
@@ -201,8 +168,6 @@ LOCATIONS = {
     row["label"]: (row["Latitude"], row["Longitude"])
     for _, row in india_df.iterrows()
 }
-
-
 
 NAME_STYLES = [
     {
@@ -234,12 +199,10 @@ NAME_STYLES = [
 if "quote_lang" not in st.session_state:
     st.session_state.quote_lang = "Hindi"
 
-# MUST EXIST BEFORE SIDEBAR
 if "name_style_idx" not in st.session_state:
     st.session_state.name_style_idx = 0
 
 with st.sidebar:
-    # ================= LOCATION =================
     st.markdown("### 📍 स्थान चयन (Location)")
 
     location_keys = list(LOCATIONS.keys())
@@ -254,7 +217,6 @@ with st.sidebar:
         "राज्य / राजधानी चुनें",
         list(LOCATIONS.keys()),
         index=default_index
-
     )
 
     LAT, LON = LOCATIONS[selected_location]
@@ -262,7 +224,6 @@ with st.sidebar:
     st.caption(f"Latitude: {LAT:.4f}°")
     st.caption(f"Longitude: {LON:.4f}°")
 
-    # ================= QUOTE LANGUAGE =================
     st.markdown("---")
     quote_lang = st.radio(
         "उद्धरण भाषा/Quote Language",
@@ -271,10 +232,7 @@ with st.sidebar:
     )
     st.session_state.quote_lang = quote_lang
 
-    # ================= NAME ROTATOR =================
     st.markdown("---")
-
-    #st_autorefresh(interval=10000000, key="name_refresh")
 
     if "name_style_time" not in st.session_state:
         st.session_state.name_style_time = datetime.datetime.now()
@@ -285,7 +243,6 @@ with st.sidebar:
         st.session_state.name_style_idx = (
             st.session_state.name_style_idx + 1
         ) % len(NAME_STYLES)
-
         st.session_state.name_style_time = now
 
     style = NAME_STYLES[st.session_state.name_style_idx]
@@ -317,9 +274,6 @@ with st.sidebar:
 
     ACTIVE_QUOTES = QUOTES if quote_lang == "हिंदी" else EN_QUOTES
 
-    # ================= QUOTE ROTATOR =================
-    #st_autorefresh(interval=1000, key="quote_refresh")
-
     if "quote_time" not in st.session_state:
         st.session_state.quote_time = datetime.datetime.now()
 
@@ -329,7 +283,6 @@ with st.sidebar:
         st.session_state.quote_index = (
             st.session_state.quote_index + 1
         ) % len(ACTIVE_QUOTES)
-
         st.session_state.quote_time = now
 
     st.markdown(
@@ -354,9 +307,7 @@ with st.sidebar:
 
 FLAGS = swe.FLG_SWIEPH | swe.FLG_SIDEREAL
 swe.set_sid_mode(swe.SIDM_LAHIRI)
-# Required for eclipse calculations
 swe.set_ephe_path(".")
-
 
 # ================= SESSION DEFAULTS =================
 if "sel_date" not in st.session_state:
@@ -393,15 +344,6 @@ PLANETS = [
     ("राहु", swe.MEAN_NODE,"रा.")
 ]
 
-
-
-
-
-
-
-
-
-# ================= FUNCTIONS =================
 def nakshatra_pada(lon):
     nak_size = 13 + 1/3
     pada_size = nak_size / 4
@@ -427,26 +369,19 @@ def get_positions(dt_utc):
 
     return pos, retro, jd
 
-
 def get_true_moon_lon_and_speed(jd):
     ay = swe.get_ayanamsa_ut(jd)
-
     r, _ = swe.calc_ut(
         jd,
         swe.MOON,
         swe.FLG_SWIEPH | swe.FLG_TRUEPOS | swe.FLG_SPEED
     )
-
     moon_lon = (r[0] - ay) % 360
-    moon_speed = abs(r[3])  # deg/day
-
+    moon_speed = abs(r[3])
     return moon_lon, moon_speed
 
-
 def get_sun_moon_times(date, lat, lon):
-
     jd = swe.julday(date.year, date.month, date.day, 0)
-
     geopos = (lon, lat, 0)
 
     rs = swe.rise_trans(jd, swe.SUN, swe.CALC_RISE | swe.BIT_DISC_CENTER, geopos)
@@ -456,29 +391,15 @@ def get_sun_moon_times(date, lat, lon):
     ms = swe.rise_trans(jd, swe.MOON, swe.CALC_SET,  geopos)
 
     def jd_to_time(res):
-
         try:
-
             if res[0] != 0:
                 return "—"
-
-        # Julian → calendar
             y, m, d, h = swe.revjul(res[1][0])
-
             hour = int(h)
             minute = int((h - hour) * 60)
-
-        # UTC datetime
-            dt_utc = datetime.datetime(
-                y, m, d, hour, minute,
-                tzinfo=pytz.utc
-            )
-
-        # Convert to IST
+            dt_utc = datetime.datetime(y, m, d, hour, minute, tzinfo=pytz.utc)
             dt_ist = dt_utc.astimezone(pytz.timezone("Asia/Kolkata"))
-
             return dt_ist.strftime("%H:%M")
-
         except:
             return "—"
 
@@ -488,15 +409,13 @@ def get_sun_moon_times(date, lat, lon):
     moonset  = jd_to_time(ms)
 
     return sunrise, sunset, moonrise, moonset
+
 TITHI_NAMES = ["प्रतिपदा","द्वितीया","तृतीया","चतुर्थी","पंचमी","षष्ठी","सप्तमी","अष्टमी","नवमी","दशमी","एकादशी","द्वादशी","त्रयोदशी","चतुर्दशी","पूर्णिमा","प्रतिपदा","द्वितीया","तृतीया","चतुर्थी","पंचमी","षष्ठी","सप्तमी","अष्टमी","नवमी","दशमी","एकादशी","द्वादशी","त्रयोदशी","चतुर्दशी","अमावस्या"]
 
 def get_tithi(moon_lon, sun_lon):
-
     diff = (moon_lon - sun_lon) % 360
     tithi_index = int(diff / 12)
-
     return TITHI_NAMES[tithi_index]
-
 
 CHOGHADIYA_DAY = [
 "उद्वेग","चर","लाभ","अमृत",
@@ -504,28 +423,24 @@ CHOGHADIYA_DAY = [
 ]
 
 def get_running_choghadiya(current_time, sunrise, sunset):
+    try:
+        sr = datetime.datetime.strptime(sunrise,"%H:%M")
+        ss = datetime.datetime.strptime(sunset,"%H:%M")
+        now = datetime.datetime.strptime(current_time,"%H:%M")
 
-    sr = datetime.datetime.strptime(sunrise,"%H:%M")
-    ss = datetime.datetime.strptime(sunset,"%H:%M")
-    now = datetime.datetime.strptime(current_time,"%H:%M")
+        day_duration = (ss - sr).seconds / 8
 
-    day_duration = (ss - sr).seconds / 8
+        for i in range(8):
+            start = sr + datetime.timedelta(seconds=i*day_duration)
+            end = start + datetime.timedelta(seconds=day_duration)
 
-    for i in range(8):
-        start = sr + datetime.timedelta(seconds=i*day_duration)
-        end = start + datetime.timedelta(seconds=day_duration)
-
-        if start <= now <= end:
-            return CHOGHADIYA_DAY[i]
-
+            if start <= now <= end:
+                return CHOGHADIYA_DAY[i]
+    except:
+        pass
     return "रात्रि चोघड़िया"
 
-
-
-
 def generate_svg(pos, retro):
-    from collections import defaultdict
-
     cx, cy = 350, 350
 
     OUTER_R = 330
@@ -535,7 +450,7 @@ def generate_svg(pos, retro):
     BASE_PLANET_R = 195
     STACK_GAP = 26
 
-    # Calculate Moon Nakshatra for center display
+    # Current Moon Nakshatra in Clock Center
     moon_nak, _, moon_pada = nakshatra_pada(pos["चन्द्र"])
 
     svg = f"""
@@ -555,7 +470,7 @@ def generate_svg(pos, retro):
             stroke="#88c9ff"
             stroke-width="3"/>
 
-    <!-- Display Current Nakshatra in Clock Center -->
+    <!-- Display Current Moon Nakshatra in Clock Center -->
     <text x="{cx}" y="{cy - 10}"
           fill="#ffd700"
           font-size="16"
@@ -572,7 +487,7 @@ def generate_svg(pos, retro):
     </text>
     """
 
-    # राशियाँ
+    # Sector Divider Lines
     for i in range(12):
         ang = math.radians(90 - i * 30)
         x = cx + LINE_R * math.cos(ang)
@@ -585,6 +500,7 @@ def generate_svg(pos, retro):
               stroke-width="2"/>
         """
 
+    # Zodiac Sign Names
     for i in range(12):
         ang = math.radians(90 - (i * 30 + 15))
         x = cx + TEXT_R * math.cos(ang)
@@ -601,7 +517,7 @@ def generate_svg(pos, retro):
         </text>
         """
 
-    # ग्रह stacking
+    # Group Planets by Zodiac Sign
     groups = defaultdict(list)
 
     for name, code, sym in PLANETS:
@@ -611,8 +527,13 @@ def generate_svg(pos, retro):
     ketu_deg = pos["केतु"]
     groups[int(ketu_deg // 30)].append(("केतु", "के.", ketu_deg))
 
+    # Render Planet Badges, Degrees, and Nakshatra/Pada Labels
     for rashi, plist in groups.items():
-        ang = math.radians(90 - (rashi * 30 + 15))
+        sector_deg = 90 - (rashi * 30 + 15)
+        ang = math.radians(sector_deg)
+
+        # SVG text rotation angle along radial line
+        rot_angle = -sector_deg
 
         for i, (name, sym, lon) in enumerate(plist):
             r = BASE_PLANET_R - i * STACK_GAP
@@ -621,8 +542,10 @@ def generate_svg(pos, retro):
             py = cy - r * math.sin(ang)
 
             deg_in_sign = lon % 30
+            p_nak, _, p_pada = nakshatra_pada(lon)
             color = "#ff4d4d" if retro.get(name, False) else "#79e887"
 
+            # Planet Badge Circle
             svg += f"""
             <circle cx="{px}" cy="{py}"
                     r="12"
@@ -630,6 +553,7 @@ def generate_svg(pos, retro):
                     stroke="#0b3d1f"
                     stroke-width="1"/>
 
+            <!-- Planet Symbol -->
             <text x="{px}" y="{py}"
                   font-size="11"
                   font-weight="bold"
@@ -639,13 +563,30 @@ def generate_svg(pos, retro):
                 {sym}
             </text>
 
-            <!-- Planet Degree Text -->
+            <!-- Planet Degree in Sign -->
             <text x="{px}" y="{py + 18}"
                   font-size="10"
                   font-weight="bold"
                   fill="#ffd700"
                   text-anchor="middle">
                 {deg_in_sign:.1f}°
+            </text>
+            """
+
+            # Planet Nakshatra & Pada Label (Angled radially inside the sector)
+            nak_r = r - 38
+            tx = cx + nak_r * math.cos(ang)
+            ty = cy - nak_r * math.sin(ang)
+
+            svg += f"""
+            <text x="{tx}" y="{ty}"
+                  font-size="10"
+                  font-weight="bold"
+                  fill="#9bf6ff"
+                  text-anchor="middle"
+                  dominant-baseline="middle"
+                  transform="rotate({rot_angle}, {tx}, {ty})">
+                {p_nak} (पद {p_pada})
             </text>
             """
 
@@ -695,13 +636,9 @@ with right:
     st.markdown('<div class="solid-title">🌙 ज्योतिष सार</div>', unsafe_allow_html=True)
 
     moon_nak, moon_lord, moon_pada = nakshatra_pada(pos["चन्द्र"])
-
     sunrise, sunset, moonrise, moonset = get_sun_moon_times(date, LAT, LON)
-
     tithi = get_tithi(pos["चन्द्र"], pos["सूर्य"])
-
     current_time_str = dt_ist.strftime("%H:%M")
-
     choghadiya = get_running_choghadiya(current_time_str, sunrise, sunset)
 
     summary = [
@@ -720,7 +657,6 @@ with right:
     ]
 
     st.table(pd.DataFrame(summary, columns=["तत्व", "मान"]))
-
     st.markdown('</div>', unsafe_allow_html=True)
 
 st.markdown('<div class="solid-card">', unsafe_allow_html=True)
@@ -827,39 +763,6 @@ def upcoming_aspects(start_dt_utc, days=5, step_minutes=30):
 
     return events
 
-def unique_events(events):
-    seen = set()
-    final = []
-
-    for e in events:
-        key = (e["aspect"], e["planets"])
-        if key not in seen:
-            seen.add(key)
-            final.append(e)
-
-    return final
-
-def zodiac_sign(deg):
-    return ZODIACS[int(deg // 30)]
-
-def detect_aspects(pos):
-    events = []
-
-    planets = list(pos.keys())
-
-    for i in range(len(planets)):
-        for j in range(i + 1, len(planets)):
-            p1, p2 = planets[i], planets[j]
-            s1 = zodiac_sign(pos[p1])
-            s2 = zodiac_sign(pos[p2])
-
-            if s1 == s2:
-                events.append(f"{p1} ☌ {p2} (Conjunction in {s1})")
-            elif ASPECTS["Opposition"].get(s1) == s2:
-                events.append(f"{p1} ☍ {p2} (Opposition {s1}–{s2})")
-
-    return events
-
 def moon_sun_diff(moon_deg, sun_deg):
     diff = (moon_deg - sun_deg) % 360
     return min(diff, 360 - diff)
@@ -871,7 +774,6 @@ def detect_amavasya_purnima(start_dt_utc, days=30, step_minutes=15):
     }
 
     total_steps = int((days * 24 * 60) / step_minutes)
-
     prev_diff = None
 
     for step in range(total_steps):
@@ -923,21 +825,9 @@ def detect_amavasya_purnima(start_dt_utc, days=30, step_minutes=15):
 
     return events
 
-ASPECT_STYLE = {
-    "Conjunction": {
-        "icon": "🟢",
-        "color": "#2ecc71"
-    },
-    "Opposition": {
-        "icon": "🔴",
-        "color": "#e74c3c"
-    }
-}
-
 st.subheader("🌙 Amavasya & Purnima (Upcoming)")
 
 events = detect_amavasya_purnima(dt_utc, days=30)
-
 ist = pytz.timezone("Asia/Kolkata")
 
 for name, data in events.items():
@@ -964,13 +854,10 @@ events = upcoming_aspects(
     step_minutes=30
 )
 
-ist = pytz.timezone("Asia/Kolkata")
-
 if not events:
     st.caption("No major conjunctions or oppositions in the next 10 days.")
 else:
     rows = []
-
     for e in events:
         t_ist = e["time"].astimezone(ist)
         rows.append([
@@ -990,7 +877,7 @@ else:
         use_container_width=True,
         hide_index=True
     )
-    st.markdown('</div>', unsafe_allow_html=True)
+st.markdown('</div>', unsafe_allow_html=True)
 
 NAK_SIZE = 13 + 1/3
 
@@ -1008,7 +895,6 @@ def nakshatra_name(deg):
 
 def upcoming_sign_nakshatra_changes(start_dt_utc, days=10, step_minutes=30):
     events = []
-
     FAST_PLANETS = ["चन्द्र", "बुध", "शुक्र", "सूर्य"]
 
     total_steps = int((days * 24 * 60) / step_minutes)
@@ -1059,13 +945,10 @@ events = upcoming_sign_nakshatra_changes(
     step_minutes=30
 )
 
-ist = pytz.timezone("Asia/Kolkata")
-
 if not events:
     st.caption("No planetary sign or nakshatra changes in the next 10 days.")
 else:
     rows = []
-
     for e in events:
         t_ist = e["time"].astimezone(ist)
         rows.append([
@@ -1094,116 +977,3 @@ else:
         use_container_width=True,
         hide_index=True
     )
-
-# ================= NORTH INDIAN KUNDALI (FINAL FIXED) =================
-
-
-
-HOUSE_BOXES = {
-    1:  (360, 200),   # Top-center (Lagna)
-
-    2:  (210, 120),   # Top-left
-    12: (500, 120),   # Top-right
-
-    3:  (120, 180),   # Middle-left
-    11: (600, 160),   # Middle-right
-
-    4:  (220, 270),   # Inner-left
-    7:  (360, 390),   # Center-bottom (inside diamond)
-    10: (510, 270),   # Inner-right
-
-    5:  (100, 370),   # Bottom-left
-    6:  (210, 420),   # Bottom-center-left
-    9:  (600, 380),   # Bottom-right
-
-    8:  (520, 450),   # Bottom tip
-}
-
-
-def rashi_number_from_deg(deg):
-    return int(deg // 30) + 1
-
-def planet_house_from_rashi(planet_rashi, lagna_rashi):
-    return ((planet_rashi - lagna_rashi) % 12) + 1
-def deg_in_rashi(lon):
-    return lon % 30
-
-
-
-
-def draw_north_indian_kundali_CORRECT():
-    return """
-    <svg width="720" height="520" viewBox="0 0 720 520">
-
-    <!-- OUTER RECTANGLE -->
-    <rect x="60" y="60" width="600" height="400"
-          fill="white" stroke="black" stroke-width="3"/>
-
-    <!-- MAIN DIAMOND -->
-    <polygon points="360,60 660,260 360,460 60,260"
-             fill="none" stroke="black" stroke-width="3"/>
-
-    <!-- INNER CROSS -->
-    <line x1="60" y1="60" x2="660" y2="460"
-          stroke="black" stroke-width="3"/>
-
-    <line x1="660" y1="60" x2="60" y2="460"
-          stroke="black" stroke-width="3"/>
-
-    </svg>
-    """
-
-
-
-
-def generate_lagna_number(lagna_deg):
-    lagna_rashi = rashi_number_from_deg(lagna_deg)
-    x, y = HOUSE_BOXES[1]
-    return f"""
-    <text x="{x}" y="{y-18}"
-          font-size="16"
-          fill="red"
-          font-weight="bold"
-          text-anchor="middle">
-        {lagna_rashi}
-    </text>
-    """
-
-def generate_rashi_numbers(lagna_deg):
-    lagna_rashi = rashi_number_from_deg(lagna_deg)
-    svg_txt = ""
-
-    for house, (x, y) in HOUSE_BOXES.items():
-
-        # 🔥 SKIP Lagna house (House 1)
-        if house == 1:
-            continue
-
-        rashi_num = ((lagna_rashi + house - 2) % 12) + 1
-
-        svg_txt += f"""
-        <text x="{x}" y="{y-22}"
-              font-size="13"
-              fill="#666"
-              font-weight="bold"
-              text-anchor="middle">
-            {rashi_num}
-        </text>
-        """
-
-    return svg_txt
-
-
-
-def generate_north_indian_kundali(pos, lagna_deg):
-    lagna_rashi = rashi_number_from_deg(lagna_deg)
-    svg = draw_north_indian_kundali_CORRECT()
-
-    house_map = defaultdict(list)
-
-    for planet, lon in pos.items():
-        planet_rashi = rashi_number_from_deg(lon)
-        house = planet_house_from_rashi(planet_rashi, lagna_rashi)
-        house_map[house].append((planet, deg_in_rashi(lon)))
-
-    return svg
