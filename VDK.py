@@ -440,15 +440,16 @@ def get_running_choghadiya(current_time, sunrise, sunset):
         pass
     return "रात्रि चोघड़िया"
 
+# ================= SVG GENERATOR WITH NON-OVERLAPPING LAYOUT =================
 def generate_svg(pos, retro):
     cx, cy = 350, 350
 
-    OUTER_R = 330
-    INNER_R = 270
-    LINE_R  = 260
-    TEXT_R  = 210
-    BASE_PLANET_R = 195
-    STACK_GAP = 26
+    OUTER_R = 340
+    INNER_R = 330
+    LINE_R  = 330
+    RASHI_R = 298       # Pushed to outer boundary (no overlap with planets)
+    BASE_PLANET_R = 235 # Outer ring for planet badges
+    STACK_GAP = 36     # Spacing between multiple planets in same sign
 
     # Current Moon Nakshatra in Clock Center
     moon_nak, _, moon_pada = nakshatra_pada(pos["चन्द्र"])
@@ -471,16 +472,16 @@ def generate_svg(pos, retro):
             stroke-width="3"/>
 
     <!-- Display Current Moon Nakshatra in Clock Center -->
-    <text x="{cx}" y="{cy - 10}"
+    <text x="{cx}" y="{cy - 12}"
           fill="#ffd700"
-          font-size="16"
+          font-size="15"
           font-weight="bold"
           text-anchor="middle">
         नक्षत्र: {moon_nak}
     </text>
-    <text x="{cx}" y="{cy + 15}"
+    <text x="{cx}" y="{cy + 12}"
           fill="#00e6ff"
-          font-size="14"
+          font-size="13"
           font-weight="bold"
           text-anchor="middle">
         (पद {moon_pada})
@@ -497,19 +498,20 @@ def generate_svg(pos, retro):
         <line x1="{cx}" y1="{cy}"
               x2="{x}" y2="{y}"
               stroke="#ffd700"
-              stroke-width="2"/>
+              stroke-opacity="0.6"
+              stroke-width="1.5"/>
         """
 
-    # Zodiac Sign Names
+    # Zodiac Sign Names (Placed high up near outer edge)
     for i in range(12):
         ang = math.radians(90 - (i * 30 + 15))
-        x = cx + TEXT_R * math.cos(ang)
-        y = cy - TEXT_R * math.sin(ang)
+        x = cx + RASHI_R * math.cos(ang)
+        y = cy - RASHI_R * math.sin(ang)
 
         svg += f"""
         <text x="{x}" y="{y}"
               fill="#00e6ff"
-              font-size="22"
+              font-size="18"
               font-weight="bold"
               text-anchor="middle"
               dominant-baseline="middle">
@@ -532,8 +534,15 @@ def generate_svg(pos, retro):
         sector_deg = 90 - (rashi * 30 + 15)
         ang = math.radians(sector_deg)
 
-        # SVG text rotation angle along radial line
-        rot_angle = -sector_deg
+        # SVG text rotation angle & auto-flip for readability
+        raw_rot = -sector_deg
+        norm_rot = raw_rot % 360
+
+        # Auto-flip text if angle is upside-down (between 90° and 270°)
+        if 90 < norm_rot < 270:
+            rot_angle = raw_rot + 180
+        else:
+            rot_angle = raw_rot
 
         for i, (name, sym, lon) in enumerate(plist):
             r = BASE_PLANET_R - i * STACK_GAP
@@ -548,14 +557,14 @@ def generate_svg(pos, retro):
             # Planet Badge Circle
             svg += f"""
             <circle cx="{px}" cy="{py}"
-                    r="12"
+                    r="11"
                     fill="{color}"
                     stroke="#0b3d1f"
                     stroke-width="1"/>
 
             <!-- Planet Symbol -->
             <text x="{px}" y="{py}"
-                  font-size="11"
+                  font-size="10"
                   font-weight="bold"
                   fill="black"
                   text-anchor="middle"
@@ -564,8 +573,8 @@ def generate_svg(pos, retro):
             </text>
 
             <!-- Planet Degree in Sign -->
-            <text x="{px}" y="{py + 18}"
-                  font-size="10"
+            <text x="{px}" y="{py + 16}"
+                  font-size="9"
                   font-weight="bold"
                   fill="#ffd700"
                   text-anchor="middle">
@@ -573,20 +582,20 @@ def generate_svg(pos, retro):
             </text>
             """
 
-            # Planet Nakshatra & Pada Label (Angled radially inside the sector)
-            nak_r = r - 38
+            # Planet Nakshatra & Pada Label (Placed cleanly below degree text)
+            nak_r = r - 26
             tx = cx + nak_r * math.cos(ang)
             ty = cy - nak_r * math.sin(ang)
 
             svg += f"""
             <text x="{tx}" y="{ty}"
-                  font-size="10"
+                  font-size="9"
                   font-weight="bold"
                   fill="#9bf6ff"
                   text-anchor="middle"
                   dominant-baseline="middle"
                   transform="rotate({rot_angle}, {tx}, {ty})">
-                {p_nak} (पद {p_pada})
+                {p_nak} ({p_pada})
             </text>
             """
 
